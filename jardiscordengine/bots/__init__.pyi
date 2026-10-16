@@ -1,8 +1,8 @@
 # =============================================================================
-# JarDiscordEngine - Python Discord Bot Engine (discord.py-based)
+# JarDiscordEngine - Python Discord Bot Engine (pycord-based)
 # =============================================================================
 #
-# JarDiscordEngine is a lightweight bot framework built on top of discord.py
+# JarDiscordEngine is a lightweight bot framework built on top of pycord
 # that simplifies Discord bot development while providing higher-level
 # abstractions for command management, event handling, and extensibility.
 #
@@ -12,7 +12,7 @@
 # Licence: GPL v3
 # =============================================================================
 #
-# This engine is inspired by discord.py, modern bot framework design patterns,
+# This engine is inspired by pycord, modern bot framework design patterns,
 # and modular software architecture.
 #
 # It is designed for educational purposes and small-to-medium Discord bot
@@ -26,8 +26,8 @@
 # WARNING:
 # =============================================================================
 #
-# This is NOT discord.py itself.
-# It is a custom abstraction layer built on top of discord.py.
+# This is NOT pycord itself.
+# It is a custom abstraction layer built on top of pycord.
 #
 # =============================================================================
 
@@ -38,8 +38,10 @@ JarDiscordEngine bots module.
 from __future__ import annotations
 
 # Public API exports
+from .bot import JDEBot
 
 # Submodules
 
 __all__: list[str] = [
+    "JDEBot",
 ]

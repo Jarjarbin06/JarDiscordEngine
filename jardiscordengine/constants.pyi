@@ -1,31 +1,33 @@
 # =============================================================================
-# JarEngine - Python Game Engine Wrapper (Pygame-based)
+# JarDiscordEngine - Python Discord Bot Engine (pycord-based)
 # =============================================================================
 #
-# JarEngine is a lightweight game framework built on top of Pygame
-# that simplifies usage while providing higher-level abstractions for
-# game development and prototyping.
+# JarDiscordEngine is a lightweight bot framework built on top of pycord
+# that simplifies Discord bot development while providing higher-level
+# abstractions for command management, event handling, and extensibility.
 #
 # =============================================================================
-# Version: jarengine-v2.0
+# Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
 # Licence: GPL v3
 # =============================================================================
 #
-# This engine is inspired by Pygame, modern game engine design patterns,
-# and directly influenced by the architecture of NewCSFML.
+# This engine is inspired by pycord, modern bot framework design patterns,
+# and modular software architecture.
 #
-# It is designed for educational purposes and small-to-medium game projects.
+# It is designed for educational purposes and small-to-medium Discord bot
+# projects.
 #
-# It provides structured systems such as entity management, scene handling,
-# render abstraction, and advanced modules like particle systems.
+# It provides structured systems such as automatic command discovery,
+# command registration, event handling, extension management, and shared
+# services for logging, configuration, and permissions.
 #
 # =============================================================================
 # WARNING:
 # =============================================================================
 #
-# This is NOT Pygame itself.
-# It is a custom abstraction layer built on top of Pygame.
+# This is NOT pycord itself.
+# It is a custom abstraction layer built on top of pycord.
 #
 # =============================================================================
 

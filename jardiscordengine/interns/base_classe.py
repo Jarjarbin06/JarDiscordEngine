@@ -1,8 +1,8 @@
 # =============================================================================
-# JarDiscordEngine - Python Discord Bot Engine (discord.py-based)
+# JarDiscordEngine - Python Discord Bot Engine (pycord-based)
 # =============================================================================
 #
-# JarDiscordEngine is a lightweight bot framework built on top of discord.py
+# JarDiscordEngine is a lightweight bot framework built on top of pycord
 # that simplifies Discord bot development while providing higher-level
 # abstractions for command management, event handling, and extensibility.
 #
@@ -12,7 +12,7 @@
 # Licence: GPL v3
 # =============================================================================
 #
-# This engine is inspired by discord.py, modern bot framework design patterns,
+# This engine is inspired by pycord, modern bot framework design patterns,
 # and modular software architecture.
 #
 # It is designed for educational purposes and small-to-medium Discord bot
@@ -26,8 +26,8 @@
 # WARNING:
 # =============================================================================
 #
-# This is NOT discord.py itself.
-# It is a custom abstraction layer built on top of discord.py.
+# This is NOT pycord itself.
+# It is a custom abstraction layer built on top of pycord.
 #
 # =============================================================================
 
@@ -101,7 +101,7 @@ class JDEInternBaseClass:
             "name": (255, 255, 150),
             "list": (200, 160, 255),
             "dict": (160, 255, 220),
-            "pygame": (255, 140, 255),
+            "discord": (255, 140, 255),
             "immutable": (180, 180, 180),
             "callable": (255, 180, 100),
             "error": (255, 80, 80),
@@ -140,7 +140,7 @@ class JDEInternBaseClass:
             limit = getattr(cls, "__instance_limit__", None)
 
             if policy == "normal":
-                return ""
+                return "{normal:∞}"
 
             if policy == "singleton":
                 return "{singleton:1}"
@@ -167,8 +167,8 @@ class JDEInternBaseClass:
             if isinstance(value, (list, tuple, set)):
                 return "list"
             module_name = getattr(type(value), "__module__", "")
-            if module_name.startswith("pygame"):
-                return "pygame"
+            if "discord" in module_name:
+                return "discord"
             return "value"
 
         def extend_prefix(
@@ -222,9 +222,9 @@ class JDEInternBaseClass:
             rendered = safe_repr(value)
 
             module_name = getattr(type(value), "__module__", "")
-            if module_name.startswith("pygame"):
-                rendered = f"{type(value).__name__} (PyGame)"
-                category = "pygame"
+            if "discord" in module_name:
+                rendered = f"{type(value).__name__} (Discord)"
+                category = "discord"
 
             lines.append(
                 f"{child_prefix}{connector}{label} = {colorize(rendered, category)}"
