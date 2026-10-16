@@ -15,3 +15,4 @@ trace
 *.egg-info
 coverage.xml
 .coverage
+uv.lock
