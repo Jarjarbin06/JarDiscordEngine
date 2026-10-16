@@ -1,0 +1,17 @@
+# --- FOLDERS --- #
+perso/
+dist/
+dist_done/
+htmlcov/
+__pycache__/
+.idea/
+.vscode/
+.obsidian/
+.run/
+
+# --- FILES --- #
+trace
+*.jar-log
+*.egg-info
+coverage.xml
+.coverage
