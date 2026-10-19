@@ -33,21 +33,32 @@
 
 from __future__ import annotations
 
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import JDEInternAsset as _JDEInternAsset
 from jardiscordengine.interns.decorators import documentation as _documentation
 
 @_documentation
 class JDEEmoji(_JDEInternAsset):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
+
+    def __new__(cls, emoji, name = None, _jde_key = None):
+        return _JDEInternAsset.__new__(
+            cls,
+            name,
+            _jde_key=_jde_key
+        )
 
     def __init__(self, emoji, name = None):
         if name is None:
             name = emoji
 
-        super().__init__(name)
+        _assert_is_instance(emoji, str, "EMOJI must be str")
+
+        _JDEInternAsset.__init__(self, name)
 
         self._emoji = f":{emoji}:"
 
@@ -55,48 +66,37 @@ class JDEEmoji(_JDEInternAsset):
     def emoji(self):
         return self._emoji
 
-    @emoji.setter
-    def emoji(self, emoji):
-        raise AttributeError(f"{self.__class__.__name__}.emoji cannot be changed")
-
-    def __str__(self):
-        return self._emoji
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(emoji={self._emoji!r})"
-
 @_documentation
 class JDECustomEmoji(JDEEmoji):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
 class JDESticker(_JDEInternAsset):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
+
+    def __new__(cls, url, name = None, _jde_key = None):
+        return _JDEInternAsset.__new__(
+            cls,
+            name,
+            _jde_key=_jde_key
+        )
 
     def __init__(self, url, name = None):
         if name is None:
             name = url.split("/")[-1]
 
-        super().__init__(name)
+        _assert_is_instance(url, str, "URL must be str")
+
+        _JDEInternAsset.__init__(self, name)
 
         self._url = url
 
     @property
     def url(self):
         return self._url
-
-    @url.setter
-    def url(self, url):
-        raise AttributeError(f"{self.__class__.__name__}.url cannot be changed")
-
-    def __str__(self):
-        return self._url
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(url={self._url!r})"

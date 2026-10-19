@@ -33,18 +33,28 @@
 
 from __future__ import annotations
 
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 from jardiscordengine.interns.decorators import documentation as _documentation
 
 @_documentation
-class JDEInternPartialEntity(_JDEInternEntity):
+class JDEInternIdentity(_JDEInternEntity):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
+    def __new__(cls, id, _jde_key = None):
+        return _JDEInternEntity.__new__(
+            cls,
+            _jde_key=_jde_key or id,
+        )
+
     def __init__(self, id):
-        super().__init__()
+        _assert_is_instance(id, int, "ID must be int")
+
+        _JDEInternEntity.__init__(self)
 
         self._id = id
 
@@ -52,30 +62,63 @@ class JDEInternPartialEntity(_JDEInternEntity):
     def id(self):
         return self._id
 
-    @id.setter
-    def id(self, id):
-        raise AttributeError(f"{self.__class__.__name__}.id cannot be changed")
-
 @_documentation
-class JDEInternUserIdentity(JDEInternPartialEntity):
+class JDEInternUserIdentity(JDEInternIdentity):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
-    def __init__(self, id, name):
-        super().__init__(id)
+    def __new__(cls, id, username, _jde_key = None):
+        return JDEInternIdentity.__new__(
+            cls,
+            id,
+            _jde_key=_jde_key or id,
+        )
 
-        self.name = name
+    def __init__(self, id, username):
+        _assert_is_instance(username, str, "USERNAME must be str")
+
+        JDEInternIdentity.__init__(self, id)
+
+        self._username = username
+
+    @property
+    def username(self):
+        return self._username
+
+    @username.setter
+    def username(self, username):
+        _assert_is_instance(username, str, "USERNAME must be str")
+
+        self._username = username
 
 @_documentation
 class JDEInternAsset(_JDEInternEntity):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
-    def __init__(self, name):
-        super().__init__()
+    def __new__(cls, name, _jde_key = None):
+        return _JDEInternEntity.__new__(
+            cls,
+            _jde_key=_jde_key,
+        )
 
-        self.name = name
+    def __init__(self, name):
+        _assert_is_instance(name, str, "NAME must be str")
+
+        _JDEInternEntity.__init__(self)
+
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        _assert_is_instance(name, str, "NAME must be str")
+
+        self._name = name

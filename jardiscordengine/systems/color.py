@@ -38,19 +38,32 @@ from typing import final as _final
 from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInternBaseClass
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 
 @_documentation
 @_final
 class JDEColor(_JDEInternBaseClass):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
     fields = ("red", "green", "blue", "alpha")
 
+    def __new__(cls, r, g, b, a, _jde_key = None):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key
+        )
+
     def __init__(self, r = 0, g = 0, b = 0, a = 255):
-        super().__init__()
+        _assert_is_instance(r, int, "R must be int")
+        _assert_is_instance(g, int, "G must be int")
+        _assert_is_instance(b, int, "B must be int")
+        _assert_is_instance(a, int, "A must be int")
+
+        _JDEInternBaseClass.__init__(self)
 
         self._color = [r, g, b, a]
 
@@ -64,6 +77,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @r.setter
     def r(self, r):
+        _assert_is_instance(r, int, "R must be int")
+
         self._color[0] = r
 
     @property
@@ -72,6 +87,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @g.setter
     def g(self, g):
+        _assert_is_instance(g, int, "G must be int")
+
         self._color[1] = g
 
     @property
@@ -80,6 +97,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @b.setter
     def b(self, b):
+        _assert_is_instance(b, int, "B must be int")
+
         self._color[2] = b
 
     @property
@@ -88,6 +107,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @a.setter
     def a(self, a):
+        _assert_is_instance(a, int, "A must be int")
+
         self._color[3] = a
 
     @property
@@ -96,6 +117,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @rgb.setter
     def rgb(self, rgb):
+        _assert_is_instance(rgb, tuple | list, "RGB must be tuple or list")
+
         self.r = rgb[0]
         self.g = rgb[1]
         self.b = rgb[2]
@@ -106,6 +129,8 @@ class JDEColor(_JDEInternBaseClass):
 
     @rgba.setter
     def rgba(self, rgba):
+        _assert_is_instance(rgba, tuple | list, "RGBA must be tuple or list")
+
         self.r = rgba[0]
         self.g = rgba[1]
         self.b = rgba[2]

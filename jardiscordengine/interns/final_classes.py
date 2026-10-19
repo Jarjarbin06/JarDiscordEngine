@@ -32,21 +32,3 @@
 # =============================================================================
 
 from __future__ import annotations
-
-from typing import final as _final
-
-from jardiscordengine.interns import DiscordExtern as _DiscordExtern
-from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInternBaseClass
-from jardiscordengine.interns.decorators import documentation as _documentation
-
-@_final
-@_documentation
-class JDEInternBot(_DiscordExtern.Bot, _JDEInternBaseClass):
-
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
-    __recursive__ = True
-
-    def __init__(self):
-        _DiscordExtern.Bot.__init__(self)
-        _JDEInternBaseClass.__init__(self)

@@ -31,39 +31,40 @@
 #
 # =============================================================================
 
-"""
-JarDiscordEngine internal module.
-
-Provides internal engine classes, configurations, decorators,
-and external integrations required by JarDiscordEngine.
-
-Warning:
-    This module is intended for engine development and advanced usage.
-    Users should avoid directly modifying or relying on its internals.
-"""
-
 from __future__ import annotations
 
-# Public API exports
-from .base_classe import JDEInternBaseClass
-from . import decorators as Decorators
-from . import final_classes as FinalClasses
-from . import high_classes as HighClasses
-from . import low_classes as LowClasses
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
+from jardiscordengine.interns.high_classes import JDEInternIdentity as _JDEInternIdentity
+from jardiscordengine.interns.decorators import documentation as _documentation
 
-# Submodules
-import jarbin_toolkit_console as JTKExternConsole
-import jarbin_toolkit_error as JTKExternError
-import discord as DiscordExtern
+@_documentation
+class JDEGuilds(_JDEInternIdentity):
 
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = False
 
-__all__: list[str] = [
-    "JDEInternBaseClass",
-    "Decorators",
-    "FinalClasses",
-    "HighClasses",
-    "LowClasses",
-    "JTKExternConsole",
-    "JTKExternError",
-    "DiscordExtern",
-]
+    def __new__(cls, id, name, _jde_key = None):
+        return _JDEInternIdentity.__new__(
+            cls,
+            id,
+            _jde_key=_jde_key or id
+        )
+
+    def __init__(self, id, name):
+        _assert_is_instance(name, str, "NAME must be str")
+
+        _JDEInternIdentity.__init__(self, id)
+
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        _assert_is_instance(name, str, "NAME must be str")
+
+        self._name = name

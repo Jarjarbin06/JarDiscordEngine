@@ -35,19 +35,117 @@ from __future__ import annotations
 
 from uuid import uuid4 as _uuid4
 from typing import Any as _Any
+from math import inf as _inf
 
 from jardiscordengine.interns import (
     JTKExternConsole as _JTKExternConsole,
     JTKExternError as _JTKExternError
 )
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+
+
+class _JDEInternMeta(type):
+    def __call__(cls, *args, **kwargs):
+        instance = cls.__new__(cls, *args, **kwargs)
+
+        if not isinstance(instance, cls):
+            return instance
+
+        if getattr(instance, "_jde_initialized", False):
+            return instance
+
+        instance._jde_initialized = True
+
+        try:
+            cls.__init__(instance, *args, **kwargs)
+        except Exception:
+            instance._jde_initialized = False
+            raise
+
+        return instance
 
 @_documentation
-class JDEInternBaseClass:
+class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
-    __recursive__ = False
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = True
+
+    _jde_instances: dict[type, dict[_Any, object]] = {}
+
+    def __new__(cls, *args, _jde_key = None, **kwargs):
+        policy = cls.__instance_policy__
+        limit = cls.__instance_limit__
+
+        if policy == _JDEInternInstancePolicy.NORMAL:
+            return object.__new__(cls)
+
+        instances = JDEInternBaseClass._jde_instances.setdefault(cls, {})
+
+        if policy == _JDEInternInstancePolicy.SINGLETON:
+            key = None
+
+        elif policy == _JDEInternInstancePolicy.FLYWEIGHT:
+            if _jde_key is None:
+                raise _JTKExternError.JErrorRuntime(
+                    f"{cls.__name__} requires an explicit _jde_key "
+                    "when using the flyweight policy."
+                )
+            key = _jde_key
+
+        else:
+            raise _JTKExternError.JErrorValue(
+                f"Invalid instance policy {policy!r} "
+                f"for {cls.__name__}."
+            )
+
+        if key in instances:
+            return instances[key]
+
+        if len(instances) >= limit:
+            raise _JTKExternError.JErrorRuntime(
+                f"{cls.__name__} reached its instance limit "
+                f"of {limit}."
+            )
+
+        instance = object.__new__(cls)
+        instances[key] = instance
+
+        return instance
+
+    @classmethod
+    def validate_instance_policies(cls) -> None:
+        policy = cls.__instance_policy__
+        limit = cls.__instance_limit__
+
+        if policy not in _JDEInternInstancePolicy:
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: invalid instance policy {policy!r}."
+            )
+
+        if (
+            not isinstance(limit, (int, float))
+            or limit < 0
+        ):
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: instance limit must be positive."
+            )
+
+        if policy == _JDEInternInstancePolicy.SINGLETON and limit != 1:
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: singleton requires an instance limit of 1."
+            )
+
+        if policy == _JDEInternInstancePolicy.FLYWEIGHT and limit > _inf:
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: invalid flyweight instance limit."
+            )
+
+        if policy == _JDEInternInstancePolicy.NORMAL and limit != 0:
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: invalid instance limit."
+            )
 
     def __init__(self):
         self._jdeid: str = _uuid4().hex
@@ -136,19 +234,19 @@ class JDEInternBaseClass:
             return _rgb(color, text)
 
         def get_instance_indicator(cls) -> str:
-            policy = getattr(cls, "__instance_policy__", "normal")
+            policy = getattr(cls, "__instance_policy__", _JDEInternInstancePolicy.NORMAL)
             limit = getattr(cls, "__instance_limit__", None)
 
-            if policy == "normal":
-                return "{normal:∞}"
+            if policy == _JDEInternInstancePolicy.NORMAL:
+                return f"{{{_JDEInternInstancePolicy.NORMAL}:∞}}"
 
-            if policy == "singleton":
-                return "{singleton:1}"
+            if policy == _JDEInternInstancePolicy.SINGLETON:
+                return f"{{{_JDEInternInstancePolicy.SINGLETON}:1}}"
 
-            if policy == "flyweight":
+            if policy == _JDEInternInstancePolicy.FLYWEIGHT:
                 if limit is None:
-                    return "{flyweight:∞}"
-                return f"{{flyweight:{limit}}}"
+                    return f"{{{_JDEInternInstancePolicy.FLYWEIGHT}:∞}}"
+                return f"{{{_JDEInternInstancePolicy.FLYWEIGHT}:{limit}}}"
 
             return ""
 

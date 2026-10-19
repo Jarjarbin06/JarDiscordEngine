@@ -81,6 +81,10 @@ def _banner():
         end="\n\n"
     )
 
+def _validate_all_instance_policies() -> None:
+    for subclass in Interns.JDEInternBaseClass.__subclasses__():
+        subclass.validate_instance_policies()
+
 __all__ = [
     ## Special ##
     "__author__",
@@ -106,3 +110,4 @@ __all__ = [
 ]
 
 _banner()
+_validate_all_instance_policies()

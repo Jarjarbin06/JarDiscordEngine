@@ -31,17 +31,12 @@
 #
 # =============================================================================
 
-"""
-JarDiscordEngine bots module.
-"""
-
 from __future__ import annotations
 
-# Public API exports
-from .bot import JDEBot
+from jardiscordengine.interns import JTKExternError
 
-# Submodules
-
-__all__: list[str] = [
-    "JDEBot",
-]
+def assert_is_instance(obj, cls, msg=None):
+    if not isinstance(obj, cls):
+        raise JTKExternError.JErrorType(
+            "Invalid type" if msg is None else msg,
+        )

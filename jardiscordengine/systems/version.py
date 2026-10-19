@@ -41,10 +41,13 @@ from enum import (
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInternBaseClass
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 
 @_final
 @_documentation
 class JDECompatibility(_IntEnum):
+
     OK = _auto()
     WARNING = _auto()
     ERROR = _auto()
@@ -52,34 +55,26 @@ class JDECompatibility(_IntEnum):
 @_documentation
 class JDEVersion(_JDEInternBaseClass):
 
-    __instance_policy__ = "normal"
-    __instance_limit__ = None
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
     __recursive__ = False
 
     fields = ("major", "minor", "patch")
 
-    def __init__(self, major, minor, patch):
-        super().__init__()
-
-        self._version = (
-            self._validate_component(major, "major"),
-            self._validate_component(minor, "minor"),
-            self._validate_component(patch, "patch"),
+    def __new__(cls, major, minor, patch, _jde_key = None):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key
         )
 
-    @staticmethod
-    def _validate_component(value, name):
-        if isinstance(value, bool) or not isinstance(value, int):
-            raise TypeError(
-                f"Version component '{name}' must be an integer."
-            )
+    def __init__(self, major, minor, patch):
+        _assert_is_instance(major, int, "MAJOR must be int")
+        _assert_is_instance(minor, int, "MINOR must be int")
+        _assert_is_instance(patch, int, "PATCH must be int")
 
-        if value < 0:
-            raise ValueError(
-                f"Version component '{name}' cannot be negative."
-            )
+        _JDEInternBaseClass.__init__(self)
 
-        return value
+        self._version = (major, minor, patch)
 
     def __repr__(self):
         fields = (

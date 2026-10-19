@@ -31,23 +31,12 @@
 #
 # =============================================================================
 
-"""
-JarDiscordEngine entities module.
-"""
-
 from __future__ import annotations
 
-# Public API exports
-from .assets import (
-    JDEEmoji,
-    JDECustomEmoji,
-    JDESticker,
-)
+from enum import StrEnum
 
-# Submodules
+class JDEInternInstancePolicy(StrEnum):
 
-__all__: list[str] = [
-    "JDEEmoji",
-    "JDECustomEmoji",
-    "JDESticker",
-]
+    NORMAL = "normal"
+    SINGLETON = "singleton"
+    FLYWEIGHT = "flyweight"

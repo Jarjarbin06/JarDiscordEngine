@@ -37,31 +37,29 @@ from typing import final as _final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInternBaseClass
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+
 
 @_documentation
 @_final
 class JDEBool(_JDEInternBaseClass):
 
-    _instances = {}
-
-    __instance_policy__ = "flyweight"
+    __instance_policy__ = _JDEInternInstancePolicy.FLYWEIGHT
     __instance_limit__ = 2
     __recursive__ = False
 
-    def __new__(cls, value):
-        val = bool(value)
-
-        if val not in cls._instances:
-            instance = super().__new__(cls)
-            cls._instances[val] = instance
-
-        return cls._instances[val]
+    def __new__(cls, value, _jde_key = None):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key or bool(value),
+        )
 
     def __init__(self, value):
         if hasattr(self, "_initialized"):
             return
 
-        super().__init__()
+        _JDEInternBaseClass.__init__(self)
+
         self._bool = bool(value)
         self._initialized = True
 
@@ -80,11 +78,11 @@ class JDEBool(_JDEInternBaseClass):
     def __call__(self):
         return JDEBool(not self)
 
-    def __or__(self, other):
-        return JDEBool(self or other)
-
     def __and__(self, other):
-        return JDEBool(self and other)
+        return JDEBool(bool(self) and bool(other))
+
+    def __or__(self, other):
+        return JDEBool(bool(self) or bool(other))
 
     @property
     def b(self):

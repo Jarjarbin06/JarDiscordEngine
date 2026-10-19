@@ -31,15 +31,25 @@
 #
 # =============================================================================
 
-"""
-JarDiscordEngine extensions module.
-"""
-
 from __future__ import annotations
 
-# Public API exports
+from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.high_classes import JDEInternIdentity as _JDEInternIdentity
+from jardiscordengine.interns.decorators import documentation as _documentation
 
-# Submodules
+@_documentation
+class JDEMessage(_JDEInternIdentity):
 
-__all__: list[str] = [
-]
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    def __new__(cls, id, _jde_key = None):
+        return _JDEInternIdentity.__new__(
+            cls,
+            id,
+            _jde_key=_jde_key or id
+        )
+
+    def __init__(self, id):
+        _JDEInternIdentity.__init__(self, id)
