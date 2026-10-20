@@ -33,10 +33,15 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+)
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
-from jardiscordengine.interns.high_classes import JDEInternEntityFieldID as _JDEInternEntityFieldID
+
 
 @_documentation
 class JDEEntityMessage(_JDEInternEntity, _JDEInternEntityFieldID):

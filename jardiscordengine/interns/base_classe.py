@@ -33,19 +33,19 @@
 
 from __future__ import annotations
 
-from uuid import uuid4 as _uuid4
-from typing import Any as _Any
 from math import inf as _inf
+from typing import Any as _Any
+from uuid import uuid4 as _uuid4
 
-from jardiscordengine.interns import (
-    JTKExternConsole as _JTKExternConsole,
-    JTKExternError as _JTKExternError
-)
+from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
 from jardiscordengine.interns.helpers import warning as _warning
 
-_JDE_WARNED_INSTANCE_LIMIT: set[type] = set()
+_JDE_WARNED_INSTANCE_LIMIT: set[_Any] = set()
 
 class _JDEInternMeta(type):
 
@@ -84,9 +84,12 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
             cls,
             *args,
             _jde_key=None,
-            _jde_warn=True,
+            _jde_warn=None,
             **kwargs,
         ):
+        if _jde_key is None:
+            _jde_key = True
+
         policy = cls.__instance_policy__
         limit = cls.__instance_limit__
 
@@ -128,12 +131,21 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         )
 
         if should_warn and _jde_warn:
-            _warning(
-                _JTKExternError.JErrorRuntime(
-                    f"{cls.__name__}: construction warning for "
-                    f"the {policy} policy."
-                )
+            warning_identifier = cls._get_warning_identifier(
+                cls,
+                policy,
+                key,
             )
+
+            if warning_identifier not in _JDE_WARNED_INSTANCE_LIMIT:
+                _JDE_WARNED_INSTANCE_LIMIT.add(warning_identifier)
+
+                _warning(
+                    _JTKExternError.JErrorRuntime(
+                        f"{cls.__name__}: construction warning for "
+                        f"the {policy.upper()} policy."
+                    )
+                )
 
         if exists:
             return instances[key]
@@ -152,6 +164,16 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
             )
 
         return instance
+
+    @staticmethod
+    def _get_warning_identifier(cls, policy, key):
+        if policy in (
+            _JDEInternInstancePolicy.FLYWEIGHT,
+            _JDEInternInstancePolicy.UNIQUE,
+        ):
+            return (cls, key)
+
+        return cls
 
     @classmethod
     def validate_instance_policies(cls) -> None:
@@ -195,12 +217,11 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                     "an instance limit of at least 1."
                 )
 
-        elif policy == _JDEInternInstancePolicy.UNIQUE:
-            if limit != 0:
-                raise _JTKExternError.JErrorValue(
-                    f"{cls.__name__}: unique requires "
-                    "an instance limit of 0."
-                )
+        elif policy == _JDEInternInstancePolicy.UNIQUE and limit != 0:
+            raise _JTKExternError.JErrorValue(
+                f"{cls.__name__}: unique requires "
+                "an instance limit of 0."
+            )
 
     def __init__(self):
         self._jdeid: str = _uuid4().hex
@@ -495,7 +516,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                     try:
                         props[f"@{attr_name}"] = getattr(self, attr_name)
                     except NotImplementedError:
-                        props[f"@{attr_name}"] = f"<error: not implemented>"
+                        props[f"@{attr_name}"] = "<error: not implemented>"
                     except Exception as err:
                         props[f"@{attr_name}"] = f"<error: {err}>"
 

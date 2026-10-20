@@ -34,14 +34,19 @@
 from __future__ import annotations
 
 from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
-from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
     JDEInternEntityFieldID as _JDEInternEntityFieldID,
-    JDEInternEntityFieldUsername as _JDEInternEntityFieldUsername
 )
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldUsername as _JDEInternEntityFieldUsername,
+)
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+
 
 @_documentation
 class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldUsername):

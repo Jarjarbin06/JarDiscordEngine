@@ -33,10 +33,15 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
-from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.low_classes import JDEInternEntityField as _JDEInternEntityField
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
+from jardiscordengine.interns.low_classes import (
+    JDEInternEntityField as _JDEInternEntityField,
+)
+
 
 @_documentation
 class JDEInternEntityFieldID(_JDEInternEntityField):

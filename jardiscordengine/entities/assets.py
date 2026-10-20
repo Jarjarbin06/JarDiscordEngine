@@ -33,14 +33,19 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
-from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
+from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
     JDEInternEntityFieldName as _JDEInternEntityFieldName,
-    JDEInternEntityFieldURL as _JDEInternEntityFieldURL
 )
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldURL as _JDEInternEntityFieldURL,
+)
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+
 
 @_documentation
 class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):

@@ -48,8 +48,8 @@ import jardiscordengine.extensions as Extensions
 import jardiscordengine.interns as Interns
 import jardiscordengine.services as Services
 import jardiscordengine.systems as Systems
-
 from jardiscordengine.constants import *
+
 
 ##Special##
 def _title_color(title):
@@ -72,7 +72,7 @@ def _banner():
     center = Text("-").f_layout_pad_center(50)
 
     bottom = Text(
-        f"Discord bot development framework"
+        "Discord bot development framework"
     ).f_layout_align_center(50)
 
     Interns.JTKExternConsole.Console.Console.print(
@@ -85,7 +85,7 @@ def _validate_all_instance_policies() -> None:
     for subclass in Interns.JDEInternBaseClass.__subclasses__():
         subclass.validate_instance_policies()
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     ## Special ##
     "__author__",
     "__email__",

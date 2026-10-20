@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import inspect as _inspect
 
+
 def documentation(cls):
     """Add automatic, runtime documentation"""
 

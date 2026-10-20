@@ -36,10 +36,15 @@ from __future__ import annotations
 from typing import final as _final
 
 from jardiscordengine.interns import JTKExternError as _JTKExternError
-from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInternBaseClass
+from jardiscordengine.interns.base_classe import (
+    JDEInternBaseClass as _JDEInternBaseClass,
+)
 from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
+
 
 @_documentation
 @_final

@@ -31,10 +31,11 @@
 #
 # =============================================================================
 
+from sys import version_info as _python_version
+
+from jardiscordengine import __version__ as _jarengine_version
 from jardiscordengine.systems.bool import JDEBool as _JDEBool
 from jardiscordengine.systems.version import JDEVersion as _JDEVersion
-from jardiscordengine import __version__ as _jarengine_version
-from sys import version_info as _python_version
 
 # Versions #
 JDEVersion_JarEngine = _JDEVersion(*[int(v) for v in _jarengine_version.split('.')])
@@ -44,7 +45,7 @@ JDEVersion_Python = _JDEVersion(*_python_version[0:3])
 JDEFalse = _JDEBool(0)
 JDETrue = _JDEBool(1)
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     # Versions #
     'JDEVersion_JarEngine',
     'JDEVersion_Python',

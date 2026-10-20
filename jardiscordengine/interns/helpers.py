@@ -37,6 +37,7 @@ import sys
 
 from jardiscordengine.interns import JTKExternError
 
+
 def assert_is_instance(obj, cls, msg=None):
     if not isinstance(obj, cls):
         raise JTKExternError.JErrorType(

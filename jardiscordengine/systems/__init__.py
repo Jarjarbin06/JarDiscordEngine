@@ -36,13 +36,13 @@ from __future__ import annotations
 from jardiscordengine.systems.bool import JDEBool
 from jardiscordengine.systems.color import JDEColor
 from jardiscordengine.systems.version import (
-    JDEVersion,
     JDECompatibility,
+    JDEVersion,
 )
 
 __all__ = [
     'JDEBool',
     'JDEColor',
-    'JDEVersion',
     'JDECompatibility',
+    'JDEVersion',
 ]
