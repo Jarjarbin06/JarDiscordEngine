@@ -33,57 +33,63 @@
 
 from __future__ import annotations
 
-from jardiscordengine.entities.guilds import JDEGuilds as _JDEGuilds
+from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.high_classes import JDEInternUserIdentity as _JDEInternUserIdentity
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+    JDEInternEntityFieldUsername as _JDEInternEntityFieldUsername
+)
 
 @_documentation
-class JDEUser(_JDEInternUserIdentity):
+class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldUsername):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, username, _jde_key = None):
-        return _JDEInternUserIdentity.__new__(
+    def __new__(cls, id, username, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            id,
-            username,
-            _jde_key=_jde_key or id
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, id, username):
-        _JDEInternUserIdentity.__init__(self, id, username)
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldID.__init__(self, id)
+        _JDEInternEntityFieldUsername.__init__(self, username)
 
 @_documentation
-class JDEClientUser(JDEUser):
+class JDEEntityClientUser(JDEEntityUser):
 
     __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
     __instance_limit__ = 1
     __recursive__ = False
 
 @_documentation
-class JDEMember(JDEUser):
+class JDEEntityMember(JDEEntityUser):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, user, guild, _jde_key = None):
-        return JDEUser.__new__(
+    def __new__(cls, user, guild, _jde_key = None, _jde_warn = None):
+        return JDEEntityUser.__new__(
             cls,
             user.id,
             user.username,
-            _jde_key=_jde_key or user.id
+            _jde_key=_jde_key if _jde_key is not None else (user.id, guild.id),
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, user, guild):
-        _assert_is_instance(user, JDEUser, "USER must be JDEUser")
-        _assert_is_instance(guild, _JDEGuilds, "GUILD must be JDEGuilds")
+        _assert_is_instance(user, JDEEntityUser, "USER must be JDEEntityUser")
+        _assert_is_instance(guild, _JDEEntityGuild, "GUILD must be JDEEntityGuild")
 
-        JDEUser.__init__(self, user.id, user.username)
+        JDEEntityUser.__init__(self, user.id, user.username)
 
         self._guild = guild
 
@@ -92,24 +98,23 @@ class JDEMember(JDEUser):
         return self._guild
 
 @_documentation
-class JDEUserProfile(_JDEInternUserIdentity):
+class JDEEntityUserProfile(_JDEInternEntity):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, user, _jde_key = None):
-        return _JDEInternUserIdentity.__new__(
+    def __new__(cls, user, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            user.id,
-            user.username,
-            _jde_key=_jde_key or user.id
+            _jde_key=_jde_key if _jde_key is not None else user.id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, user):
-        _assert_is_instance(user, JDEUser, "USER must be JDEUser")
+        _assert_is_instance(user, JDEEntityUser, "USER must be JDEEntityUser")
 
-        _JDEInternUserIdentity.__init__(self, user.id, user.username)
+        _JDEInternEntity.__init__(self)
 
         self._user = user
 

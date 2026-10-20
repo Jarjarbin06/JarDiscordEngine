@@ -35,21 +35,25 @@ from __future__ import annotations
 
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.high_classes import JDEInternAsset as _JDEInternAsset
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldName as _JDEInternEntityFieldName,
+    JDEInternEntityFieldURL as _JDEInternEntityFieldURL
+)
 
 @_documentation
-class JDEEmoji(_JDEInternAsset):
+class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, emoji, name = None, _jde_key = None):
-        return _JDEInternAsset.__new__(
+    def __new__(cls, emoji, name = None, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            name,
-            _jde_key=_jde_key
+            _jde_key=_jde_key if _jde_key is not None else name,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, emoji, name = None):
@@ -58,7 +62,8 @@ class JDEEmoji(_JDEInternAsset):
 
         _assert_is_instance(emoji, str, "EMOJI must be str")
 
-        _JDEInternAsset.__init__(self, name)
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldName.__init__(self, name)
 
         self._emoji = f":{emoji}:"
 
@@ -67,36 +72,58 @@ class JDEEmoji(_JDEInternAsset):
         return self._emoji
 
 @_documentation
-class JDECustomEmoji(JDEEmoji):
+class JDEEntityCustomEmoji(JDEEntityEmoji):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
-class JDESticker(_JDEInternAsset):
+class JDEEntityImage(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntityFieldName):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, url, name = None, _jde_key = None):
-        return _JDEInternAsset.__new__(
+    def __new__(cls, url, name = None, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            name,
-            _jde_key=_jde_key
+            _jde_key=_jde_key if _jde_key is not None else name,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, url, name = None):
         if name is None:
             name = url.split("/")[-1]
 
-        _assert_is_instance(url, str, "URL must be str")
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldURL.__init__(self, url)
+        _JDEInternEntityFieldName.__init__(self, name)
 
-        _JDEInternAsset.__init__(self, name)
+@_documentation
+class JDEEntityAvatar(JDEEntityImage):
 
-        self._url = url
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False
 
-    @property
-    def url(self):
-        return self._url
+@_documentation
+class JDEEntityGuildIcon(JDEEntityImage):
+
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False
+
+@_documentation
+class JDEEntityBanner(JDEEntityImage):
+
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False
+
+@_documentation
+class JDEEntitySticker(JDEEntityImage):
+
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False

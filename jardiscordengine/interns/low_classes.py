@@ -37,7 +37,6 @@ from jardiscordengine.interns.base_classe import JDEInternBaseClass as _JDEInter
 from jardiscordengine.interns.decorators import documentation as _documentation
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 
-
 @_documentation
 class JDEInternEntity(_JDEInternBaseClass):
 
@@ -45,10 +44,28 @@ class JDEInternEntity(_JDEInternBaseClass):
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, _jde_key = None):
+    def __new__(cls, _jde_key = None, _jde_warn = None):
         return _JDEInternBaseClass.__new__(
             cls,
-            _jde_key=_jde_key
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn,
+        )
+
+    def __init__(self):
+        _JDEInternBaseClass.__init__(self)
+
+@_documentation
+class JDEInternEntityField(_JDEInternBaseClass):
+
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    def __new__(cls, _jde_key = None, _jde_warn = None):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn,
         )
 
     def __init__(self):

@@ -34,37 +34,28 @@
 from __future__ import annotations
 
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
-from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.high_classes import JDEInternIdentity as _JDEInternIdentity
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+    JDEInternEntityFieldName as _JDEInternEntityFieldName
+)
 
 @_documentation
-class JDERole(_JDEInternIdentity):
+class JDEEntityRole(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldName):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, name, _jde_key = None):
-        return _JDEInternIdentity.__new__(
+    def __new__(cls, id, name, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            id,
-            _jde_key=_jde_key or id
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, id, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
-        _JDEInternIdentity.__init__(self, id)
-
-        self._name = name
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
-        self._name = name
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldID.__init__(self, id)
+        _JDEInternEntityFieldName.__init__(self, name)

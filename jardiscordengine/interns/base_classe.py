@@ -43,10 +43,16 @@ from jardiscordengine.interns import (
 )
 from jardiscordengine.interns.decorators import documentation as _documentation
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
+from jardiscordengine.interns.helpers import warning as _warning
 
+_JDE_WARNED_INSTANCE_LIMIT: set[type] = set()
 
 class _JDEInternMeta(type):
+
     def __call__(cls, *args, **kwargs):
+        init_kwargs = kwargs.copy()
+        init_kwargs.pop("_jde_warn", None)
+
         instance = cls.__new__(cls, *args, **kwargs)
 
         if not isinstance(instance, cls):
@@ -58,7 +64,7 @@ class _JDEInternMeta(type):
         instance._jde_initialized = True
 
         try:
-            cls.__init__(instance, *args, **kwargs)
+            cls.__init__(instance, *args, **init_kwargs)
         except Exception:
             instance._jde_initialized = False
             raise
@@ -74,7 +80,13 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
     _jde_instances: dict[type, dict[_Any, object]] = {}
 
-    def __new__(cls, *args, _jde_key = None, **kwargs):
+    def __new__(
+            cls,
+            *args,
+            _jde_key=None,
+            _jde_warn=True,
+            **kwargs,
+        ):
         policy = cls.__instance_policy__
         limit = cls.__instance_limit__
 
@@ -86,11 +98,14 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         if policy == _JDEInternInstancePolicy.SINGLETON:
             key = None
 
-        elif policy == _JDEInternInstancePolicy.FLYWEIGHT:
+        elif policy in (
+            _JDEInternInstancePolicy.FLYWEIGHT,
+            _JDEInternInstancePolicy.UNIQUE,
+        ):
             if _jde_key is None:
                 raise _JTKExternError.JErrorRuntime(
                     f"{cls.__name__} requires an explicit _jde_key "
-                    "when using the flyweight policy."
+                    f"when using the {policy} policy."
                 )
             key = _jde_key
 
@@ -100,17 +115,41 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 f"for {cls.__name__}."
             )
 
-        if key in instances:
+        exists = key in instances
+
+        should_warn = (
+            policy == _JDEInternInstancePolicy.SINGLETON and exists
+            or policy == _JDEInternInstancePolicy.UNIQUE and exists
+            or (
+                policy == _JDEInternInstancePolicy.FLYWEIGHT
+                and not exists
+                and len(instances) >= limit
+            )
+        )
+
+        if should_warn and _jde_warn:
+            _warning(
+                _JTKExternError.JErrorRuntime(
+                    f"{cls.__name__}: construction warning for "
+                    f"the {policy} policy."
+                )
+            )
+
+        if exists:
             return instances[key]
 
-        if len(instances) >= limit:
+        instance = object.__new__(cls)
+        instances[key] = instance
+
+        if (
+            policy == _JDEInternInstancePolicy.FLYWEIGHT
+            and len(instances) > limit
+        ):
+            del instances[key]
             raise _JTKExternError.JErrorRuntime(
                 f"{cls.__name__} reached its instance limit "
                 f"of {limit}."
             )
-
-        instance = object.__new__(cls)
-        instances[key] = instance
 
         return instance
 
@@ -119,33 +158,49 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         policy = cls.__instance_policy__
         limit = cls.__instance_limit__
 
-        if policy not in _JDEInternInstancePolicy:
+        if not isinstance(policy, _JDEInternInstancePolicy):
             raise _JTKExternError.JErrorValue(
                 f"{cls.__name__}: invalid instance policy {policy!r}."
             )
 
         if (
-            not isinstance(limit, (int, float))
+            isinstance(limit, bool)
+            or not isinstance(limit, (int, float))
             or limit < 0
+            or limit == _inf
         ):
             raise _JTKExternError.JErrorValue(
-                f"{cls.__name__}: instance limit must be positive."
+                f"{cls.__name__}: instance limit must be a "
+                "finite, non-negative number."
             )
 
-        if policy == _JDEInternInstancePolicy.SINGLETON and limit != 1:
-            raise _JTKExternError.JErrorValue(
-                f"{cls.__name__}: singleton requires an instance limit of 1."
-            )
+        if policy == _JDEInternInstancePolicy.NORMAL:
+            if limit != 0:
+                raise _JTKExternError.JErrorValue(
+                    f"{cls.__name__}: normal policy requires "
+                    "an instance limit of 0."
+                )
 
-        if policy == _JDEInternInstancePolicy.FLYWEIGHT and limit > _inf:
-            raise _JTKExternError.JErrorValue(
-                f"{cls.__name__}: invalid flyweight instance limit."
-            )
+        elif policy == _JDEInternInstancePolicy.SINGLETON:
+            if limit != 1:
+                raise _JTKExternError.JErrorValue(
+                    f"{cls.__name__}: singleton requires "
+                    "an instance limit of 1."
+                )
 
-        if policy == _JDEInternInstancePolicy.NORMAL and limit != 0:
-            raise _JTKExternError.JErrorValue(
-                f"{cls.__name__}: invalid instance limit."
-            )
+        elif policy == _JDEInternInstancePolicy.FLYWEIGHT:
+            if limit < 1:
+                raise _JTKExternError.JErrorValue(
+                    f"{cls.__name__}: flyweight requires "
+                    "an instance limit of at least 1."
+                )
+
+        elif policy == _JDEInternInstancePolicy.UNIQUE:
+            if limit != 0:
+                raise _JTKExternError.JErrorValue(
+                    f"{cls.__name__}: unique requires "
+                    "an instance limit of 0."
+                )
 
     def __init__(self):
         self._jdeid: str = _uuid4().hex
@@ -234,21 +289,41 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
             return _rgb(color, text)
 
         def get_instance_indicator(cls) -> str:
-            policy = getattr(cls, "__instance_policy__", _JDEInternInstancePolicy.NORMAL)
+            policy = getattr(
+                cls,
+                "__instance_policy__",
+                _JDEInternInstancePolicy.NORMAL,
+            )
             limit = getattr(cls, "__instance_limit__", None)
 
             if policy == _JDEInternInstancePolicy.NORMAL:
-                return f"{{{_JDEInternInstancePolicy.NORMAL}:∞}}"
+                return f"{{{policy}:∞}}"
 
             if policy == _JDEInternInstancePolicy.SINGLETON:
-                return f"{{{_JDEInternInstancePolicy.SINGLETON}:1}}"
+                return f"{{{policy}:1}}"
 
             if policy == _JDEInternInstancePolicy.FLYWEIGHT:
-                if limit is None:
-                    return f"{{{_JDEInternInstancePolicy.FLYWEIGHT}:∞}}"
-                return f"{{{_JDEInternInstancePolicy.FLYWEIGHT}:{limit}}}"
+                return f"{{{policy}:{limit}}}"
+
+            if policy == _JDEInternInstancePolicy.UNIQUE:
+                return f"{{{policy}:∞}}"
 
             return ""
+
+        def get_name(obj):
+            name = getattr(obj, "name", None)
+
+            if name is not None:
+                return name
+
+            for attr_name in dir(obj):
+                if "name" in attr_name.lower():
+                    value = getattr(obj, attr_name, None)
+
+                    if value is not None:
+                        return value
+
+            return None
 
         def classify(
                 name: str,
@@ -385,7 +460,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         try:
             lines: list[str] = []
 
-            name = getattr(self, "name", None)
+            name = get_name(self)
             class_name_raw = self.__class__.__name__
             class_name = colorize(class_name_raw, "class")
 
@@ -466,6 +541,21 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         def type_name(v) -> str:
             return type(v).__name__
 
+        def get_name(obj):
+            name = getattr(obj, "name", None)
+
+            if name is not None:
+                return name
+
+            for attr_name in dir(obj):
+                if "name" in attr_name.lower():
+                    value = getattr(obj, attr_name, None)
+
+                    if value is not None:
+                        return value
+
+            return None
+
         def safe_repr(v) -> str:
             try:
                 r = repr(v)
@@ -497,7 +587,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
         lines = []
         class_name = self.__class__.__name__
-        name = getattr(self, "name", None)
+        name = get_name(self)
 
         class_part = class_name + (f" ({name!r})" if name else "")
 

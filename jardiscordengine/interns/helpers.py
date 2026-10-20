@@ -33,6 +33,8 @@
 
 from __future__ import annotations
 
+import sys
+
 from jardiscordengine.interns import JTKExternError
 
 def assert_is_instance(obj, cls, msg=None):
@@ -40,3 +42,13 @@ def assert_is_instance(obj, cls, msg=None):
         raise JTKExternError.JErrorType(
             "Invalid type" if msg is None else msg,
         )
+
+def warning(err):
+    if isinstance(err, JTKExternError.BaseJError):
+        err = JTKExternError.BaseJError(
+            err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
+            error="Warning",
+            format=JTKExternError.FormatType.COMPACT
+        )
+
+    print(err, file=sys.stderr)

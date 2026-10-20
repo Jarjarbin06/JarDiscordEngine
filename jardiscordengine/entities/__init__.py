@@ -34,13 +34,71 @@
 from __future__ import annotations
 
 from jardiscordengine.entities.assets import (
-    JDEEmoji,
-    JDECustomEmoji,
-    JDESticker,
+    JDEEntityEmoji,
+    JDEEntityCustomEmoji,
+    JDEEntityImage,
+    JDEEntityAvatar,
+    JDEEntityGuildIcon,
+    JDEEntityBanner,
+    JDEEntitySticker,
+)
+from jardiscordengine.entities.channels import (
+    JDEEntityChannel,
+    JDEEntityGuildChannel,
+    JDEEntityTextChannel,
+    JDEEntityVoiceChannel,
+    JDEEntityStageChannel,
+    JDEEntityForumChannel,
+    JDEEntityAnnouncementChannel,
+)
+from jardiscordengine.entities.guilds import (
+    JDEEntityGuild,
+)
+from jardiscordengine.entities.messages import (
+    JDEEntityMessage,
+    JDEEntityEmbed,
+)
+from jardiscordengine.entities.miscellaneous import (
+    JDEEntityWebhook,
+)
+from jardiscordengine.entities.roles import (
+    JDEEntityRole,
+)
+from jardiscordengine.entities.users import (
+    JDEEntityUser,
+    JDEEntityClientUser,
+    JDEEntityMember,
+    JDEEntityUserProfile,
 )
 
 __all__ = [
-    "JDEEmoji",
-    "JDECustomEmoji",
-    "JDESticker",
+    "JDEEntityEmoji",
+    "JDEEntityCustomEmoji",
+    "JDEEntityImage",
+    "JDEEntityAvatar",
+    "JDEEntityGuildIcon",
+    "JDEEntityBanner",
+    "JDEEntitySticker",
+
+    "JDEEntityChannel",
+    "JDEEntityGuildChannel",
+    "JDEEntityTextChannel",
+    "JDEEntityVoiceChannel",
+    "JDEEntityStageChannel",
+    "JDEEntityForumChannel",
+    "JDEEntityAnnouncementChannel",
+
+    "JDEEntityGuild",
+
+    "JDEEntityMessage",
+    "JDEEntityEmbed",
+
+    "JDEEntityWebhook",
+
+    "JDEEntityRole",
+
+    "JDEEntityUser",
+    "JDEEntityClientUser",
+    "JDEEntityMember",
+    "JDEEntityUserProfile",
 ]

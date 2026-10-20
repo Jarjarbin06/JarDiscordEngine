@@ -35,26 +35,27 @@ from __future__ import annotations
 
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.low_classes import JDEInternEntityField as _JDEInternEntityField
 from jardiscordengine.interns.decorators import documentation as _documentation
 
 @_documentation
-class JDEInternIdentity(_JDEInternEntity):
+class JDEInternEntityFieldID(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, _jde_key = None):
-        return _JDEInternEntity.__new__(
+    def __new__(cls, id, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntityField.__new__(
             cls,
-            _jde_key=_jde_key or id,
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn,
         )
 
     def __init__(self, id):
         _assert_is_instance(id, int, "ID must be int")
 
-        _JDEInternEntity.__init__(self)
+        _JDEInternEntityField.__init__(self)
 
         self._id = id
 
@@ -63,23 +64,23 @@ class JDEInternIdentity(_JDEInternEntity):
         return self._id
 
 @_documentation
-class JDEInternUserIdentity(JDEInternIdentity):
+class JDEInternEntityFieldUsername(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, username, _jde_key = None):
-        return JDEInternIdentity.__new__(
+    def __new__(cls, username, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntityField.__new__(
             cls,
-            id,
-            _jde_key=_jde_key or id,
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn,
         )
 
-    def __init__(self, id, username):
+    def __init__(self, username):
         _assert_is_instance(username, str, "USERNAME must be str")
 
-        JDEInternIdentity.__init__(self, id)
+        _JDEInternEntityField.__init__(self)
 
         self._username = username
 
@@ -89,27 +90,26 @@ class JDEInternUserIdentity(JDEInternIdentity):
 
     @username.setter
     def username(self, username):
-        _assert_is_instance(username, str, "USERNAME must be str")
-
         self._username = username
 
 @_documentation
-class JDEInternAsset(_JDEInternEntity):
+class JDEInternEntityFieldName(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, name, _jde_key = None):
-        return _JDEInternEntity.__new__(
+    def __new__(cls, name, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntityField.__new__(
             cls,
-            _jde_key=_jde_key,
+            _jde_key=_jde_key if _jde_key is not None else name,
+            _jde_warn=_jde_warn,
         )
 
     def __init__(self, name):
         _assert_is_instance(name, str, "NAME must be str")
 
-        _JDEInternEntity.__init__(self)
+        _JDEInternEntityField.__init__(self)
 
         self._name = name
 
@@ -119,6 +119,33 @@ class JDEInternAsset(_JDEInternEntity):
 
     @name.setter
     def name(self, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
         self._name = name
+
+@_documentation
+class JDEInternEntityFieldURL(_JDEInternEntityField):
+
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    def __new__(cls, url, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntityField.__new__(
+            cls,
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn,
+        )
+
+    def __init__(self, url):
+        _assert_is_instance(url, str, "URL must be str")
+
+        _JDEInternEntityField.__init__(self)
+
+        self._url = url
+
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, url):
+        self._url = url

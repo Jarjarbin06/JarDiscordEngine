@@ -34,22 +34,42 @@
 from __future__ import annotations
 
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
-from jardiscordengine.interns.high_classes import JDEInternIdentity as _JDEInternIdentity
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.high_classes import JDEInternEntityFieldID as _JDEInternEntityFieldID
 
 @_documentation
-class JDEMessage(_JDEInternIdentity):
+class JDEEntityMessage(_JDEInternEntity, _JDEInternEntityFieldID):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, _jde_key = None):
-        return _JDEInternIdentity.__new__(
+    def __new__(cls, id, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            id,
-            _jde_key=_jde_key or id
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, id):
-        _JDEInternIdentity.__init__(self, id)
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldID.__init__(self, id)
+
+@_documentation
+class JDEEntityEmbed(_JDEInternEntity, _JDEInternEntityFieldID):
+
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    def __new__(cls, id, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
+            cls,
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
+        )
+
+    def __init__(self, id):
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldID.__init__(self, id)

@@ -35,60 +35,54 @@ from __future__ import annotations
 
 from jardiscordengine.interns.enums import JDEInternInstancePolicy as _JDEInternInstancePolicy
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
-from jardiscordengine.interns.high_classes import JDEInternIdentity as _JDEInternIdentity
 from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.entities.guilds import JDEGuilds as _JDEGuilds
+from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
+from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.interns.high_classes import (
+    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+    JDEInternEntityFieldName as _JDEInternEntityFieldName
+)
 
 @_documentation
-class JDEChannel(_JDEInternIdentity):
+class JDEEntityChannel(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldName):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, id, name, _jde_key = None):
-        return _JDEInternIdentity.__new__(
+    def __new__(cls, id, name, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntity.__new__(
             cls,
-            id,
-            _jde_key=_jde_key or id
+            _jde_key=_jde_key if _jde_key is not None else id,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, id, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
-        _JDEInternIdentity.__init__(self, id)
-
-        self._name = name
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
-        self._name = name
+        _JDEInternEntity.__init__(self)
+        _JDEInternEntityFieldID.__init__(self, id)
+        _JDEInternEntityFieldName.__init__(self, name)
 
 @_documentation
-class JDEGuildChannel(JDEChannel):
+class JDEEntityGuildChannel(JDEEntityChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, channel, guild, _jde_key = None):
-        return JDEChannel.__new__(
+    def __new__(cls, channel, guild, _jde_key = None, _jde_warn = None):
+        return JDEEntityChannel.__new__(
             cls,
             channel.id,
             channel.name,
-            _jde_key=_jde_key or channel.id
+            _jde_key=_jde_key if _jde_key is not None else (channel.id, guild.id),
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, channel, guild):
-        _assert_is_instance(guild, _JDEGuilds, "GUILD must be JDEGuilds")
+        _assert_is_instance(channel, JDEEntityChannel, "CHANNEL must be JDEEntityChannel")
+        _assert_is_instance(guild, _JDEEntityGuild, "GUILD must be JDEEntityGuild")
 
-        JDEChannel.__init__(self, channel.id, channel.name)
+        JDEEntityChannel.__init__(self, channel.id, channel.name)
 
         self._guild = guild
 
@@ -96,75 +90,37 @@ class JDEGuildChannel(JDEChannel):
     def guild(self):
         return self._guild
 
-    @guild.setter
-    def guild(self, guild):
-        _assert_is_instance(guild, _JDEGuilds, "GUILD must be JDEGuilds")
-
-        self._guild = guild
-
 @_documentation
-class JDEGuildChannel(JDEChannel):
+class JDEEntityTextChannel(JDEEntityGuildChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
-
-    def __new__(cls, channel, guild, _jde_key = None):
-        return JDEChannel.__new__(
-            cls,
-            channel.id,
-            channel.name,
-            _jde_key=_jde_key or channel.id
-        )
-
-    def __init__(self, channel, guild):
-        _assert_is_instance(guild, _JDEGuilds, "GUILD must be JDEGuilds")
-
-        JDEChannel.__init__(self, channel.id, channel.name)
-
-        self._guild = guild
-
-    @property
-    def guild(self):
-        return self._guild
-
-    @guild.setter
-    def guild(self, guild):
-        _assert_is_instance(guild, _JDEGuilds, "GUILD must be JDEGuilds")
-
-        self._guild = guild
-
-@_documentation
-class JDETextChannel(JDEGuildChannel):
-
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
-class JDEVoiceChannel(JDEGuildChannel):
+class JDEEntityVoiceChannel(JDEEntityGuildChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
-class JDEStageChannel(JDEGuildChannel):
+class JDEEntityStageChannel(JDEEntityGuildChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
-class JDEForumChannel(JDEGuildChannel):
+class JDEEntityForumChannel(JDEEntityGuildChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
 @_documentation
-class JDEAnnouncementChannel(JDEGuildChannel):
+class JDEEntityAnnouncementChannel(JDEEntityGuildChannel):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False

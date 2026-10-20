@@ -40,3 +40,4 @@ class JDEInternInstancePolicy(StrEnum):
     NORMAL = "normal"
     SINGLETON = "singleton"
     FLYWEIGHT = "flyweight"
+    UNIQUE = "unique"
