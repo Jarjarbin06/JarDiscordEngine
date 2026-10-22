@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -33,12 +33,6 @@
 
 from __future__ import annotations
 
-from enum import (
-    IntEnum as _IntEnum,
-)
-from enum import (
-    auto as _auto,
-)
 from typing import final as _final
 
 from jardiscordengine.interns.base_classe import (
@@ -49,16 +43,10 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
+from jardiscordengine.systems.enums import JDECompatibility as _JDECompatibility
 
 
 @_final
-@_documentation
-class JDECompatibility(_IntEnum):
-
-    OK = _auto()
-    WARNING = _auto()
-    ERROR = _auto()
-
 @_documentation
 class JDEVersion(_JDEInternBaseClass):
 
@@ -66,12 +54,13 @@ class JDEVersion(_JDEInternBaseClass):
     __instance_limit__ = 0
     __recursive__ = False
 
-    fields = ("major", "minor", "patch")
+    _fields = ("major", "minor", "patch")
 
-    def __new__(cls, major, minor, patch, _jde_key = None):
+    def __new__(cls, major, minor, patch, _jde_key = None, _jde_warn = None):
         return _JDEInternBaseClass.__new__(
             cls,
-            _jde_key=_jde_key
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, major, minor, patch):
@@ -86,7 +75,7 @@ class JDEVersion(_JDEInternBaseClass):
     def __repr__(self):
         fields = (
             f"{name}={value}"
-            for name, value in zip(self.fields, self._version)
+            for name, value in zip(self._fields, self._version)
         )
 
         return f"<{self.__class__.__name__}({', '.join(fields)})>"
@@ -112,22 +101,22 @@ class JDEVersion(_JDEInternBaseClass):
     def patch(self):
         return self._version[2]
 
-    def compatibility(
-            self,
-            other,
-        ):
+    def compatibility(self, other):
         if not isinstance(other, JDEVersion):
             raise TypeError(
                 "'other' must be an instance of JDEVersion."
             )
 
         if self.major != other.major:
-            return JDECompatibility.ERROR
+            return _JDECompatibility.ERROR
 
         if self.minor < other.minor:
-            return JDECompatibility.ERROR
+            return _JDECompatibility.ERROR
+
+        if self.minor > other.minor:
+            return _JDECompatibility.WARNING
 
         if self.minor == other.minor and self.patch < other.patch:
-            return JDECompatibility.WARNING
+            return _JDECompatibility.WARNING
 
-        return JDECompatibility.OK
+        return _JDECompatibility.OK

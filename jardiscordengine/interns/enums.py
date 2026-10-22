@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -33,12 +33,15 @@
 
 from __future__ import annotations
 
-from enum import StrEnum
+from enum import StrEnum as _IntEnum
+from enum import auto as _auto
+from typing import final as _final
 
 
-class JDEInternInstancePolicy(StrEnum):
+@_final
+class JDEInternInstancePolicy(_IntEnum):
 
-    NORMAL = "normal"
-    SINGLETON = "singleton"
-    FLYWEIGHT = "flyweight"
-    UNIQUE = "unique"
+    NORMAL = _auto()
+    SINGLETON = _auto()
+    FLYWEIGHT = _auto()
+    UNIQUE = _auto()

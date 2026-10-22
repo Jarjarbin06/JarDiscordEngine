@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -52,11 +52,17 @@ class JDEBot(_JDEInternBaseClass):
     __instance_limit__ = 1
     __recursive__ = False
 
-    def __new__(cls, _jde_key = None):
+    def __new__(cls, _jde_key = None, _jde_warn = None):
         return _JDEInternBaseClass.__new__(
             cls,
-            _jde_key=_jde_key
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self):
+        if hasattr(self, "_initialized"):
+            return
+
         _JDEInternBaseClass.__init__(self)
+
+        self._initialized = True

@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -35,6 +35,7 @@ from __future__ import annotations
 
 from math import inf as _inf
 from typing import Any as _Any
+from typing import ClassVar as _ClassVar
 from uuid import uuid4 as _uuid4
 
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
@@ -53,7 +54,7 @@ class _JDEInternMeta(type):
         init_kwargs = kwargs.copy()
         init_kwargs.pop("_jde_warn", None)
 
-        instance = cls.__new__(cls, *args, **kwargs)
+        instance = cls.__new__(cls, *args, **kwargs)  # pyright: ignore[reportCallIssue, reportArgumentType]
 
         if not isinstance(instance, cls):
             return instance
@@ -72,21 +73,15 @@ class _JDEInternMeta(type):
         return instance
 
 @_documentation
-class JDEInternBaseClass(metaclass=_JDEInternMeta):
+class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, RecursiveT: bool](metaclass=_JDEInternMeta):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = True
 
-    _jde_instances: dict[type, dict[_Any, object]] = {}
+    _jde_instances: _ClassVar[dict[type, dict[_Any, object]]] = {}
 
-    def __new__(
-            cls,
-            *args,
-            _jde_key=None,
-            _jde_warn=None,
-            **kwargs,
-        ):
+    def __new__(cls, *args, _jde_key=None, _jde_warn=None, **kwargs):
         if _jde_key is None:
             _jde_key = True
 
@@ -132,7 +127,6 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
         if should_warn and _jde_warn:
             warning_identifier = cls._get_warning_identifier(
-                cls,
                 policy,
                 key,
             )
@@ -165,7 +159,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
         return instance
 
-    @staticmethod
+    @classmethod
     def _get_warning_identifier(cls, policy, key):
         if policy in (
             _JDEInternInstancePolicy.FLYWEIGHT,
@@ -292,16 +286,10 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
         if _stack is None:
             _stack = set()
 
-        def _rgb(
-                rgb: tuple[int, int, int],
-                text: str
-            ) -> str:
+        def _rgb(rgb, text):
             return _JTKExternConsole.Text(text).f_color_foreground(_JTKExternConsole.ColorRGB(*rgb))
 
-        def colorize(
-                text: str,
-                category: str
-            ) -> str:
+        def colorize(text, category):
             if not is_colored:
                 return text
             color = COLOR_THEME.get(category)
@@ -309,7 +297,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 return text
             return _rgb(color, text)
 
-        def get_instance_indicator(cls) -> str:
+        def get_instance_indicator(cls):
             policy = getattr(
                 cls,
                 "__instance_policy__",
@@ -346,10 +334,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
 
             return None
 
-        def classify(
-                name: str,
-                value
-            ) -> str:
+        def classify(name, value):
             if name == "JDEID":
                 return "id"
             if isinstance(value, JDEInternBaseClass):
@@ -365,24 +350,16 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 return "discord"
             return "value"
 
-        def extend_prefix(
-                current_prefix: str,
-                last_item: bool
-            ) -> str:
+        def extend_prefix(current_prefix, last_item):
             return current_prefix + (SPACE if last_item else BRANCH)
 
         def safe_repr(value) -> str:
             try:
                 return repr(value)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 return f"<repr error: {err}>"
 
-        def append_child_object(
-                label: str,
-                child,
-                child_prefix: str,
-                last_item: bool
-            ):
+        def append_child_object(label, child, child_prefix, last_item):
             connector = "└─ " if last_item else "├─ "
             cls_col = colorize(child.__class__.__name__, "engine_object")
             lines.append(f"{child_prefix}{connector}{label} ({cls_col})")
@@ -404,13 +381,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 ).splitlines()
             )
 
-        def append_leaf(
-                name: str,
-                label: str,
-                value,
-                child_prefix: str,
-                last_item: bool
-            ):
+        def append_leaf(name, label, value, child_prefix, last_item):
             connector = "└─ " if last_item else "├─ "
             category = classify(name, value)
             rendered = safe_repr(value)
@@ -424,13 +395,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 f"{child_prefix}{connector}{label} = {colorize(rendered, category)}"
             )
 
-        def append_mapping(
-                name: str,
-                label: str,
-                mapping: dict,
-                child_prefix: str,
-                last_item: bool
-            ):
+        def append_mapping(name, label, mapping, child_prefix, last_item):
             connector = "└─ " if last_item else "├─ "
             lines.append(f"{child_prefix}{connector}{label} = {colorize('{}', 'dict')}")
 
@@ -446,13 +411,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 else:
                     append_leaf(name, sub_label, sub_value, nested_prefix, sub_last)
 
-        def append_sequence(
-                name: str,
-                label: str,
-                sequence,
-                child_prefix: str,
-                last_item: bool
-            ):
+        def append_sequence(name, label, sequence, child_prefix, last_item):
             connector = "└─ " if last_item else "├─ "
             lines.append(f"{child_prefix}{connector}{label} = {colorize('[]', 'list')}")
 
@@ -517,7 +476,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                         props[f"@{attr_name}"] = getattr(self, attr_name)
                     except NotImplementedError:
                         props[f"@{attr_name}"] = "<error: not implemented>"
-                    except Exception as err:
+                    except Exception as err:  # noqa: BLE001
                         props[f"@{attr_name}"] = f"<error: {err}>"
 
             all_attrs = {**public_attrs, **props}
@@ -581,7 +540,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
             try:
                 r = repr(v)
                 return r if len(r) <= 80 else r[:77] + "…"
-            except Exception:
+            except Exception:  # noqa: BLE001
                 return "<repr error>"
 
         def summarize_collection(v) -> str:
@@ -592,7 +551,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
                 return f"dict[{len(v)}] of {', '.join(contained)}"
             try:
                 elements = list(v)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 return f"{type_name(v)}(?)"
             if not elements:
                 return f"{type_name(v)}[0]"
@@ -629,7 +588,7 @@ class JDEInternBaseClass(metaclass=_JDEInternMeta):
             if isinstance(descriptor, property) and not attr_name.startswith("_"):
                 try:
                     props[f"@{attr_name}"] = getattr(self, attr_name)
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001
                     props[f"@{attr_name}"] = f"<error: {exc}>"
 
         items = list({**raw_attrs, **props}.items())

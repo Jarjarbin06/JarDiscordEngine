@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -54,12 +54,13 @@ class JDEColor(_JDEInternBaseClass):
     __instance_limit__ = 0
     __recursive__ = False
 
-    fields = ("red", "green", "blue", "alpha")
+    _fields = ("red", "green", "blue", "alpha")
 
-    def __new__(cls, r, g, b, a, _jde_key = None):
+    def __new__(cls, r, g, b, a, _jde_key = None, _jde_warn = None):
         return _JDEInternBaseClass.__new__(
             cls,
-            _jde_key=_jde_key
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn if _jde_warn is not None else False,
         )
 
     def __init__(self, r = 0, g = 0, b = 0, a = 255):
@@ -150,7 +151,7 @@ class JDEColor(_JDEInternBaseClass):
     def __repr__(self):
         fields = (
             f"{name}={value}"
-            for name, value in zip(self.fields, self._color)
+            for name, value in zip(self._fields, self._color)
         )
 
         return f"<{self.__class__.__name__}({', '.join(fields)})>"

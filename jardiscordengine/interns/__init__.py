@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -41,19 +41,25 @@ import discord as DiscordExtern
 import jarbin_toolkit_console as JTKExternConsole
 import jarbin_toolkit_error as JTKExternError
 
+import jardiscordengine.interns.config as Config
 import jardiscordengine.interns.decorators as Decorators
 import jardiscordengine.interns.final_classes as FinalClasses
+import jardiscordengine.interns.helpers as Helpers
 import jardiscordengine.interns.high_classes as HighClasses
+import jardiscordengine.interns.log as Log
 import jardiscordengine.interns.low_classes as LowClasses
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
 
 __all__ = [
+    "Config",
     "Decorators",
     "DiscordExtern",
     "FinalClasses",
+    "Helpers",
     "HighClasses",
     "JDEInternBaseClass",
     "JTKExternConsole",
     "JTKExternError",
+    "Log",
     "LowClasses",
 ]

@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -35,10 +35,10 @@ from __future__ import annotations
 
 from jardiscordengine.systems.bool import JDEBool
 from jardiscordengine.systems.color import JDEColor
-from jardiscordengine.systems.version import (
+from jardiscordengine.systems.enums import (
     JDECompatibility,
-    JDEVersion,
 )
+from jardiscordengine.systems.version import JDEVersion
 
 __all__ = [
     'JDEBool',

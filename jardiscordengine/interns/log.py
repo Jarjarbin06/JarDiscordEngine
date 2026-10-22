@@ -1,0 +1,154 @@
+# =============================================================================
+# JarDiscordEngine - Python Discord Bot Engine (pycord-based)
+# =============================================================================
+#
+# JarDiscordEngine is a lightweight bot framework built on top of pycord
+# that simplifies Discord bot development while providing higher-level
+# abstractions for command management, event handling, and extensibility.
+#
+# =============================================================================
+# Version: jardiscordengine-v1
+# Author: Jarjarbin Studio
+# License: GPL v3
+# =============================================================================
+#
+# This engine is inspired by pycord, modern bot framework design patterns,
+# and modular software architecture.
+#
+# It is designed for educational purposes and small-to-medium Discord bot
+# projects.
+#
+# It provides structured systems such as automatic command discovery,
+# command registration, event handling, extension management, and shared
+# services for logging, configuration, and permissions.
+#
+# =============================================================================
+# WARNING:
+# =============================================================================
+#
+# This is NOT pycord itself.
+# It is a custom abstraction layer built on top of pycord.
+#
+# =============================================================================
+
+from __future__ import annotations
+
+import re
+from typing import final as _final
+
+from jarbin_toolkit_log import (
+    Log as _JTKExternLog,
+)
+from jarbin_toolkit_log import (
+    LogLevel as _LogLevel,
+)
+from jarbin_toolkit_log import (
+    LogType as _LogType,
+)
+
+from jardiscordengine.interns import JTKExternError as _JTKExternError
+from jardiscordengine.interns.base_classe import (
+    JDEInternBaseClass as _JDEInternBaseClass,
+)
+from jardiscordengine.interns.config import get as _get
+from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.enums import JDEInternInstancePolicy
+
+current_logs = {
+    "base": None,
+    "crash": None
+}
+_log_levels = ["DEBUG", "INFO", "NOTICE", "WARN", "ERROR", "CRIT"]
+_ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+
+
+@_documentation
+@_final
+class JDEInternLog(_JTKExternLog, _JDEInternBaseClass):
+
+    __instance_policy__ = JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    project_path = None
+    log_path = None
+
+    def __new__(cls, name, _session, _jde_key=None, _jde_warn=None, **kwargs):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key if _jde_key is not None else name,
+            _jde_warn=_jde_warn,
+        )
+
+    def __init__(self, name, _session):
+        if not JDEInternLog.project_path or not JDEInternLog.log_path:
+            raise _JTKExternError.JErrorRuntime(
+                "JarDiscordEngine.init(path) must be called first"
+            )
+
+        _JTKExternLog.__init__(
+            self,
+            JDEInternLog.log_path,
+            name,
+            type=_LogType.JAR_LOG,
+            metadata={
+                "application": _get('project', 'PROJECT', 'name', str, "Unnamed project"),
+                "description": _get('project', 'PROJECT', 'description', str, "No description"),
+                "version": _get('project', 'PROJECT', 'version', str, "0.0.0"),
+            },
+            run_id=_session,
+        )
+        _JDEInternBaseClass.__init__(self)
+
+        current_logs["base"] = self
+
+def _clean_text(text):
+    if isinstance(text, _JTKExternError.BaseJError):
+        return f"{text.error}{''.join([f'\n    {line}' for line in text.message.removeprefix("\n").split("\n")])}"
+    text.strip().replace("  ", " ")
+    if "\033" in text:
+        return _ansi_escape.sub("", text)
+    return text
+
+def log(status, title, description, jdeid=None, *values):
+    if current_logs["base"] is None:
+        return
+
+    status = status.upper()
+    title = title.upper()
+    description = _clean_text(description)
+
+    _description = description.lower()
+
+    if jdeid is not None:
+        description += f" (JDEID:{jdeid})"
+
+    if values:
+        description += f" (VALUES:{', '.join(map(repr, values))})"
+
+    current_logs["base"].log(
+        _LogLevel(status),
+        description,
+        scope=title,
+    )
+
+def comment(comment):
+    if current_logs["base"] is not None:
+        current_logs["base"].comment(_clean_text(comment))
+
+def save():
+    if current_logs["base"] is None:
+        return
+
+    current_logs["base"].flush()
+
+def close():
+    if current_logs["base"] is None:
+        return
+
+    current_log = current_logs["base"]
+
+    current_log.flush()
+    current_log.close()
+
+    current_logs["base"] = None

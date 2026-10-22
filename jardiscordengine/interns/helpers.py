@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -35,21 +35,77 @@ from __future__ import annotations
 
 import sys
 
-from jardiscordengine.interns import JTKExternError
+from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns import JTKExternError as _JTKExternError
 
 
 def assert_is_instance(obj, cls, msg=None):
     if not isinstance(obj, cls):
-        raise JTKExternError.JErrorType(
+        raise _JTKExternError.JErrorType(
             "Invalid type" if msg is None else msg,
         )
 
-def warning(err):
-    if isinstance(err, JTKExternError.BaseJError):
-        err = JTKExternError.BaseJError(
+def deprecated(func, new_func, version = None):
+
+    def callable_path(func):
+        return f"{_JTKExternConsole.Text(f'{func.__qualname__}(...)').f_style_bold()} in {_JTKExternConsole.Text(func.__module__).f_style_bold()}"
+
+    message = (
+        f"Function {callable_path(func)} is deprecated"
+        f"\nUse {callable_path(new_func)} instead."
+    )
+    if version:
+        message += f"\n  → deprecated since {version}"
+
+    _JTKExternConsole.print(
+        _JTKExternConsole.Text(" JDE - Deprecated ").f_color_white(background=True).f_color_black(),
+        _JTKExternConsole.Text(" :\n").f_color_white(),
+        _JTKExternConsole.Text(message).f_color_white().f_layout_indent(1),
+        stream=sys.stderr,
+        separator="",
+    )
+
+def error(err):
+    if isinstance(err, _JTKExternError.BaseJError):
+        err = _JTKExternError.BaseJError(
             err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
-            error="Warning",
-            format=JTKExternError.FormatType.COMPACT
+            error="Error",
+            format=_JTKExternError.FormatType.COMPACT
         )
 
-    print(err, file=sys.stderr)
+    title, message = str(err).split(":")
+
+    _JTKExternConsole.print(
+        _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_error(background=True).f_color_black(),
+        _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_error(),
+        stream=sys.stderr,
+        separator="",
+    )
+
+def warning(err):
+    if isinstance(err, _JTKExternError.BaseJError):
+        err = _JTKExternError.BaseJError(
+            err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
+            error="Warning",
+            format=_JTKExternError.FormatType.COMPACT
+        )
+
+    title, message = str(err).split(":")
+
+    _JTKExternConsole.print(
+        _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_warning(background=True).f_color_black(),
+        _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_warning(),
+        stream=sys.stderr,
+        separator="",
+    )
+
+def version(config, section, key):
+    from jardiscordengine.interns.config import get as _get
+    from jardiscordengine.systems.version import JDEVersion as _JDEVersion
+
+    return _JDEVersion(*[int(v) for v in _get(config, section, key).split(".")])
+
+def enabled(config, section, setting = "enabled"):
+    from jardiscordengine.interns.config import get as _get
+
+    return _get(config, section, setting, bool, False)

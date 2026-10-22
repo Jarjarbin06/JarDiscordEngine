@@ -9,7 +9,7 @@
 # =============================================================================
 # Version: jardiscordengine-v1
 # Author: Jarjarbin Studio
-# Licence: GPL v3
+# License: GPL v3
 # =============================================================================
 #
 # This engine is inspired by pycord, modern bot framework design patterns,
@@ -31,25 +31,23 @@
 #
 # =============================================================================
 
+from __future__ import annotations
+
 from sys import version_info as _python_version
 
-from jardiscordengine import __version__ as _jarengine_version
+from discord import __version__ as _discord_version
+
+from jardiscordengine import __config_version__ as _config_version
+from jardiscordengine import __version__ as _jardiscordengine_version
 from jardiscordengine.systems.bool import JDEBool as _JDEBool
 from jardiscordengine.systems.version import JDEVersion as _JDEVersion
 
 # Versions #
-JDEVersion_JarEngine = _JDEVersion(*[int(v) for v in _jarengine_version.split('.')])
+JDEVersion_JarDiscordEngine = _JDEVersion(*(int(v) for v in _jardiscordengine_version.split('.')))
+JDEVersion_Config = _JDEVersion(*(int(v) for v in _config_version.split(".")))
+JDEVersion_Discord = _JDEVersion(*(int(v) for v in _discord_version.split(".")))
 JDEVersion_Python = _JDEVersion(*_python_version[0:3])
 
 # Booleans #
 JDEFalse = _JDEBool(0)
 JDETrue = _JDEBool(1)
-
-__all__ = [  # noqa: RUF022
-    # Versions #
-    'JDEVersion_JarEngine',
-    'JDEVersion_Python',
-    # Booleans #
-    'JDEFalse',
-    'JDETrue',
-]
