@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, Literal, final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
@@ -32,3 +33,7 @@ class JDEBool(
         Args:
             value (Any): Value to to transform.
         """
+
+__all__: Sequence[str] = [
+    "JDEBool",
+]

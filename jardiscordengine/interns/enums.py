@@ -33,7 +33,7 @@
 
 from __future__ import annotations
 
-from enum import StrEnum as _IntEnum
+from enum import IntEnum as _IntEnum
 from enum import auto as _auto
 from typing import final as _final
 

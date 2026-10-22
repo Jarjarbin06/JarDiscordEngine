@@ -120,3 +120,7 @@ class JDEVersion(_JDEInternBaseClass):
             return _JDECompatibility.WARNING
 
         return _JDECompatibility.OK
+
+__all__ = [
+    "JDEVersion",
+]

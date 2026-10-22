@@ -34,6 +34,9 @@
 from __future__ import annotations
 
 import inspect as _inspect
+from collections.abc import Callable
+from functools import update_wrapper
+from typing import Any
 
 
 def documentation(cls):
@@ -126,6 +129,22 @@ def documentation(cls):
                     line(f"        {v['doc']}")
 
     cls.__docmap__ = build_docmap(cls)
-    cls.doc = classmethod(lambda c: print_docmap(c.__docmap__))
+    cls.doc = classmethod(lambda c: print_docmap(c.__docmap__))  # pyright: ignore[reportAttributeAccessIssue]
 
     return cls
+
+class flag:
+    def __init__(self, func: Callable[[Any], str]):
+        self.name = func(None)
+        update_wrapper(self, func)  # pyright: ignore[reportArgumentType]
+
+    def __get__(self, instance: Any, owner: type | None = None) -> Any:
+        if instance is None:
+            return self
+        return getattr(instance._discord, self.name)
+
+    def __set__(self, instance: Any, value: bool) -> None:
+        setattr(instance._discord, self.name, value)
+
+    def __repr__(self) -> str:
+        return f"<flag name={self.name!r}>"

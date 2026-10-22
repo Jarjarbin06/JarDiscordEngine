@@ -42,6 +42,12 @@ from jardiscordengine.entities.assets import (
     JDEEntityImage,
     JDEEntitySticker,
 )
+from jardiscordengine.entities.bot import (
+    JDEEntityActivity,
+    JDEEntityActivityGame,
+    JDEEntityActivityStreaming,
+    JDEEntityIntents,
+)
 from jardiscordengine.entities.channels import (
     JDEEntityAnnouncementChannel,
     JDEEntityChannel,
@@ -50,6 +56,9 @@ from jardiscordengine.entities.channels import (
     JDEEntityStageChannel,
     JDEEntityTextChannel,
     JDEEntityVoiceChannel,
+)
+from jardiscordengine.entities.enums import (
+    JDEActivityType,
 )
 from jardiscordengine.entities.guilds import (
     JDEEntityGuild,
@@ -72,6 +81,10 @@ from jardiscordengine.entities.users import (
 )
 
 __all__ = [
+    "JDEActivityType",
+    "JDEEntityActivity",
+    "JDEEntityActivityGame",
+    "JDEEntityActivityStreaming",
     "JDEEntityAnnouncementChannel",
     "JDEEntityAvatar",
     "JDEEntityBanner",
@@ -85,6 +98,7 @@ __all__ = [
     "JDEEntityGuildChannel",
     "JDEEntityGuildIcon",
     "JDEEntityImage",
+    "JDEEntityIntents",
     "JDEEntityMember",
     "JDEEntityMessage",
     "JDEEntityRole",

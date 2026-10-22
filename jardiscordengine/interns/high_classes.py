@@ -154,3 +154,26 @@ class JDEInternEntityFieldURL(_JDEInternEntityField):
     @url.setter
     def url(self, url):
         self._url = url
+
+@_documentation
+class JDEInternEntityFieldDiscord(_JDEInternEntityField):
+
+    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
+    __instance_limit__ = 0
+    __recursive__ = False
+
+    def __new__(cls, _jde_key = None, _jde_warn = None):
+        return _JDEInternEntityField.__new__(
+            cls,
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn,
+        )
+
+    def __init__(self, discord):
+        _JDEInternEntityField.__init__(self)
+
+        self._discord = discord
+
+    @property
+    def discord(self):
+        return self._discord

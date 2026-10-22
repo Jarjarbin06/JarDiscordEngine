@@ -155,3 +155,7 @@ class JDEColor(_JDEInternBaseClass):
         )
 
         return f"<{self.__class__.__name__}({', '.join(fields)})>"
+
+__all__ = [
+    "JDEColor",
+]

@@ -137,7 +137,7 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
                 _warning(
                     _JTKExternError.JErrorRuntime(
                         f"{cls.__name__}: construction warning for "
-                        f"the {policy.upper()} policy."
+                        f"the {policy.name} policy."
                     )
                 )
 
@@ -306,16 +306,16 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
             limit = getattr(cls, "__instance_limit__", None)
 
             if policy == _JDEInternInstancePolicy.NORMAL:
-                return f"{{{policy}:∞}}"
+                return f"{{{policy.name}:∞}}"
 
             if policy == _JDEInternInstancePolicy.SINGLETON:
-                return f"{{{policy}:1}}"
+                return f"{{{policy.name}:1}}"
 
             if policy == _JDEInternInstancePolicy.FLYWEIGHT:
-                return f"{{{policy}:{limit}}}"
+                return f"{{{policy.name}:{limit}}}"
 
             if policy == _JDEInternInstancePolicy.UNIQUE:
-                return f"{{{policy}:∞}}"
+                return f"{{{policy.name}:∞}}"
 
             return ""
 
@@ -625,3 +625,7 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
         lines = [line for line in lines if line.strip()]
 
         return "\n".join(lines)
+
+__all__ = [
+    "JDEInternBaseClass",
+]

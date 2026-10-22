@@ -37,9 +37,6 @@ import re
 from typing import final as _final
 
 from jarbin_toolkit_log import (
-    Log as _JTKExternLog,
-)
-from jarbin_toolkit_log import (
     LogLevel as _LogLevel,
 )
 from jarbin_toolkit_log import (
@@ -47,6 +44,7 @@ from jarbin_toolkit_log import (
 )
 
 from jardiscordengine.interns import JTKExternError as _JTKExternError
+from jardiscordengine.interns import JTKExternLog as _JTKExternLog
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
@@ -64,7 +62,7 @@ _ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 @_documentation
 @_final
-class JDEInternLog(_JTKExternLog, _JDEInternBaseClass):
+class JDEInternLog(_JTKExternLog.Log, _JDEInternBaseClass):
 
     __instance_policy__ = JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -86,21 +84,21 @@ class JDEInternLog(_JTKExternLog, _JDEInternBaseClass):
                 "JarDiscordEngine.init(path) must be called first"
             )
 
-        _JTKExternLog.__init__(
+        _JTKExternLog.Log.__init__(
             self,
             JDEInternLog.log_path,
             name,
-            type=_LogType.JAR_LOG,
+            type=_JTKExternLog.LogType.JAR_LOG,
             metadata={
-                "application": _get('project', 'PROJECT', 'name', str, "Unnamed project"),
-                "description": _get('project', 'PROJECT', 'description', str, "No description"),
-                "version": _get('project', 'PROJECT', 'version', str, "0.0.0"),
+                "application": _get('project', 'PROJECT', 'name', str, "Unnamed project"),  # pyright: ignore[reportArgumentType]
+                "description": _get('project', 'PROJECT', 'description', str, "No description"),  # pyright: ignore[reportArgumentType]
+                "version": _get('project', 'PROJECT', 'version', str, "0.0.0"),  # pyright: ignore[reportArgumentType]
             },
             run_id=_session,
         )
         _JDEInternBaseClass.__init__(self)
 
-        current_logs["base"] = self
+        current_logs["base"] = self  # pyright: ignore[reportArgumentType]
 
 def _clean_text(text):
     if isinstance(text, _JTKExternError.BaseJError):
@@ -152,3 +150,11 @@ def close():
     current_log.close()
 
     current_logs["base"] = None
+
+__all__ = [
+    "JDEInternLog",
+    "close",
+    "comment",
+    "log",
+    "save",
+]

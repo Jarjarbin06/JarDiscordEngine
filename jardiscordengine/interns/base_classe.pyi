@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, Self
 
 from jardiscordengine.interns.decorators import documentation
@@ -85,3 +86,7 @@ class JDEInternBaseClass[
         Returns:
             str: Dump string.
         """
+
+__all__: Sequence[str] = [
+    "JDEInternBaseClass",
+]

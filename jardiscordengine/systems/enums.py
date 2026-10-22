@@ -44,3 +44,7 @@ class JDECompatibility(_IntEnum):
     OK = _auto()
     WARNING = _auto()
     ERROR = _auto()
+
+__all__ = [
+    "JDECompatibility",
+]

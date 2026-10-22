@@ -92,3 +92,7 @@ class JDEBool(_JDEInternBaseClass):
     @property
     def b(self):
         return bool(self)
+
+__all__ = [
+    "JDEBool",
+]

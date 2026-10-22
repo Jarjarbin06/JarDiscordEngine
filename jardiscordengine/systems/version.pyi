@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Literal, final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
@@ -59,3 +60,7 @@ class JDEVersion(
         Returns:
             JDECompatibility: Compatibility status.
         """
+
+__all__: Sequence[str] = [
+    "JDEVersion",
+]

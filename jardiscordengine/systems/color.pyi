@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Literal, final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
@@ -48,3 +49,7 @@ class JDEColor(
             b (int): Blue channel (0 - 255)
             a (int): Alpha channel (0 - 255)
         """
+
+__all__: Sequence[str] = [
+    "JDEColor",
+]

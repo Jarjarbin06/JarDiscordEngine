@@ -37,20 +37,7 @@ from datetime import datetime as _datetime
 from pathlib import Path as _Path
 from typing import final as _final
 
-from jarbin_toolkit_config import Config as _JTKExternConfig
-from jarbin_toolkit_config.errors import (
-    ConfigFileNotFoundJError as _ConfigFileNotFoundJError,
-)
-from jarbin_toolkit_config.errors import (
-    ConfigRuntimeJError as _ConfigRuntimeJError,
-)
-from jarbin_toolkit_config.errors import (
-    ConfigTypeJError as _ConfigTypeJError,
-)
-from jarbin_toolkit_config.errors import (
-    ConfigValueJError as _ConfigValueJError,
-)
-
+from jardiscordengine.interns import JTKExternConfig as _JTKExternConfig
 from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
@@ -63,7 +50,7 @@ from jardiscordengine.interns.enums import (
 
 @_documentation
 @_final
-class JDEInternConfig(_JTKExternConfig, _JDEInternBaseClass):
+class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -100,9 +87,9 @@ class JDEInternConfig(_JTKExternConfig, _JDEInternBaseClass):
             )
 
         if _token is not None:
-            _JTKExternConfig.__init__(
+            _JTKExternConfig.Config.__init__(
                 self,
-                JDEInternConfig.config_path,
+                JDEInternConfig.config_path,  # pyright: ignore[reportArgumentType]
                 name,
                 metadata=metadata,
                 has_extension=has_extension,
@@ -118,7 +105,7 @@ class JDEInternConfig(_JTKExternConfig, _JDEInternBaseClass):
         )
 
         config_directory = _Path(
-            JDEInternConfig.state_path
+            JDEInternConfig.state_path  # pyright: ignore[reportArgumentType]
             if is_state
             else JDEInternConfig.config_path
         )
@@ -135,12 +122,12 @@ class JDEInternConfig(_JTKExternConfig, _JDEInternBaseClass):
 
         try:
             try:
-                config = _JTKExternConfig.open(
+                config = _JTKExternConfig.Config.open(
                     config_directory,
                     file_name,
                 )
-            except _ConfigFileNotFoundJError:
-                config = _JTKExternConfig.create(
+            except _JTKExternConfig.ConfigFileNotFoundJError:
+                config = _JTKExternConfig.Config.create(
                     config_directory,
                     file_name,
                 )
@@ -164,11 +151,11 @@ class JDEInternConfig(_JTKExternConfig, _JDEInternBaseClass):
                             config.set(section, option, value)
 
 
-        except _ConfigValueJError as error:
+        except _JTKExternConfig.ConfigValueJError as error:
             raise _JTKExternError.JErrorKey(
                 str(error)
             ) from error
-        except _ConfigRuntimeJError as error:
+        except _JTKExternConfig.ConfigRuntimeJError as error:
             raise _JTKExternError.JErrorRuntime(
                 str(error)
             ) from error
@@ -206,14 +193,14 @@ def get(name, section, setting, type = str, default = None):
         # Support other types through explicit conversion.
         return type(config.get(section, setting))
 
-    except _ConfigTypeJError as error:
+    except _JTKExternConfig.ConfigTypeJError as error:
         if default is not None:
             return default
         raise _JTKExternError.JErrorType(
             "Invalid value type"
         ) from error
 
-    except _ConfigValueJError as error:
+    except _JTKExternConfig.ConfigValueJError as error:
         if default is not None:
             return default
         raise _JTKExternError.JErrorKey(
@@ -239,7 +226,7 @@ def set(name, section, setting, value):
             setting,
             value,
         )
-    except _ConfigValueJError as error:
+    except _JTKExternConfig.ConfigValueJError as error:
         raise _JTKExternError.JErrorKey(
             str(error)
         ) from error
@@ -359,3 +346,11 @@ def check_compatibility():
             required_config,
             f"{get(config, 'INFO', 'name')} Config version"
         )
+
+__all__ = [
+    "JDEInternConfig",
+    "check_compatibility",
+    "get",
+    "init_all",
+    "set"
+]

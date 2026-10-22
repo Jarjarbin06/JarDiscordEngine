@@ -5,8 +5,11 @@ Internal layers of the engine
 """
 
 import discord as DiscordExtern
+import jarbin_toolkit_config as JTKExternConfig
 import jarbin_toolkit_console as JTKExternConsole
 import jarbin_toolkit_error as JTKExternError
+import jarbin_toolkit_log as JTKExternLog
+import jarbin_toolkit_time as JTKExternTime
 
 from . import config as Config
 from . import decorators as Decorators
@@ -25,8 +28,11 @@ __all__: list[str] = [
     "Helpers",
     "HighClasses",
     "JDEInternBaseClass",
+    "JTKExternConfig",
     "JTKExternConsole",
     "JTKExternError",
+    "JTKExternLog",
+    "JTKExternTime",
     "Log",
     "LowClasses",
 ]

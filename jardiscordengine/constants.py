@@ -51,3 +51,14 @@ JDEVersion_Python = _JDEVersion(*_python_version[0:3])
 # Booleans #
 JDEFalse = _JDEBool(0)
 JDETrue = _JDEBool(1)
+
+__all__ = [
+    # Versions #
+    "JDEVersion_JarDiscordEngine",
+    "JDEVersion_Config",
+    "JDEVersion_Discord",
+    "JDEVersion_Python",
+    # Booleans #
+    "JDEFalse",
+    "JDETrue"
+]

@@ -1,21 +1,10 @@
-import re
+from collections.abc import Sequence
 from typing import Any, Literal, final
 
-from jarbin_toolkit_log import (
-    Log as JTKExternLog,
-)
-from jarbin_toolkit_log import (
-    LogLevel,
-)
-from jarbin_toolkit_log import (
-    LogType,
-)
-
-from jardiscordengine.interns import JTKExternError
+from jardiscordengine.interns import JTKExternLog
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.config import get
 from jardiscordengine.interns.decorators import documentation
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
@@ -24,7 +13,7 @@ current_logs: dict[str, JDEInternLog]
 @documentation
 @final
 class JDEInternLog(
-    JTKExternLog,
+    JTKExternLog.Log,
     JDEInternBaseClass[
         Literal[JDEInternInstancePolicy.UNIQUE],
         Literal[0],
@@ -80,3 +69,11 @@ def save(
 
 def close():
     """Save and close the log file."""
+
+__all__: Sequence[str] = [
+    "JDEInternLog",
+    "close",
+    "comment",
+    "log",
+    "save",
+]

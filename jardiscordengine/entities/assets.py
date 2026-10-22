@@ -33,6 +33,9 @@
 
 from __future__ import annotations
 
+import re
+
+from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import documentation as _documentation
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
@@ -61,20 +64,74 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
-    def __init__(self, emoji, name = None):
-        if name is None:
-            name = emoji
-
+    def __init__(self, emoji, **kwargs):
         _assert_is_instance(emoji, str, "EMOJI must be str")
 
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldName.__init__(self, name)
 
-        self._emoji = f":{emoji}:"
+        self._emoji = emoji
+
+        unicode_match = re.fullmatch(r":([a-zA-Z0-9_]+):", emoji)
+        guild_match = re.fullmatch(
+            r"<:([a-zA-Z0-9_]+):(\d{17,20})>",
+            emoji,
+        )
+        animated_match = re.fullmatch(
+            r"<a:([a-zA-Z0-9_]+):(\d{17,20})>",
+            emoji,
+        )
+
+        if unicode_match:
+            name = unicode_match.group(1)
+            self._guild_id = None
+            self._animated = None
+
+        elif guild_match:
+            name = guild_match.group(1)
+            self._guild_id = int(guild_match.group(2))
+            self._animated = False
+
+        elif animated_match:
+            name = animated_match.group(1)
+            self._guild_id = int(animated_match.group(2))
+            self._animated = True
+
+        else:
+            raise _JTKExternError.JErrorValue(
+                "Emoji format is invalid"
+            )
+
+        _JDEInternEntityFieldName.__init__(self, name)
 
     @property
     def emoji(self):
         return self._emoji
+
+    @property
+    def guild_id(self):
+        return self._guild_id
+
+    @property
+    def animated(self):
+        return self._animated
+
+    @classmethod
+    def from_emoji(cls, emoji):
+        return cls(emoji, _jde_key=emoji)
+
+    @classmethod
+    def from_name(cls, name):
+        return cls(f":{name}:", _jde_key=f":{name}:")
+
+    @classmethod
+    def from_guild(cls, name, guild):
+        emoji = f"<:{name}:{guild.id}>"
+        return cls(emoji, _jde_key=emoji)
+
+    @classmethod
+    def animated_from_guild(cls, name, guild):
+        emoji = f"<a:{name}:{guild.id}>"
+        return cls(emoji, _jde_key=emoji)
 
 @_documentation
 class JDEEntityCustomEmoji(JDEEntityEmoji):

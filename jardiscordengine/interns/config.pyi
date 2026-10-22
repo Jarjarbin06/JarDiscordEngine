@@ -1,7 +1,9 @@
+"""Config file handler"""
+
+from collections.abc import Sequence
 from typing import Any, Literal, final
 
-from jarbin_toolkit_config import Config as JTKExternConfig
-
+from jardiscordengine.interns import JTKExternConfig
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
@@ -13,7 +15,7 @@ from jardiscordengine.interns.enums import (
 @documentation
 @final
 class JDEInternConfig(
-    JTKExternConfig,
+    JTKExternConfig.Config,
     JDEInternBaseClass[
         Literal[JDEInternInstancePolicy.UNIQUE],
         Literal[0],
@@ -92,3 +94,11 @@ def init_all(
 def check_compatibility(
 ) -> None:
     """Check all config instances compatibility"""
+
+__all__: Sequence[str] = [
+    "JDEInternConfig",
+    "check_compatibility",
+    "get",
+    "init_all",
+    "set"
+]
