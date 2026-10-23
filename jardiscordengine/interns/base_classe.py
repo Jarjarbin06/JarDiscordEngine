@@ -41,6 +41,7 @@ from uuid import uuid4 as _uuid4
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
 from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -262,19 +263,18 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
         COLOR_THEME: dict[str, tuple[int, int, int]] = {
             "class": (180, 220, 255),
             "attribute": (255, 200, 120),
+            "flag": (190, 255, 120),
+            "property": (100, 210, 255),
             "value": (200, 200, 200),
             "engine_object": (120, 255, 180),
-            "container": (120, 180, 255),
             "id": (255, 120, 120),
             "name": (255, 255, 150),
             "list": (200, 160, 255),
             "dict": (160, 255, 220),
             "discord": (255, 140, 255),
-            "immutable": (180, 180, 180),
             "callable": (255, 180, 100),
             "error": (255, 80, 80),
             "policy": (255, 180, 255),
-            "limit": (180, 255, 255),
         }
 
         BRANCH = "│   "
@@ -381,10 +381,10 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
                 ).splitlines()
             )
 
-        def append_leaf(name, label, value, child_prefix, last_item):
+        def append_leaf(name, label, value, child_prefix, last_item, _id=False):
             connector = "└─ " if last_item else "├─ "
             category = classify(name, value)
-            rendered = safe_repr(value)
+            rendered = value if _id else safe_repr(value)
 
             module_name = getattr(type(value), "__module__", "")
             if "discord" in module_name:
@@ -468,29 +468,50 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
                 if not key.startswith("_")
             }
 
+            jdeid: dict[str, object] = {}
+            jdeid["# : JDEID"] = getattr(self, "jdeid", "<error: failed to load JDEID>")
+
             props: dict[str, object] = {}
             for attr_name in dir(self.__class__):
+
+                if attr_name == "jdeid":
+                    continue
+
                 attr = getattr(self.__class__, attr_name, None)
                 if isinstance(attr, property) and not attr_name.startswith("_"):
                     try:
-                        props[f"@{attr_name}"] = getattr(self, attr_name)
+                        props[f"⚙️ : {attr_name}"] = getattr(self, attr_name)
                     except NotImplementedError:
-                        props[f"@{attr_name}"] = "<error: not implemented>"
+                        props[f"⚙️ : {attr_name}"] = "<error: not implemented>"
                     except Exception as err:  # noqa: BLE001
-                        props[f"@{attr_name}"] = f"<error: {err}>"
+                        props[f"⚙️ : {attr_name}"] = f"<error: {err}>"
 
-            all_attrs = {**public_attrs, **props}
+            flags: dict[str, object] = {}
+            for attr_name in dir(self.__class__):
+                attr = getattr(self.__class__, attr_name, None)
+                if isinstance(attr, _flag) and not attr_name.startswith("_"):
+                    try:
+                        flags[f"⚐ : {attr_name}"] = getattr(self, attr_name)
+                    except NotImplementedError:
+                        flags[f"⚐ : {attr_name}"] = "<error: not implemented>"
+                    except Exception as err:  # noqa: BLE001
+                        flags[f"⚐ : {attr_name}"] = f"<error: {err.__class__.__name__}({err})>"
 
-            if "@jdeid" in all_attrs:
-                append_leaf("JDEID", colorize("JDEID", "id"), all_attrs["@jdeid"], new_prefix, len(all_attrs) == 1)
-                all_attrs.pop("@jdeid")
+            all_attrs = {**jdeid, **public_attrs, **props, **flags}
+
+            if "# : JDEID" in all_attrs:
+                append_leaf("# : JDEID", colorize("# : JDEID", "id"), colorize(all_attrs["# : JDEID"], "id"), new_prefix, len(all_attrs) == 1, _id=True)
+                all_attrs.pop("# : JDEID")
 
             for index, (attr_name, attr_value) in enumerate(all_attrs.items()):
                 last_item = index == len(all_attrs) - 1
-                attr_label = colorize(attr_name, "attribute")
 
-                if attr_name == "@jdeid":
-                    continue
+                if attr_name.startswith("⚙️"):
+                    attr_label = colorize(attr_name, "property")
+                elif attr_name.startswith("⚐"):
+                    attr_label = colorize(attr_name, "flag")
+                else:
+                    attr_label = colorize(attr_name, "attribute")
 
                 if isinstance(attr_value, JDEInternBaseClass):
                     append_child_object(attr_label, attr_value, new_prefix, last_item)
@@ -505,126 +526,6 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
         finally:
             if branched_recursive:
                 _stack.discard(obj_id)
-
-    def dump(self, *, _is_last=True, _is_root=True, _prefix="", _attr_key=None, _visited=None):
-        BRANCH = "│   "
-        SPACE = "    "
-        TEE = "├─ "
-        ELBOW = "└─ "
-
-        if _visited is None:
-            _visited = set()
-
-        def extend_prefix(current: str, last: bool) -> str:
-            return current + (SPACE if last else BRANCH)
-
-        def type_name(v) -> str:
-            return type(v).__name__
-
-        def get_name(obj):
-            name = getattr(obj, "name", None)
-
-            if name is not None:
-                return name
-
-            for attr_name in dir(obj):
-                if "name" in attr_name.lower():
-                    value = getattr(obj, attr_name, None)
-
-                    if value is not None:
-                        return value
-
-            return None
-
-        def safe_repr(v) -> str:
-            try:
-                r = repr(v)
-                return r if len(r) <= 80 else r[:77] + "…"
-            except Exception:  # noqa: BLE001
-                return "<repr error>"
-
-        def summarize_collection(v) -> str:
-            if isinstance(v, dict):
-                if not v:
-                    return "dict[0]"
-                contained = sorted({type(x).__name__ for x in v.values()})
-                return f"dict[{len(v)}] of {', '.join(contained)}"
-            try:
-                elements = list(v)
-            except Exception:  # noqa: BLE001
-                return f"{type_name(v)}(?)"
-            if not elements:
-                return f"{type_name(v)}[0]"
-            contained = sorted({type(x).__name__ for x in elements})
-            return f"{type_name(v)}[{len(elements)}] of {', '.join(contained)}"
-
-        obj_id = id(self)
-        if obj_id in _visited and self.__recursive__:
-            connector = ELBOW if _is_last else TEE
-            key_part = f"{_attr_key}: " if _attr_key else ""
-            return f"{_prefix}{connector}{key_part}<circular> {self.__class__.__name__}"
-        _visited.add(obj_id)
-
-        lines = []
-        class_name = self.__class__.__name__
-        name = get_name(self)
-
-        class_part = class_name + (f" ({name!r})" if name else "")
-
-        if _is_root:
-            lines.append(class_part)
-        else:
-            connector = ELBOW if _is_last else TEE
-            key_part = f"{_attr_key}: " if _attr_key else ""
-            lines.append(f"{_prefix}{connector}{key_part}{class_part}")
-
-        new_prefix = extend_prefix(_prefix, _is_last)
-
-        raw_attrs: dict = {k: v for k, v in dict(getattr(self, "__dict__", {})).items() if not k.startswith("_")}
-
-        props: dict = {}
-        for attr_name in dir(self.__class__):
-            descriptor = getattr(self.__class__, attr_name, None)
-            if isinstance(descriptor, property) and not attr_name.startswith("_"):
-                try:
-                    props[f"@{attr_name}"] = getattr(self, attr_name)
-                except Exception as exc:  # noqa: BLE001
-                    props[f"@{attr_name}"] = f"<error: {exc}>"
-
-        items = list({**raw_attrs, **props}.items())
-
-        for i, (k, v) in enumerate(items):
-            last = (i == len(items) - 1)
-            connector = ELBOW if last else TEE
-
-            if isinstance(v, JDEInternBaseClass):
-                if id(v) in _visited:
-                    lines.append(
-                        f"{new_prefix}{connector}{k}: {v.__class__.__name__} = <circular>"
-                    )
-                else:
-                    child = v.dump(
-                        _is_last=last,
-                        _is_root=False,
-                        _prefix=new_prefix,
-                        _attr_key=k,
-                        _visited=_visited,
-                    )
-                    lines.append(child)
-
-            elif isinstance(v, (list, tuple, dict)):
-                summary = summarize_collection(v)
-                lines.append(f"{new_prefix}{connector}{k}: {type_name(v)} = {summary}")
-
-            else:
-                lines.append(f"{new_prefix}{connector}{k}: {type_name(v)} = {safe_repr(v)}")
-
-            if last:
-                lines.append(f"{new_prefix}")
-
-        lines = [line for line in lines if line.strip()]
-
-        return "\n".join(lines)
 
 __all__ = [
     "JDEInternBaseClass",

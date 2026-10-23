@@ -34,9 +34,7 @@
 from __future__ import annotations
 
 import inspect as _inspect
-from collections.abc import Callable
 from functools import update_wrapper
-from typing import Any
 
 
 def documentation(cls):
@@ -134,17 +132,24 @@ def documentation(cls):
     return cls
 
 class flag:
-    def __init__(self, func: Callable[[Any], str]):
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __call__(self, func):
         self.name = func(None)
         update_wrapper(self, func)  # pyright: ignore[reportArgumentType]
+        return self
 
-    def __get__(self, instance: Any, owner: type | None = None) -> Any:
+    def __get__(self, instance, owner = None):
         if instance is None:
             return self
-        return getattr(instance._discord, self.name)
 
-    def __set__(self, instance: Any, value: bool) -> None:
-        setattr(instance._discord, self.name, value)
+        target = instance if self.obj == "." else getattr(instance, self.obj)
+        return getattr(target, self.name)
 
-    def __repr__(self) -> str:
-        return f"<flag name={self.name!r}>"
+    def __set__(self, instance, value):
+        target = instance if self.obj == "." else getattr(instance, self.obj)
+        setattr(target, self.name, value)
+
+    def __repr__(self):
+        return f"<flag obj={self.obj!r} name={self.name!r}>"

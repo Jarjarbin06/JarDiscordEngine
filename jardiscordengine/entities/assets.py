@@ -84,7 +84,7 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
         if unicode_match:
             name = unicode_match.group(1)
             self._guild_id = None
-            self._animated = None
+            self._animated = False
 
         elif guild_match:
             name = guild_match.group(1)

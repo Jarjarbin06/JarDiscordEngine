@@ -99,95 +99,95 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     # Guild, membership, and moderation #
 
-    @_flag
+    @_flag("discord")
     def guilds(self):
         return "guilds"
 
-    @_flag
+    @_flag("discord")
     def members(self):
         return "members"
 
-    @_flag
+    @_flag("discord")
     def moderation(self):
         return "moderation"
 
-    @_flag
+    @_flag("discord")
     def emojis_and_stickers(self):
         return "emojis_and_stickers"
 
-    @_flag
+    @_flag("discord")
     def integrations(self):
         return "integrations"
 
-    @_flag
+    @_flag("discord")
     def webhooks(self):
         return "webhooks"
 
-    @_flag
+    @_flag("discord")
     def invites(self):
         return "invites"
 
-    @_flag
+    @_flag("discord")
     def scheduled_events(self):
         return "scheduled_events"
 
-    @_flag
+    @_flag("discord")
     def auto_moderation_configuration(self):
         return "auto_moderation_configuration"
 
-    @_flag
+    @_flag("discord")
     def auto_moderation_execution(self):
         return "auto_moderation_execution"
 
     # Messages, reactions, and typing #
 
-    @_flag
+    @_flag("discord")
     def messages(self):
         return "messages"
 
-    @_flag
+    @_flag("discord")
     def guild_messages(self):
         return "guild_messages"
 
-    @_flag
+    @_flag("discord")
     def dm_messages(self):
         return "dm_messages"
 
-    @_flag
+    @_flag("discord")
     def guild_reactions(self):
         return "guild_reactions"
 
-    @_flag
+    @_flag("discord")
     def dm_reactions(self):
         return "dm_reactions"
 
-    @_flag
+    @_flag("discord")
     def guild_typing(self):
         return "guild_typing"
 
-    @_flag
+    @_flag("discord")
     def dm_typing(self):
         return "dm_typing"
 
-    @_flag
+    @_flag("discord")
     def message_content(self):
         return "message_content"
 
-    @_flag
+    @_flag("discord")
     def guild_polls(self):
         return "guild_polls"
 
-    @_flag
+    @_flag("discord")
     def dm_polls(self):
         return "dm_polls"
 
     # Voice and presence #
 
-    @_flag
+    @_flag("discord")
     def voice_states(self):
         return "voice_states"
 
-    @_flag
+    @_flag("discord")
     def presences(self):
         return "presences"
 

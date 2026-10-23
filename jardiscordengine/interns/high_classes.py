@@ -34,6 +34,7 @@
 from __future__ import annotations
 
 from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -89,13 +90,9 @@ class JDEInternEntityFieldUsername(_JDEInternEntityField):
 
         self._username = username
 
-    @property
+    @_flag(".")
     def username(self):
-        return self._username
-
-    @username.setter
-    def username(self, username):
-        self._username = username
+        return "_username"
 
 @_documentation
 class JDEInternEntityFieldName(_JDEInternEntityField):
@@ -118,13 +115,9 @@ class JDEInternEntityFieldName(_JDEInternEntityField):
 
         self._name = name
 
-    @property
+    @_flag(".")
     def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
+        return "_name"
 
 @_documentation
 class JDEInternEntityFieldURL(_JDEInternEntityField):
@@ -147,13 +140,9 @@ class JDEInternEntityFieldURL(_JDEInternEntityField):
 
         self._url = url
 
-    @property
+    @_flag(".")
     def url(self):
-        return self._url
-
-    @url.setter
-    def url(self, url):
-        self._url = url
+        return "_url"
 
 @_documentation
 class JDEInternEntityFieldDiscord(_JDEInternEntityField):

@@ -77,16 +77,6 @@ class JDEInternBaseClass[
             str: Debug string.
         """
 
-    def dump(
-        self,
-    ) -> str:
-        """
-        Dump JDE object content into a string.
-
-        Returns:
-            str: Dump string.
-        """
-
 __all__: Sequence[str] = [
     "JDEInternBaseClass",
 ]
