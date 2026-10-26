@@ -12,6 +12,8 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
 
+CONFIGS: dict[str, JDEInternConfig]
+
 @documented
 @final
 class JDEInternConfig(
@@ -26,7 +28,6 @@ class JDEInternConfig(
     project_path: str | None
     config_path: str | None
     state_path: str | None
-    configs: dict[str, JDEInternConfig]
 
     def __init__(
         self,
@@ -96,6 +97,7 @@ def check_compatibility(
     """Check all config instances compatibility"""
 
 __all__: Sequence[str] = [
+    "CONFIGS",
     "JDEInternConfig",
     "check_compatibility",
     "get",

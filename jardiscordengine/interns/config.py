@@ -48,6 +48,7 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 
+CONFIGS = {}
 
 @_documented
 @_final
@@ -60,7 +61,6 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
     project_path = None
     config_path = None
     state_path = None
-    configs = {}  # noqa: RUF012
 
     @_requires_init
     def __new__(cls, name, data, is_state, _jde_key=None, _jde_warn=None, **kwargs):
@@ -170,16 +170,16 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
 
         _JDEInternBaseClass.__init__(self)
 
-        JDEInternConfig.configs[name] = self
+        CONFIGS[name] = self
 
 @_requires_init
 def get(name, section, setting, type = str, default = None):
-    if name not in JDEInternConfig.configs:
+    if name not in CONFIGS:
         raise _JTKExternError.JErrorFileNotFound(
             f"No config named {name} is opened"
         )
 
-    config = JDEInternConfig.configs[name]
+    config = CONFIGS[name]
 
     getters = {
         str: config.get,
@@ -220,13 +220,13 @@ def get(name, section, setting, type = str, default = None):
 
 @_requires_init
 def set(name, section, setting, value):
-    if name not in JDEInternConfig.configs:
+    if name not in CONFIGS:
         raise _JTKExternError.JErrorFileNotFound(
             f"No config named {name} is opened"
         )
 
     try:
-        JDEInternConfig.configs[name].set(
+        CONFIGS[name].set(
             section,
             setting,
             value,
@@ -340,7 +340,7 @@ def check_compatibility():
     _check(_JDEVersion_Discord, required_pycord, "Discord version")
     _check(_JDEVersion_Python, required_python, "Python version")
 
-    for config in JDEInternConfig.configs:
+    for config in CONFIGS:
 
         _check(
             _version(config, "INFO", "jardiscordengine_version"),
@@ -355,6 +355,7 @@ def check_compatibility():
         )
 
 __all__ = [
+    "CONFIGS",
     "JDEInternConfig",
     "check_compatibility",
     "get",
