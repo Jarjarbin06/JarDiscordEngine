@@ -33,10 +33,10 @@
 
 from __future__ import annotations
 
-import re
-
+from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
 from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -57,81 +57,46 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
     __instance_limit__ = 0
     __recursive__ = False
 
-    def __new__(cls, emoji, name = None, _jde_key = None, _jde_warn = None):
+    emoji = _field(str, required=True, read_only=True, doc="Emoji")
+    name = _field(str, required=True, read_only=True, doc="Name")
+    guild = _field(_JDEEntityGuild | None, read_only=True, doc="Guild")
+    animated = _field(bool, read_only=True, doc="Is animated")
+
+    def __new__(cls, emoji, name, guild = None, animated = False, _jde_key = None, _jde_warn = None):
         return _JDEInternEntity.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else name,
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
-    def __init__(self, emoji, **kwargs):
-        _assert_is_instance(emoji, str, "EMOJI must be str")
-
+    def __init__(self, emoji, name, guild = None, animated = False, **kwargs):
         _JDEInternEntity.__init__(self)
-
-        self._emoji = emoji
-
-        unicode_match = re.fullmatch(r":([a-zA-Z0-9_]+):", emoji)
-        guild_match = re.fullmatch(
-            r"<:([a-zA-Z0-9_]+):(\d{17,20})>",
-            emoji,
-        )
-        animated_match = re.fullmatch(
-            r"<a:([a-zA-Z0-9_]+):(\d{17,20})>",
-            emoji,
-        )
-
-        if unicode_match:
-            name = unicode_match.group(1)
-            self._guild_id = None
-            self._animated = False
-
-        elif guild_match:
-            name = guild_match.group(1)
-            self._guild_id = int(guild_match.group(2))
-            self._animated = False
-
-        elif animated_match:
-            name = animated_match.group(1)
-            self._guild_id = int(animated_match.group(2))
-            self._animated = True
-
-        else:
-            raise _JTKExternError.JErrorValue(
-                "Emoji format is invalid"
-            )
-
         _JDEInternEntityFieldName.__init__(self, name)
 
-    @property
-    def emoji(self):
-        return self._emoji
+        self.emoji = emoji
+        self.guild = guild
+        self.animated = animated
 
-    @property
-    def guild_id(self):
-        return self._guild_id
+    def __str__(self):
+        if self.guild is not None:
+            if self.animated:
+                return f"<a:{self.emoji}:{self.guild.id}>"
 
-    @property
-    def animated(self):
-        return self._animated
+            return f"<:{self.emoji}:{self.guild.id}>"
 
-    @classmethod
-    def from_emoji(cls, emoji):
-        return cls(emoji, _jde_key=emoji)
+        return f":{self.emoji}:"
 
     @classmethod
-    def from_name(cls, name):
-        return cls(f":{name}:", _jde_key=f":{name}:")
+    def from_emoji(cls, emoji, name):
+        return cls(emoji, name)
 
     @classmethod
-    def from_guild(cls, name, guild):
-        emoji = f"<:{name}:{guild.id}>"
-        return cls(emoji, _jde_key=emoji)
+    def from_guild(cls, emoji, name, guild):
+        return cls(emoji, name, guild)
 
     @classmethod
-    def animated_from_guild(cls, name, guild):
-        emoji = f"<a:{name}:{guild.id}>"
-        return cls(emoji, _jde_key=emoji)
+    def animated_from_guild(cls, emoji, name, guild):
+        return cls(emoji, name, guild, True)
 
 @_documented
 class JDEEntityCustomEmoji(JDEEntityEmoji):

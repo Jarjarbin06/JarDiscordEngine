@@ -54,6 +54,7 @@ from jardiscordengine.interns.high_classes import (
     JDEInternEntityFieldURL as _JDEInternEntityFieldURL,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
+from jardiscordengine.systems.bool import JDEBool as _JDEBool
 
 
 @_documented
@@ -97,95 +98,95 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     # Guild, membership, and moderation #
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def guilds(self):
         return "guilds"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def members(self):
         return "members"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def moderation(self):
         return "moderation"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def emojis_and_stickers(self):
         return "emojis_and_stickers"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def integrations(self):
         return "integrations"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def webhooks(self):
         return "webhooks"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def invites(self):
         return "invites"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def scheduled_events(self):
         return "scheduled_events"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def auto_moderation_configuration(self):
         return "auto_moderation_configuration"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def auto_moderation_execution(self):
         return "auto_moderation_execution"
 
     # Messages, reactions, and typing #
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def messages(self):
         return "messages"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def guild_messages(self):
         return "guild_messages"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def dm_messages(self):
         return "dm_messages"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def guild_reactions(self):
         return "guild_reactions"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def dm_reactions(self):
         return "dm_reactions"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def guild_typing(self):
         return "guild_typing"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def dm_typing(self):
         return "dm_typing"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def message_content(self):
         return "message_content"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def guild_polls(self):
         return "guild_polls"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def dm_polls(self):
         return "dm_polls"
 
     # Voice and presence #
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def voice_states(self):
         return "voice_states"
 
-    @_flag("discord")
+    @_flag("discord", cast=_JDEBool)
     def presences(self):
         return "presences"
 

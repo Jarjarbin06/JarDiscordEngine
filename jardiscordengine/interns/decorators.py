@@ -575,9 +575,10 @@ class field:
 
 class flag:
 
-    def __init__(self, obj = ".", *, name = None, doc = ""):
+    def __init__(self, obj = ".", *, name = None, cast = None, doc = ""):
         self.obj = obj
         self.name = name
+        self.cast = cast
         self.doc = doc
         self.owner: type | None = None
         self.public_name = ""
@@ -621,9 +622,16 @@ class flag:
     def __get__(self, instance, owner = None):
         if instance is None:
             return self
+
         if self.name is None:
             raise AttributeError(f"flag {self.public_name!r} has no backing attribute")
-        return getattr(self._target(instance), self.name)
+
+        value = getattr(self._target(instance), self.name)
+
+        if self.cast:
+            return self.cast(value)
+
+        return value
 
     def __set__(self, instance, value):
         if self.name is None:

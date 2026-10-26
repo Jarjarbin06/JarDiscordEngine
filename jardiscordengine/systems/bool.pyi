@@ -16,12 +16,7 @@ class JDEBool(
 ):
     """
     Boolean.
-
-    Attributes:
-        b (bool): Actual boolean.
     """
-
-    b: bool
 
     def __init__(
         self,

@@ -75,7 +75,7 @@ class JDEBool(_JDEInternBaseClass):
         return int(self._bool)
 
     def __str__(self):
-        return "JETrue" if self else "JEFalse"
+        return "JDETrue" if self else "JDEFalse"
 
     def __repr__(self):
         return f"<{self}>"
@@ -88,10 +88,6 @@ class JDEBool(_JDEInternBaseClass):
 
     def __or__(self, other):
         return JDEBool(bool(self) or bool(other))
-
-    @property
-    def b(self):
-        return bool(self)
 
 __all__ = [
     "JDEBool",

@@ -270,46 +270,52 @@ def _debug_collect_rows(obj):
     return [("id", "JDEID", jdeid), *properties, *values, *methods]
 
 def _debug_role(value):
+    from jardiscordengine.constants import JDEFalse as _JDEFalse
+    from jardiscordengine.constants import JDETrue as _JDETrue
+
     if isinstance(value, _DebugError):
         return "error"
-    if isinstance(value, JDEInternBaseClass):
-        return "engine_object"
-    if value is True:
+    elif value is True or value is _JDETrue:
         return "true"
-    if value is False:
+    elif value is False or value is _JDEFalse:
         return "false"
-    if value is None:
+    elif isinstance(value, JDEInternBaseClass):
+        return "engine_object"
+    elif value is None:
         return "none"
-    if isinstance(value, _inspect.Signature) or callable(value):
+    elif isinstance(value, _inspect.Signature) or callable(value):
         return "callable"
-    if isinstance(value, dict):
+    elif isinstance(value, dict):
         return "dict"
-    if isinstance(value, (list, tuple, set)):
+    elif isinstance(value, (list, tuple, set)):
         return "list"
-    if isinstance(value, _JTKExternTime.Time) or "discord" in getattr(
+    elif isinstance(value, _JTKExternTime.Time) or "discord" in getattr(
         type(value), "__module__", ""
     ):
         return "extern"
-    if isinstance(value, str):
+    elif isinstance(value, str):
         return "string"
-    if isinstance(value, (int, float)):
+    elif isinstance(value, (int, float)):
         return "number"
-    return "value"
+    else:
+        return "value"
 
 def _debug_render(value):
-    if isinstance(value, _DebugError):
-        return str(value)
-    if isinstance(value, _inspect.Signature):
-        return f"Function {value}"
-    if isinstance(value, _JTKExternTime.Time):
-        return f"{type(value).__name__} <{value}> (JarbinToolKit:Time)"
-    if "discord" in getattr(type(value), "__module__", ""):
-        return f"{type(value).__name__} (PyCord)"
+    from jardiscordengine.systems.bool import JDEBool as _JDEBool
 
-    try:
-        return repr(value)
-    except Exception as err:  # noqa: BLE001
-        return f"<repr error: {err}>"
+    if isinstance(value, _DebugError | _JDEBool):
+        return str(value)
+    elif isinstance(value, _inspect.Signature):
+        return f"Function {value}"
+    elif isinstance(value, _JTKExternTime.Time):
+        return f"{type(value).__name__} <{value}> (JarbinToolKit:Time)"
+    elif "discord" in getattr(type(value), "__module__", ""):
+        return f"{type(value).__name__} (PyCord)"
+    else:
+        try:
+            return repr(value)
+        except Exception as err:  # noqa: BLE001
+            return f"<repr error: {err}>"
 
 class _DebugWriter:
     def __init__(self, *, is_colored, max_depth, branched_recursive, stack):
@@ -342,7 +348,9 @@ class _DebugWriter:
             self.value(prefix, last, label, value)
 
     def value(self, prefix, last, label, value, *, nested = False):
-        if isinstance(value, JDEInternBaseClass):
+        from jardiscordengine.systems.bool import JDEBool as _JDEBool
+
+        if isinstance(value, JDEInternBaseClass) and not isinstance(value, _JDEBool):
             self._engine_object(prefix, last, label, value)
         elif not nested and isinstance(value, dict):
             items = [(self.paint(str(k), "name"), v) for k, v in value.items()]
@@ -612,7 +620,6 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
         stack: set[int] = _stack if _stack is not None else set()
         obj_id = id(self)
 
-        # Cycle detected on the entry object itself.
         if obj_id in stack:
             jdeid = getattr(self, "jdeid", None)
             ident = f"JDEID-{jdeid}" if jdeid else f"ID-{obj_id}"
