@@ -33,7 +33,7 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -43,7 +43,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityMessage(_JDEInternEntity, _JDEInternEntityFieldID):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
@@ -61,7 +61,7 @@ class JDEEntityMessage(_JDEInternEntity, _JDEInternEntityFieldID):
         _JDEInternEntity.__init__(self)
         _JDEInternEntityFieldID.__init__(self, id)
 
-@_documentation
+@_documented
 class JDEEntityEmbed(_JDEInternEntity, _JDEInternEntityFieldID):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE

@@ -2,10 +2,10 @@ from collections.abc import Sequence
 from typing import Literal, final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
-from jardiscordengine.interns.decorators import documentation
+from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
-@documentation
+@documented
 @final
 class JDEColor(
     JDEInternBaseClass[

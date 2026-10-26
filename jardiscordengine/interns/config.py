@@ -42,13 +42,14 @@ from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import requires_init as _requires_init
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 
 
-@_documentation
+@_documented
 @_final
 class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
 
@@ -61,6 +62,7 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
     state_path = None
     configs = {}  # noqa: RUF012
 
+    @_requires_init
     def __new__(cls, name, data, is_state, _jde_key=None, _jde_warn=None, **kwargs):
         return _JDEInternBaseClass.__new__(
             cls,
@@ -68,6 +70,7 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
             _jde_warn=_jde_warn,
         )
 
+    @_requires_init
     def __init__(
         self,
         name,
@@ -169,6 +172,7 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
 
         JDEInternConfig.configs[name] = self
 
+@_requires_init
 def get(name, section, setting, type = str, default = None):
     if name not in JDEInternConfig.configs:
         raise _JTKExternError.JErrorFileNotFound(
@@ -214,6 +218,7 @@ def get(name, section, setting, type = str, default = None):
             "Invalid value type"
         ) from error
 
+@_requires_init
 def set(name, section, setting, value):
     if name not in JDEInternConfig.configs:
         raise _JTKExternError.JErrorFileNotFound(
@@ -231,6 +236,7 @@ def set(name, section, setting, value):
             str(error)
         ) from error
 
+@_requires_init
 def init_all():
     from jardiscordengine.constants import (
         JDEVersion_Config as _JDEVersion_Config,
@@ -290,6 +296,7 @@ def init_all():
         True,
     )
 
+@_requires_init
 def check_compatibility():
     from jardiscordengine.constants import JDEVersion_Config as _JDEVersion_Config
     from jardiscordengine.constants import JDEVersion_Discord as _JDEVersion_Discord

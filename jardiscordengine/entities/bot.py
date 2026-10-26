@@ -41,8 +41,9 @@ from discord import Streaming as _Streaming
 
 from jardiscordengine.entities.enums import JDEActivityType
 from jardiscordengine.interns import JTKExternTime as _JTKExternTime
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import flag as _flag
+from jardiscordengine.interns.decorators import handle_errors as _handle_errors
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -55,7 +56,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
@@ -73,29 +74,26 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
         _JDEInternEntity.__init__(self)
         _JDEInternEntityFieldDiscord.__init__(self, _Intents(**kwargs))
 
+
     @classmethod
     def default(cls):
-        intents = cls()
-
-        intents._discord = _Intents.default()
-
-        return intents
+        return cls._from_discord_intents(_Intents.default())
 
     @classmethod
     def all(cls):
-        intents = cls()
-
-        intents._discord = _Intents.all()
-
-        return intents
+        return cls._from_discord_intents(_Intents.all())
 
     @classmethod
     def none(cls):
-        intents = cls()
+        return cls._from_discord_intents(_Intents.none())
 
-        intents._discord = _Intents.none()
-
-        return intents
+    @classmethod
+    @_handle_errors
+    def _from_discord_intents(cls, discord_intents):
+        instance = cls.__new__(cls)
+        _JDEInternEntity.__init__(instance)
+        _JDEInternEntityFieldDiscord.__init__(instance, discord_intents)
+        return instance
 
     # Guild, membership, and moderation #
 
@@ -191,7 +189,7 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
     def presences(self):
         return "presences"
 
-@_documentation
+@_documented
 class JDEEntityActivity(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
@@ -247,14 +245,16 @@ class JDEEntityActivity(_JDEInternEntity, _JDEInternEntityFieldDiscord):
         ))
 
     @property
+    @_handle_errors
     def start(self):
-        return _JTKExternTime.Time(timestamp=self._discord.start.timestamp())
+        return _JTKExternTime.Time(timestamp=self.discord.start.timestamp())
 
     @property
+    @_handle_errors
     def end(self):
-        return _JTKExternTime.Time(timestamp=self._discord.end.timestamp())
+        return _JTKExternTime.Time(timestamp=self.discord.end.timestamp())
 
-@_documentation
+@_documented
 class JDEEntityActivityGame(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
@@ -272,7 +272,7 @@ class JDEEntityActivityGame(_JDEInternEntity, _JDEInternEntityFieldDiscord):
         _JDEInternEntity.__init__(self)
         _JDEInternEntityFieldDiscord.__init__(self, _Game(name))
 
-@_documentation
+@_documented
 class JDEEntityActivityStreaming(_JDEInternEntity, _JDEInternEntityFieldDiscord, _JDEInternEntityFieldURL):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL

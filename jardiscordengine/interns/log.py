@@ -36,20 +36,14 @@ from __future__ import annotations
 import re
 from typing import final as _final
 
-from jarbin_toolkit_log import (
-    LogLevel as _LogLevel,
-)
-from jarbin_toolkit_log import (
-    LogType as _LogType,
-)
-
 from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns import JTKExternLog as _JTKExternLog
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
 from jardiscordengine.interns.config import get as _get
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import requires_init as _requires_init
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
 current_logs = {
@@ -60,7 +54,7 @@ _log_levels = ["DEBUG", "INFO", "NOTICE", "WARN", "ERROR", "CRIT"]
 _ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
 
 
-@_documentation
+@_documented
 @_final
 class JDEInternLog(_JTKExternLog.Log, _JDEInternBaseClass):
 
@@ -71,6 +65,7 @@ class JDEInternLog(_JTKExternLog.Log, _JDEInternBaseClass):
     project_path = None
     log_path = None
 
+    @_requires_init
     def __new__(cls, name, _session, _jde_key=None, _jde_warn=None, **kwargs):
         return _JDEInternBaseClass.__new__(
             cls,
@@ -78,6 +73,7 @@ class JDEInternLog(_JTKExternLog.Log, _JDEInternBaseClass):
             _jde_warn=_jde_warn,
         )
 
+    @_requires_init
     def __init__(self, name, _session):
         if not JDEInternLog.project_path or not JDEInternLog.log_path:
             raise _JTKExternError.JErrorRuntime(
@@ -108,6 +104,7 @@ def _clean_text(text):
         return _ansi_escape.sub("", text)
     return text
 
+@_requires_init
 def log(status, title, description, jdeid=None, *values):
     if current_logs["base"] is None:
         return
@@ -125,21 +122,24 @@ def log(status, title, description, jdeid=None, *values):
         description += f" (VALUES:{', '.join(map(repr, values))})"
 
     current_logs["base"].log(
-        _LogLevel(status),
+        _JTKExternLog.LogLevel(status),
         description,
         scope=title,
     )
 
+@_requires_init
 def comment(comment):
     if current_logs["base"] is not None:
         current_logs["base"].comment(_clean_text(comment))
 
+@_requires_init
 def save():
     if current_logs["base"] is None:
         return
 
     current_logs["base"].flush()
 
+@_requires_init
 def close():
     if current_logs["base"] is None:
         return

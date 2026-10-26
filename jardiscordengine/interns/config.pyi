@@ -7,12 +7,12 @@ from jardiscordengine.interns import JTKExternConfig
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documentation
+from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
 
-@documentation
+@documented
 @final
 class JDEInternConfig(
     JTKExternConfig.Config,

@@ -38,14 +38,14 @@ from typing import final as _final
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 
 
 @_final
-@_documentation
+@_documented
 class JDEBot(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.SINGLETON

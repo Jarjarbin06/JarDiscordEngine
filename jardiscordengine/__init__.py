@@ -34,8 +34,6 @@
 from __future__ import annotations
 
 from datetime import datetime as _datetime
-from glob import glob as _glob
-from os import remove as _remove
 from uuid import uuid4 as _uuid4
 
 ##Metadata##
@@ -58,7 +56,7 @@ from jardiscordengine.constants import *
 
 ##Lifetime##
 _start_time = None
-_session = _uuid4().hex
+_session = None
 
 def init(project_path):
     global _start_time, _session
@@ -66,6 +64,7 @@ def init(project_path):
     Text = Interns.JTKExternConsole.Text
 
     _start_time = _datetime.now()
+    _session = _uuid4().hex
 
     project_path = project_path.removesuffix("/")
 
@@ -119,6 +118,7 @@ def init(project_path):
 
     Interns.Log.save()
 
+@Interns.Decorators.requires_init
 def quit():
     global _session, _start_time
 
@@ -151,10 +151,10 @@ def quit():
     Interns.Log.save()
     Interns.Log.close()
 
+    Interns.Config.set("state", "LAST_RUN", "clean_exit", True)
+
     _start_time = None
     _session = None
-
-    Interns.Config.set("state", "LAST_RUN", "clean_exit", True)
 
 ##Special##
 def _title_color(title):

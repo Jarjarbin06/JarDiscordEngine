@@ -33,7 +33,7 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -46,7 +46,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityWebhook(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntityFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE

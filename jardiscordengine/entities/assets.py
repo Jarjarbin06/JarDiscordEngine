@@ -36,7 +36,7 @@ from __future__ import annotations
 import re
 
 from jardiscordengine.interns import JTKExternError as _JTKExternError
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -50,7 +50,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
@@ -133,14 +133,14 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
         emoji = f"<a:{name}:{guild.id}>"
         return cls(emoji, _jde_key=emoji)
 
-@_documentation
+@_documented
 class JDEEntityCustomEmoji(JDEEntityEmoji):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityImage(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntityFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
@@ -162,28 +162,28 @@ class JDEEntityImage(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntit
         _JDEInternEntityFieldURL.__init__(self, url)
         _JDEInternEntityFieldName.__init__(self, name)
 
-@_documentation
+@_documented
 class JDEEntityAvatar(JDEEntityImage):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityGuildIcon(JDEEntityImage):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityBanner(JDEEntityImage):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntitySticker(JDEEntityImage):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE

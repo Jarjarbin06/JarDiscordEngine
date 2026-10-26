@@ -34,7 +34,8 @@
 from __future__ import annotations
 
 from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -48,7 +49,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldUsername):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
@@ -67,19 +68,21 @@ class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityF
         _JDEInternEntityFieldID.__init__(self, id)
         _JDEInternEntityFieldUsername.__init__(self, username)
 
-@_documentation
+@_documented
 class JDEEntityClientUser(JDEEntityUser):
 
     __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
     __instance_limit__ = 1
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityMember(JDEEntityUser):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
+
+    guild = _field(_JDEEntityGuild, required=True, read_only=True, doc="Discord guild")
 
     def __new__(cls, user, guild, _jde_key = None, _jde_warn = None):
         return JDEEntityUser.__new__(
@@ -92,22 +95,19 @@ class JDEEntityMember(JDEEntityUser):
 
     def __init__(self, user, guild):
         _assert_is_instance(user, JDEEntityUser, "USER must be JDEEntityUser")
-        _assert_is_instance(guild, _JDEEntityGuild, "GUILD must be JDEEntityGuild")
 
         JDEEntityUser.__init__(self, user.id, user.username)
 
-        self._guild = guild
+        self.guild = guild
 
-    @property
-    def guild(self):
-        return self._guild
-
-@_documentation
+@_documented
 class JDEEntityUserProfile(_JDEInternEntity):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
+
+    user = _field(JDEEntityUser, required=True, read_only=True, doc="Discord user")
 
     def __new__(cls, user, _jde_key = None, _jde_warn = None):
         return _JDEInternEntity.__new__(
@@ -121,8 +121,4 @@ class JDEEntityUserProfile(_JDEInternEntity):
 
         _JDEInternEntity.__init__(self)
 
-        self._user = user
-
-    @property
-    def user(self):
-        return self._user
+        self.user = user

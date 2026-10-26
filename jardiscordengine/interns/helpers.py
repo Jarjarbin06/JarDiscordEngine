@@ -37,6 +37,8 @@ import sys
 
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
 from jardiscordengine.interns import JTKExternError as _JTKExternError
+from jardiscordengine.interns.decorators import _ENTITY_REGISTRY, _ENTITY_REGISTRY_LOCK
+from jardiscordengine.interns.decorators import requires_init as _requires_init
 
 
 def assert_is_instance(obj, cls, msg=None):
@@ -99,13 +101,36 @@ def warning(err):
         separator="",
     )
 
+@_requires_init
 def version(config, section, key):
     from jardiscordengine.interns.config import get as _get
     from jardiscordengine.systems.version import JDEVersion as _JDEVersion
 
     return _JDEVersion(*[int(v) for v in _get(config, section, key).split(".")])
 
+@_requires_init
 def enabled(config, section, setting = "enabled"):
     from jardiscordengine.interns.config import get as _get
 
     return _get(config, section, setting, bool, False)
+
+def get_registered_entities(category=None):
+    with _ENTITY_REGISTRY_LOCK:
+        if category is None:
+            return dict(_ENTITY_REGISTRY)
+
+        return {
+            name: entity
+            for (entity_category, name), entity in _ENTITY_REGISTRY.items()
+            if entity_category == category
+        }
+
+def get_registered_entity(name, *, category="entity"):
+    with _ENTITY_REGISTRY_LOCK:
+        try:
+            return _ENTITY_REGISTRY[(category, name)]
+        except KeyError:
+            raise LookupError(
+                f"No entity named {name!r} is registered "
+                f"in category {category!r}"
+            ) from None

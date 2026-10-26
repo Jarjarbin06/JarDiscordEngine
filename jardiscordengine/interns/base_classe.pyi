@@ -1,12 +1,12 @@
 from collections.abc import Sequence
 from typing import Any, Self
 
-from jardiscordengine.interns.decorators import documentation
+from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
 
-@documentation
+@documented
 class JDEInternBaseClass[
     PolicyT: JDEInternInstancePolicy,
     LimitT: int,

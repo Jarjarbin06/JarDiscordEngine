@@ -36,13 +36,13 @@ from __future__ import annotations
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 
 
-@_documentation
+@_documented
 class JDEInternEntity(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
@@ -59,7 +59,7 @@ class JDEInternEntity(_JDEInternBaseClass):
     def __init__(self):
         _JDEInternBaseClass.__init__(self)
 
-@_documentation
+@_documented
 class JDEInternEntityField(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL

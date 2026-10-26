@@ -34,7 +34,8 @@
 from __future__ import annotations
 
 from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
-from jardiscordengine.interns.decorators import documentation as _documentation
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -48,7 +49,7 @@ from jardiscordengine.interns.high_classes import (
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
-@_documentation
+@_documented
 class JDEEntityChannel(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
@@ -67,12 +68,14 @@ class JDEEntityChannel(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEnti
         _JDEInternEntityFieldID.__init__(self, id)
         _JDEInternEntityFieldName.__init__(self, name)
 
-@_documentation
+@_documented
 class JDEEntityGuildChannel(JDEEntityChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
+
+    guild = _field(_JDEEntityGuild, required=True, read_only=True, doc="Discord guild")
 
     def __new__(cls, channel, guild, _jde_key = None, _jde_warn = None):
         return JDEEntityChannel.__new__(
@@ -89,41 +92,37 @@ class JDEEntityGuildChannel(JDEEntityChannel):
 
         JDEEntityChannel.__init__(self, channel.id, channel.name)
 
-        self._guild = guild
+        self.guild = guild
 
-    @property
-    def guild(self):
-        return self._guild
-
-@_documentation
+@_documented
 class JDEEntityTextChannel(JDEEntityGuildChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityVoiceChannel(JDEEntityGuildChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityStageChannel(JDEEntityGuildChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityForumChannel(JDEEntityGuildChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
 
-@_documentation
+@_documented
 class JDEEntityAnnouncementChannel(JDEEntityGuildChannel):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE

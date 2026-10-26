@@ -33,8 +33,8 @@
 
 from __future__ import annotations
 
-from jardiscordengine.interns.decorators import documentation as _documentation
-from jardiscordengine.interns.decorators import flag as _flag
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
@@ -44,12 +44,14 @@ from jardiscordengine.interns.low_classes import (
 )
 
 
-@_documentation
+@_documented
 class JDEInternEntityFieldID(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
+
+    id = _field(int, required=True, read_only=True, doc="Discord ID")
 
     def __new__(cls, id, _jde_key = None, _jde_warn = None):
         return _JDEInternEntityField.__new__(
@@ -59,22 +61,18 @@ class JDEInternEntityFieldID(_JDEInternEntityField):
         )
 
     def __init__(self, id):
-        _assert_is_instance(id, int, "ID must be int")
-
         _JDEInternEntityField.__init__(self)
 
-        self._id = id
+        self.id = id
 
-    @property
-    def id(self):
-        return self._id
-
-@_documentation
+@_documented
 class JDEInternEntityFieldUsername(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
+
+    username = _field(str, required=True, doc="Username")
 
     def __new__(cls, username, _jde_key = None, _jde_warn = None):
         return _JDEInternEntityField.__new__(
@@ -84,22 +82,18 @@ class JDEInternEntityFieldUsername(_JDEInternEntityField):
         )
 
     def __init__(self, username):
-        _assert_is_instance(username, str, "USERNAME must be str")
-
         _JDEInternEntityField.__init__(self)
 
-        self._username = username
+        self.username = username
 
-    @_flag(".")
-    def username(self):
-        return "_username"
-
-@_documentation
+@_documented
 class JDEInternEntityFieldName(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
+
+    name = _field(str, required=True, read_only=True, doc="Name")
 
     def __new__(cls, name, _jde_key = None, _jde_warn = None):
         return _JDEInternEntityField.__new__(
@@ -109,22 +103,18 @@ class JDEInternEntityFieldName(_JDEInternEntityField):
         )
 
     def __init__(self, name):
-        _assert_is_instance(name, str, "NAME must be str")
-
         _JDEInternEntityField.__init__(self)
 
-        self._name = name
+        self.name = name
 
-    @_flag(".")
-    def name(self):
-        return "_name"
-
-@_documentation
+@_documented
 class JDEInternEntityFieldURL(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
+
+    url = _field(str, required=True, read_only=True, doc="URL")
 
     def __new__(cls, url, _jde_key = None, _jde_warn = None):
         return _JDEInternEntityField.__new__(
@@ -138,18 +128,16 @@ class JDEInternEntityFieldURL(_JDEInternEntityField):
 
         _JDEInternEntityField.__init__(self)
 
-        self._url = url
+        self.url = url
 
-    @_flag(".")
-    def url(self):
-        return "_url"
-
-@_documentation
+@_documented
 class JDEInternEntityFieldDiscord(_JDEInternEntityField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
     __recursive__ = False
+
+    discord = _field(object, required=True, read_only=True, doc="Discord object", setter_check=lambda instance: getattr(instance, "_jde_initializing", False))
 
     def __new__(cls, _jde_key = None, _jde_warn = None):
         return _JDEInternEntityField.__new__(
@@ -161,8 +149,8 @@ class JDEInternEntityFieldDiscord(_JDEInternEntityField):
     def __init__(self, discord):
         _JDEInternEntityField.__init__(self)
 
-        self._discord = discord
-
-    @property
-    def discord(self):
-        return self._discord
+        self._jde_initializing = True
+        try:
+            self.discord = discord
+        finally:
+            self._jde_initializing = False
