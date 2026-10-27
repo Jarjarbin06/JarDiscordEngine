@@ -70,10 +70,9 @@ def init(project_path):
     _start_time = _datetime.now()
     _session = _uuid4().hex
 
-    _load_dotenv()
-
-
     project_path = project_path.removesuffix("/")
+
+    _load_dotenv(f"{project_path}/.env")
 
     Interns.Config.JDEInternConfig.project_path = f"{project_path}"
     Interns.Config.JDEInternConfig.config_path = f"{project_path}/.jde-config"
