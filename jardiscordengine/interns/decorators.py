@@ -36,6 +36,7 @@ from __future__ import annotations
 import inspect as _inspect
 from functools import update_wrapper
 from functools import wraps as _wraps
+from inspect import iscoroutinefunction
 from threading import RLock as _RLock
 
 from jarbin_toolkit_time import StopWatch as _StopWatch
@@ -416,24 +417,48 @@ def deprecated(func = None, *, new_func = None, version = None):
 
     return decorator(func)
 
-def timed(func = None, *, level = "DEBUG", title = "Timing"):
+def timed(func=None, *, level="DEBUG", title="Timing"):
 
     def decorator(target):
-        @_wraps(target)
-        def wrapper(*args, **kwargs):
-            sw = _StopWatch(start=True)
+        if iscoroutinefunction(target):
 
-            try:
-                return target(*args, **kwargs)
-            finally:
-                sw.stop()
-                elapsed = sw.elapsed()
+            @_wraps(target)
+            async def async_wrapper(*args, **kwargs):
+                sw = _StopWatch(start=True)
 
-                _get_jde_log()(
-                    level,  # pyright: ignore[reportArgumentType]
-                    title,
-                    f"{target.__qualname__} took {elapsed:.6f} seconds",
-                )
+                try:
+                    return await target(*args, **kwargs)
+                finally:
+                    sw.stop()
+                    elapsed = sw.elapsed()
+
+                    _get_jde_log()(
+                        level,  # pyright: ignore[reportArgumentType]
+                        title,
+                        f"{target.__qualname__} took {elapsed:.6f} seconds",
+                    )
+
+            wrapper = async_wrapper
+
+        else:
+
+            @_wraps(target)
+            def sync_wrapper(*args, **kwargs):
+                sw = _StopWatch(start=True)
+
+                try:
+                    return target(*args, **kwargs)
+                finally:
+                    sw.stop()
+                    elapsed = sw.elapsed()
+
+                    _get_jde_log()(
+                        level,  # pyright: ignore[reportArgumentType]
+                        title,
+                        f"{target.__qualname__} took {elapsed:.6f} seconds",
+                    )
+
+            wrapper = sync_wrapper
 
         _mark_jde_decorator(
             wrapper,

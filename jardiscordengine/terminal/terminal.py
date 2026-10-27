@@ -46,11 +46,13 @@ from jardiscordengine.interns.base_classe import (
 )
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import logged as _logged
+from jardiscordengine.interns.decorators import timed as _timed
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.log import log
 
-JDECommandHandler = Callable[[list[str]], Awaitable[None]]
+JDETerminalCommandHandler = Callable[[list[str]], Awaitable[None]]
 
 @_final
 @_logged
@@ -73,7 +75,7 @@ class JDETerminal(_JDEInternBaseClass):
         self._prompt = prompt
         self._running = False
         self._on_ready = on_ready
-        self._commands: dict[str, JDECommandHandler] = {}
+        self._commands: dict[str, JDETerminalCommandHandler] = {}
 
         self.register_command(
             "exit",
@@ -83,6 +85,7 @@ class JDETerminal(_JDEInternBaseClass):
     def register_command(self, name, handler):
         self._commands[name] = handler
 
+    @_timed
     async def run(self):
         if self._running:
             raise RuntimeError("The runtime is already running.")
@@ -171,12 +174,15 @@ class JDETerminal(_JDEInternBaseClass):
 
             if handler is None:
                 print(f"Unknown command: {command_name}")
+                log("WARN", "Terminal", f"Unknown command: {command_name}")
                 continue
 
             try:
                 await handler(command_arguments)
+                log("NOTICE", "Terminal", f"Command ran: {command_name}")
             except Exception as error:  # noqa: BLE001
                 print(f"Command failed: {error}")
+                log("ERROR", "Terminal", f"Command failed: {command_name} - {error}")
 
     async def _command_exit(self, arguments):
         self._running = False
