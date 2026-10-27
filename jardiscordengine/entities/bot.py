@@ -48,17 +48,20 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldDiscord as _JDEInternEntityFieldDiscord,
+    JDEInternFieldDiscord as _JDEInternFieldDiscord,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldURL as _JDEInternEntityFieldURL,
+    JDEInternFieldName as _JDEInternFieldName,
+)
+from jardiscordengine.interns.high_classes import (
+    JDEInternFieldURL as _JDEInternFieldURL,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 from jardiscordengine.systems.bool import JDEBool as _JDEBool
 
 
 @_documented
-class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
+class JDEEntityIntents(_JDEInternEntity, _JDEInternFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -73,7 +76,7 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     def __init__(self, **kwargs):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldDiscord.__init__(self, _Intents(**kwargs))
+        _JDEInternFieldDiscord.__init__(self, _Intents(**kwargs))
 
 
     @classmethod
@@ -93,7 +96,7 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
     def _from_discord_intents(cls, discord_intents):
         instance = cls.__new__(cls)
         _JDEInternEntity.__init__(instance)
-        _JDEInternEntityFieldDiscord.__init__(instance, discord_intents)
+        _JDEInternFieldDiscord.__init__(instance, discord_intents)
         return instance
 
     # Guild, membership, and moderation #
@@ -191,7 +194,7 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternEntityFieldDiscord):
         return "presences"
 
 @_documented
-class JDEEntityActivity(_JDEInternEntity, _JDEInternEntityFieldDiscord):
+class JDEEntityActivity(_JDEInternEntity, _JDEInternFieldName, _JDEInternFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -234,7 +237,8 @@ class JDEEntityActivity(_JDEInternEntity, _JDEInternEntityFieldDiscord):
         _emoji = kwargs.pop("emoji", None)
         emoji = _PartialEmoji.from_str(_emoji.emoji) if _emoji is not None else None
 
-        _JDEInternEntityFieldDiscord.__init__(self, _Activity(
+        _JDEInternFieldName.__init__(self, name or "Activity")
+        _JDEInternFieldDiscord.__init__(self, _Activity(
             created_at=created_at,
             state=state,
             details=details,
@@ -248,15 +252,15 @@ class JDEEntityActivity(_JDEInternEntity, _JDEInternEntityFieldDiscord):
     @property
     @_handle_errors
     def start(self):
-        return _JTKExternTime.Time(timestamp=self.discord.start.timestamp())
+        return _JTKExternTime.Time(timestamp=self.discord.start.timestamp())  # pyright: ignore[reportAttributeAccessIssue]
 
     @property
     @_handle_errors
     def end(self):
-        return _JTKExternTime.Time(timestamp=self.discord.end.timestamp())
+        return _JTKExternTime.Time(timestamp=self.discord.end.timestamp())  # pyright: ignore[reportAttributeAccessIssue]
 
 @_documented
-class JDEEntityActivityGame(_JDEInternEntity, _JDEInternEntityFieldDiscord):
+class JDEEntityActivityGame(_JDEInternEntity, _JDEInternFieldName, _JDEInternFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -271,10 +275,11 @@ class JDEEntityActivityGame(_JDEInternEntity, _JDEInternEntityFieldDiscord):
 
     def __init__(self, name):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldDiscord.__init__(self, _Game(name))
+        _JDEInternFieldName.__init__(self, name)
+        _JDEInternFieldDiscord.__init__(self, _Game(name))
 
 @_documented
-class JDEEntityActivityStreaming(_JDEInternEntity, _JDEInternEntityFieldDiscord, _JDEInternEntityFieldURL):
+class JDEEntityActivityStreaming(_JDEInternEntity, _JDEInternFieldName, _JDEInternFieldDiscord, _JDEInternFieldURL):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -289,5 +294,6 @@ class JDEEntityActivityStreaming(_JDEInternEntity, _JDEInternEntityFieldDiscord,
 
     def __init__(self, name, url):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldURL.__init__(self, url)
-        _JDEInternEntityFieldDiscord.__init__(self, _Streaming(name=name, url=url))
+        _JDEInternFieldURL.__init__(self, url)
+        _JDEInternFieldName.__init__(self, name)
+        _JDEInternFieldDiscord.__init__(self, _Streaming(name=name, url=url))

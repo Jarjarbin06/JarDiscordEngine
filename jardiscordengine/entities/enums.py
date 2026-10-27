@@ -34,9 +34,11 @@
 from __future__ import annotations
 
 from enum import IntEnum as _IntEnum
+from enum import StrEnum as _StrEnum
 from typing import final as _final
 
 from discord import ActivityType as _ActivityType
+from discord import Status as _Status
 
 
 @_final
@@ -49,3 +51,14 @@ class JDEActivityType(_IntEnum):
     WATCHING = _ActivityType.watching.value
     CUSTOM = _ActivityType.custom.value
     COMPETING = _ActivityType.competing.value
+
+@_final
+class JDEStatus(_StrEnum):
+
+    ONLINE = _Status.online.value
+    OFFLINE = _Status.offline.value
+    IDLE = _Status.idle.value
+    DND = _Status.dnd.value
+    DO_NOT_DISTURB = _Status.do_not_disturb.value
+    INVISIBLE = _Status.invisible.value
+    STREAMING = _Status.streaming.value

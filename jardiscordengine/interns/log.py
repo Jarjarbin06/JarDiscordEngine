@@ -141,13 +141,15 @@ def save():
 
 @_requires_init
 def close():
+    from jardiscordengine.interns.helpers import HAS_CRITICAL
+
     if current_logs["base"] is None:
         return
 
     current_log = current_logs["base"]
 
     current_log.flush()
-    current_log.close()
+    current_log.close(result="FAIL" if HAS_CRITICAL else "SUCCESS")
 
     current_logs["base"] = None
 

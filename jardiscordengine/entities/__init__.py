@@ -59,12 +59,12 @@ from jardiscordengine.entities.channels import (
 )
 from jardiscordengine.entities.enums import (
     JDEActivityType,
+    JDEStatus,
 )
 from jardiscordengine.entities.guilds import (
     JDEEntityGuild,
 )
 from jardiscordengine.entities.messages import (
-    JDEEntityEmbed,
     JDEEntityMessage,
 )
 from jardiscordengine.entities.miscellaneous import (
@@ -91,7 +91,6 @@ __all__ = [
     "JDEEntityChannel",
     "JDEEntityClientUser",
     "JDEEntityCustomEmoji",
-    "JDEEntityEmbed",
     "JDEEntityEmoji",
     "JDEEntityForumChannel",
     "JDEEntityGuild",
@@ -109,4 +108,5 @@ __all__ = [
     "JDEEntityUserProfile",
     "JDEEntityVoiceChannel",
     "JDEEntityWebhook",
+    "JDEStatus",
 ]

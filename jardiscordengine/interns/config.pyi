@@ -50,13 +50,13 @@ class JDEInternConfig(
         """
 
 def get[
-    TYPE: type
+    TYPE: object
 ](
     name: str,
     section: str,
     setting: str,
-    type: TYPE = str,
-    default: TYPE | None = None
+    type: type[TYPE] = str,
+    default: Any = None
 ) -> TYPE:
     """
     Get a config setting.

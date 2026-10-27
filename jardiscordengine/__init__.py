@@ -33,8 +33,11 @@
 
 from __future__ import annotations
 
+import asyncio as _asyncio
 from datetime import datetime as _datetime
 from uuid import uuid4 as _uuid4
+
+from dotenv import load_dotenv as _load_dotenv
 
 ##Metadata##
 __author__ = 'Nathan Jarjarbin'
@@ -52,6 +55,7 @@ import jardiscordengine.extensions as Extensions
 import jardiscordengine.interns as Interns
 import jardiscordengine.services as Services
 import jardiscordengine.systems as Systems
+import jardiscordengine.terminal as Terminals
 from jardiscordengine.constants import *
 
 ##Lifetime##
@@ -66,6 +70,9 @@ def init(project_path):
     _start_time = _datetime.now()
     _session = _uuid4().hex
 
+    _load_dotenv()
+
+
     project_path = project_path.removesuffix("/")
 
     Interns.Config.JDEInternConfig.project_path = f"{project_path}"
@@ -77,7 +84,7 @@ def init(project_path):
 
     Interns.Config.init_all()
 
-    Interns.Log.JDEInternLog("jde-log", _session=_session)
+    Interns.Log.JDEInternLog("jde-log", _session=_session)  # pyright: ignore[reportCallIssue]
 
     name = Interns.Config.get('project', 'PROJECT', 'name', str, "Unnamed project")
     description = Interns.Config.get('project', 'PROJECT', 'description', str, "No description")
@@ -117,6 +124,15 @@ def init(project_path):
     Interns.Log.log("INFO", "ENGINE", f"Current session: {_session}")
 
     Interns.Log.save()
+
+@Interns.Decorators.requires_init
+@Interns.Decorators.handle_errors
+def run(main):
+    try:
+        _asyncio.run(main())
+    except Exception as error:
+        Interns.Helpers.critical(error)
+        return
 
 @Interns.Decorators.requires_init
 def quit():
@@ -208,21 +224,27 @@ __all__ = [  # noqa: RUF022
     "__version__",
     "__license__",
     ## Imports ##
-    'Bots',
-    'Commands',
-    'Entities',
-    'Events',
-    'Extensions',
-    'Interns',
-    'Services',
-    'Systems',
+    "Bots",
+    "Commands",
+    "Entities",
+    "Events",
+    "Extensions",
+    "Interns",
+    "Services",
+    "Systems",
+    "Terminals",
     ## Constants ##
     # Versions #
-    'JDEVersion_JarDiscordEngine',
-    'JDEVersion_Python',
+    "JDEVersion_JarDiscordEngine",
+    "JDEVersion_Python",
     # Booleans #
-    'JDEFalse',
-    'JDETrue',
+    "JDEFalse",
+    "JDETrue",
+    ## Lifetime ##
+    "init",
+    "run",
+    "quit",
+
 ]
 
 _banner()

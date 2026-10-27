@@ -60,7 +60,7 @@ class JDEInternEntity(_JDEInternBaseClass):
         _JDEInternBaseClass.__init__(self)
 
 @_documented
-class JDEInternEntityField(_JDEInternBaseClass):
+class JDEInternField(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0

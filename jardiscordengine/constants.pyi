@@ -13,7 +13,7 @@ JDEVersion_Python: JDEVersion
 JDEFalse: JDEBool
 JDETrue: JDEBool
 
-__all__: Sequence[str] = [
+__all__: Sequence[str] = [  # noqa: RUF022
     # Versions #
     "JDEVersion_JarDiscordEngine",
     "JDEVersion_Config",

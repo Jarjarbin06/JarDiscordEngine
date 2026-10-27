@@ -38,16 +38,16 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldName as _JDEInternEntityFieldName,
+    JDEInternFieldName as _JDEInternFieldName,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldURL as _JDEInternEntityFieldURL,
+    JDEInternFieldURL as _JDEInternFieldURL,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
 @_documented
-class JDEEntityWebhook(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntityFieldName):
+class JDEEntityWebhook(_JDEInternEntity, _JDEInternFieldURL, _JDEInternFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -62,5 +62,5 @@ class JDEEntityWebhook(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEnt
 
     def __init__(self, url, name):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldURL.__init__(self, url)
-        _JDEInternEntityFieldName.__init__(self, name)
+        _JDEInternFieldURL.__init__(self, url)
+        _JDEInternFieldName.__init__(self, name)

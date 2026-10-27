@@ -40,6 +40,7 @@ from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import _ENTITY_REGISTRY, _ENTITY_REGISTRY_LOCK
 from jardiscordengine.interns.decorators import requires_init as _requires_init
 
+HAS_CRITICAL = False
 
 def assert_is_instance(obj, cls, msg=None):
     if not isinstance(obj, cls):
@@ -67,39 +68,87 @@ def deprecated(func, new_func, version = None):
         separator="",
     )
 
-def error(err):
+def critical(err, show = True):
+    from jardiscordengine.interns.log import log as _log
+
+    global HAS_CRITICAL
+
+    HAS_CRITICAL = True
+
+    if isinstance(err, _JTKExternError.BaseJError):
+        err = _JTKExternError.BaseJError(
+            err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
+            error="Critical",
+            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
+        )
+    else:
+        err = _JTKExternError.BaseJError(
+            str(err).replace(":", " →").strip(),
+            error="Critical",
+            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
+        )
+
+    if show:
+        title, message = str(err).split(":")
+
+        _JTKExternConsole.print(
+            _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_error(background=True).f_color_black(),
+            _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_error(background=True).f_color_black(),
+            stream=sys.stderr,
+            separator="",
+        )
+
+    _log("CRIT", "ENGINE", err.message)
+
+def error(err, show = True):
+    from jardiscordengine.interns.log import log as _log
+
     if isinstance(err, _JTKExternError.BaseJError):
         err = _JTKExternError.BaseJError(
             err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
             error="Error",
-            format=_JTKExternError.FormatType.COMPACT
+            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
+        )
+    else:
+        err = _JTKExternError.BaseJError(
+            str(err).replace(":", " →").strip(),
+            error="Error",
+            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
         )
 
-    title, message = str(err).split(":")
+    if show:
+        title, message = str(err).split(":")
 
-    _JTKExternConsole.print(
-        _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_error(background=True).f_color_black(),
-        _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_error(),
-        stream=sys.stderr,
-        separator="",
-    )
+        _JTKExternConsole.print(
+            _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_error(background=True).f_color_black(),
+            _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_error(),
+            stream=sys.stderr,
+            separator="",
+        )
 
-def warning(err):
+    _log("ERROR", "ENGINE", err.message)
+
+def warning(err, show = True):
+    from jardiscordengine.interns.log import log as _log
+
     if isinstance(err, _JTKExternError.BaseJError):
         err = _JTKExternError.BaseJError(
             err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
             error="Warning",
-            format=_JTKExternError.FormatType.COMPACT
+            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
         )
 
-    title, message = str(err).split(":")
+    if show:
+        title, message = str(err).split(":")
 
-    _JTKExternConsole.print(
-        _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_warning(background=True).f_color_black(),
-        _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_warning(),
-        stream=sys.stderr,
-        separator="",
-    )
+        _JTKExternConsole.print(
+            _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_warning(background=True).f_color_black(),
+            _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_warning(),
+            stream=sys.stderr,
+            separator="",
+        )
+
+    _log("WARN", "ENGINE", err.message)
 
 @_requires_init
 def version(config, section, key):

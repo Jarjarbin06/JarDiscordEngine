@@ -38,16 +38,16 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+    JDEInternFieldID as _JDEInternFieldID,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldName as _JDEInternEntityFieldName,
+    JDEInternFieldName as _JDEInternFieldName,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
 @_documented
-class JDEEntityRole(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldName):
+class JDEEntityRole(_JDEInternEntity, _JDEInternFieldID, _JDEInternFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -62,5 +62,5 @@ class JDEEntityRole(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityF
 
     def __init__(self, id, name):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldID.__init__(self, id)
-        _JDEInternEntityFieldName.__init__(self, name)
+        _JDEInternFieldID.__init__(self, id)
+        _JDEInternFieldName.__init__(self, name)

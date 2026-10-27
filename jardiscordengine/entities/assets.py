@@ -42,16 +42,16 @@ from jardiscordengine.interns.enums import (
 )
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldName as _JDEInternEntityFieldName,
+    JDEInternFieldName as _JDEInternFieldName,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldURL as _JDEInternEntityFieldURL,
+    JDEInternFieldURL as _JDEInternFieldURL,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
 @_documented
-class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
+class JDEEntityEmoji(_JDEInternEntity, _JDEInternFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -71,7 +71,7 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternEntityFieldName):
 
     def __init__(self, emoji, name, guild = None, animated = False, **kwargs):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldName.__init__(self, name)
+        _JDEInternFieldName.__init__(self, name)
 
         self.emoji = emoji
         self.guild = guild
@@ -106,7 +106,7 @@ class JDEEntityCustomEmoji(JDEEntityEmoji):
     __recursive__ = False
 
 @_documented
-class JDEEntityImage(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntityFieldName):
+class JDEEntityImage(_JDEInternEntity, _JDEInternFieldURL, _JDEInternFieldName):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -124,8 +124,8 @@ class JDEEntityImage(_JDEInternEntity, _JDEInternEntityFieldURL, _JDEInternEntit
             name = url.split("/")[-1]
 
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldURL.__init__(self, url)
-        _JDEInternEntityFieldName.__init__(self, name)
+        _JDEInternFieldURL.__init__(self, url)
+        _JDEInternFieldName.__init__(self, name)
 
 @_documented
 class JDEEntityAvatar(JDEEntityImage):

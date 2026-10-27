@@ -100,7 +100,7 @@ info:
 clean:
 	@echo -e "$(YELLOW) [CLEAN] Removing cache, test, log and build files$(NC)"
 	@find . -type d -name "__pycache__" -exec rm -frd {} +
-	@rm -frd *.egg-info *.xml trace htmlcov .pytest_cache .jde-*
+	@rm -frd *.egg-info *.xml trace htmlcov .pytest_cache .jde-log*
 	@echo -e "$(GREEN) [CLEAN] Done$(NC)"
 
 # ------------------------------------------------------------

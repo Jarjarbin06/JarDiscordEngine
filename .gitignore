@@ -17,3 +17,4 @@ trace
 coverage.xml
 .coverage
 uv.lock
+.env

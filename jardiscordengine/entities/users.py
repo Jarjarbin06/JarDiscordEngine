@@ -41,16 +41,16 @@ from jardiscordengine.interns.enums import (
 )
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldID as _JDEInternEntityFieldID,
+    JDEInternFieldID as _JDEInternFieldID,
 )
 from jardiscordengine.interns.high_classes import (
-    JDEInternEntityFieldUsername as _JDEInternEntityFieldUsername,
+    JDEInternFieldUsername as _JDEInternFieldUsername,
 )
 from jardiscordengine.interns.low_classes import JDEInternEntity as _JDEInternEntity
 
 
 @_documented
-class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityFieldUsername):
+class JDEEntityUser(_JDEInternEntity, _JDEInternFieldID, _JDEInternFieldUsername):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
@@ -65,8 +65,8 @@ class JDEEntityUser(_JDEInternEntity, _JDEInternEntityFieldID, _JDEInternEntityF
 
     def __init__(self, id, username):
         _JDEInternEntity.__init__(self)
-        _JDEInternEntityFieldID.__init__(self, id)
-        _JDEInternEntityFieldUsername.__init__(self, username)
+        _JDEInternFieldID.__init__(self, id)
+        _JDEInternFieldUsername.__init__(self, username)
 
 @_documented
 class JDEEntityClientUser(JDEEntityUser):

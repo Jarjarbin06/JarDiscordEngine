@@ -47,7 +47,7 @@ def _mark_jde_decorator(decorator_target, decorator_name, **metadata):
     entry = {"decorator_name": decorator_name, **metadata}
 
     if entry not in decorators:
-        decorators.append(entry)
+        decorators.append(entry)  # pyright: ignore[reportArgumentType]
 
     decorator_target.__jde_decorators__ = tuple(decorators)
     return decorator_target
@@ -292,7 +292,7 @@ def logged(func = None, *, title = "Call", level = "DEBUG", log_args = False):
                     f" | args={args!r}, kwargs={kwargs!r}"
                 )
 
-            log(level, title, description)
+            log(level, title, description)  # pyright: ignore[reportArgumentType]
 
             try:
                 result = target(*args, **kwargs)
@@ -306,7 +306,7 @@ def logged(func = None, *, title = "Call", level = "DEBUG", log_args = False):
                 raise
 
             log(
-                level,
+                level,  # pyright: ignore[reportArgumentType]
                 title,
                 f"{target.__qualname__} completed successfully",
             )
@@ -328,7 +328,7 @@ def logged(func = None, *, title = "Call", level = "DEBUG", log_args = False):
 
     return decorator(func)
 
-def handle_errors(func = None, *, reraise = True, default = None):
+def handle_errors(func = None, *, reraise = True, default = None, keyboard_interupt = False):
 
     def decorator(target):
         @_wraps(target)
@@ -398,9 +398,9 @@ def deprecated(func = None, *, new_func = None, version = None):
 
             return target(*args, **kwargs)
 
-        wrapper.__deprecated__ = True
-        wrapper.__deprecated_since__ = version
-        wrapper.__deprecated_replacement__ = new_func
+        wrapper.__deprecated__ = True  # pyright: ignore[reportAttributeAccessIssue]
+        wrapper.__deprecated_since__ = version  # pyright: ignore[reportAttributeAccessIssue]
+        wrapper.__deprecated_replacement__ = new_func  # pyright: ignore[reportAttributeAccessIssue]
 
         _mark_jde_decorator(
             wrapper,
@@ -430,7 +430,7 @@ def timed(func = None, *, level = "DEBUG", title = "Timing"):
                 elapsed = sw.elapsed()
 
                 _get_jde_log()(
-                    level,
+                    level,  # pyright: ignore[reportArgumentType]
                     title,
                     f"{target.__qualname__} took {elapsed:.6f} seconds",
                 )
@@ -539,7 +539,11 @@ class field:
                 f"{self.name} can only be set by JDE"
             )
 
-        if self.read_only and hasattr(instance, self.storage):
+        if (
+            not getattr(instance, "_jde_initializing", False)
+            and self.read_only
+            and hasattr(instance, self.storage)
+        ):
             raise AttributeError(f"{self.name} is read-only")
 
         self._validate(value)

@@ -121,7 +121,7 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
                 "Config data must be a dictionary"
             )
 
-        file_name = f"je-{name}"
+        file_name = f"jde-{name}"
 
         try:
             try:
@@ -266,6 +266,22 @@ def init_all():
             "AUTHOR": {
                 "name": "Anonym",
                 "organization": "",
+            },
+        },
+        False,
+    )
+
+    JDEInternConfig(
+        "bots",
+        {
+            "1": {
+                "name": "JDEBot",
+                "description": "",
+                "version": "0.1.0",
+                "application_id": "",
+                "owners_id": "",
+                "debug_guild_is": "",
+                "client_id": "",
             },
         },
         False,

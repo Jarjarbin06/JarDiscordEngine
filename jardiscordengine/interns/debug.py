@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import inspect as _inspect
 from dataclasses import dataclass as _dataclass
+from enum import Enum as _Enum
 
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
 from jardiscordengine.interns import JTKExternTime as _JTKExternTime
@@ -331,10 +332,12 @@ def _debug_render(value):
         return str(value)
     elif isinstance(value, _inspect.Signature):
         return f"Function {value}"
+    elif isinstance(value, _Enum):
+        return f"{value.name} (Enum:{value.__class__.__name__})"
     elif isinstance(value, _JTKExternTime.Time):
-        return f"{type(value).__name__} <{value}> (JarbinToolKit:Time)"
+        return f"{type(value).__name__} <{value}> (Extern:JarbinToolKit:Time)"
     elif "discord" in getattr(type(value), "__module__", ""):
-        return f"{type(value).__name__} (PyCord)"
+        return f"{type(value).__name__} (Extern:PyCord)"
     else:
         try:
             return repr(value)

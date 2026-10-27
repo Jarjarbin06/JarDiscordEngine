@@ -40,12 +40,12 @@ from jardiscordengine.interns.enums import (
 )
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.low_classes import (
-    JDEInternEntityField as _JDEInternEntityField,
+    JDEInternField as _JDEInternField,
 )
 
 
 @_documented
-class JDEInternEntityFieldID(_JDEInternEntityField):
+class JDEInternFieldID(_JDEInternField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -54,19 +54,19 @@ class JDEInternEntityFieldID(_JDEInternEntityField):
     id = _field(int, required=True, read_only=True, doc="Discord ID")
 
     def __new__(cls, id, _jde_key = None, _jde_warn = None):
-        return _JDEInternEntityField.__new__(
+        return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else id,
             _jde_warn=_jde_warn,
         )
 
     def __init__(self, id):
-        _JDEInternEntityField.__init__(self)
+        _JDEInternField.__init__(self)
 
         self.id = id
 
 @_documented
-class JDEInternEntityFieldUsername(_JDEInternEntityField):
+class JDEInternFieldUsername(_JDEInternField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -75,19 +75,19 @@ class JDEInternEntityFieldUsername(_JDEInternEntityField):
     username = _field(str, required=True, doc="Username")
 
     def __new__(cls, username, _jde_key = None, _jde_warn = None):
-        return _JDEInternEntityField.__new__(
+        return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
             _jde_warn=_jde_warn,
         )
 
     def __init__(self, username):
-        _JDEInternEntityField.__init__(self)
+        _JDEInternField.__init__(self)
 
         self.username = username
 
 @_documented
-class JDEInternEntityFieldName(_JDEInternEntityField):
+class JDEInternFieldName(_JDEInternField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -96,19 +96,19 @@ class JDEInternEntityFieldName(_JDEInternEntityField):
     name = _field(str, required=True, read_only=True, doc="Name")
 
     def __new__(cls, name, _jde_key = None, _jde_warn = None):
-        return _JDEInternEntityField.__new__(
+        return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else name,
             _jde_warn=_jde_warn,
         )
 
     def __init__(self, name):
-        _JDEInternEntityField.__init__(self)
+        _JDEInternField.__init__(self)
 
         self.name = name
 
 @_documented
-class JDEInternEntityFieldURL(_JDEInternEntityField):
+class JDEInternFieldURL(_JDEInternField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -117,7 +117,7 @@ class JDEInternEntityFieldURL(_JDEInternEntityField):
     url = _field(str, required=True, read_only=True, doc="URL")
 
     def __new__(cls, url, _jde_key = None, _jde_warn = None):
-        return _JDEInternEntityField.__new__(
+        return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
             _jde_warn=_jde_warn,
@@ -126,12 +126,12 @@ class JDEInternEntityFieldURL(_JDEInternEntityField):
     def __init__(self, url):
         _assert_is_instance(url, str, "URL must be str")
 
-        _JDEInternEntityField.__init__(self)
+        _JDEInternField.__init__(self)
 
         self.url = url
 
 @_documented
-class JDEInternEntityFieldDiscord(_JDEInternEntityField):
+class JDEInternFieldDiscord(_JDEInternField):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0
@@ -140,14 +140,14 @@ class JDEInternEntityFieldDiscord(_JDEInternEntityField):
     discord = _field(object, required=True, read_only=True, doc="Discord object", setter_check=lambda instance: getattr(instance, "_jde_initializing", False))
 
     def __new__(cls, _jde_key = None, _jde_warn = None):
-        return _JDEInternEntityField.__new__(
+        return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
             _jde_warn=_jde_warn,
         )
 
     def __init__(self, discord):
-        _JDEInternEntityField.__init__(self)
+        _JDEInternField.__init__(self)
 
         self._jde_initializing = True
         try:
