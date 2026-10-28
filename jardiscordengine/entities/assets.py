@@ -34,13 +34,11 @@
 from __future__ import annotations
 
 from jardiscordengine.entities.guilds import JDEEntityGuild as _JDEEntityGuild
-from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
-from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldName as _JDEInternFieldName,
 )

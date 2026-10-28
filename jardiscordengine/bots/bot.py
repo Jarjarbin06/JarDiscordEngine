@@ -40,16 +40,19 @@ from typing import final as _final
 import discord as _discord
 from discord import Bot as _Bot
 
-from jardiscordengine.entities.bot import JDEEntityActivity as _JDEEntityActivity
-from jardiscordengine.entities.bot import (
+from jardiscordengine.bots.guild_manager import (
+    JDEGuildManager as _JDEGuildManager,
+)
+from jardiscordengine.entities.bots import JDEEntityActivity as _JDEEntityActivity
+from jardiscordengine.entities.bots import (
     JDEEntityActivityGame as _JDEEntityActivityGame,
 )
-from jardiscordengine.entities.bot import (
+from jardiscordengine.entities.bots import (
     JDEEntityActivityStreaming as _JDEEntityActivityStreaming,
 )
-from jardiscordengine.entities.bot import JDEEntityIntents as _JDEEntityIntents
-from jardiscordengine.entities.channels import (
-    JDEEntityChannel as _JDEEntityChannel,
+from jardiscordengine.entities.bots import JDEEntityIntents as _JDEEntityIntents
+from jardiscordengine.entities.categories import (
+    JDEEntityGuildCategory as _JDEEntityGuildCategory,
 )
 from jardiscordengine.entities.channels import (
     JDEEntityForumChannel as _JDEEntityForumChannel,
@@ -141,7 +144,7 @@ class JDEBot(_JDEInternFieldDiscord):
             else:
                 self.owners = None
 
-            debug_guilds = _get("bots", str(bot_index), "debug_guild_is", str, "").split(",")
+            debug_guilds = _get("bots", str(bot_index), "debug_guild_id", str, "").split(",")
             if debug_guilds and debug_guilds[0] != "":
                 self.debug_guilds = tuple(_JDEEntityGuild(int(id), f"DebugGuild({id})", _jde_warn=False) for id in debug_guilds)  # pyright: ignore[reportCallIssue]
             else:
@@ -182,6 +185,7 @@ class JDEBot(_JDEInternFieldDiscord):
         self._synchronization_event = _asyncio.Event()
         self._synchronization_error = None
 
+        self._guilds = {}
         self._channels = {}
         self._roles = {}
         self._messages = {}
@@ -208,6 +212,8 @@ class JDEBot(_JDEInternFieldDiscord):
                     _jde_warn=False  # pyright: ignore[reportCallIssue]
                 )
 
+                self._guilds[discord_guild.id] = guild
+
                 for discord_role in discord_guild.roles:
                     role = _JDEEntityRole(
                         discord_role.id,
@@ -217,49 +223,61 @@ class JDEBot(_JDEInternFieldDiscord):
                     self._roles[discord_role.id] = role
 
                 for discord_channel in discord_guild.channels:
-                    if isinstance(
-                        discord_channel,
-                        _discord.TextChannel,
-                    ):
-                        entity_type = _JDEEntityTextChannel
-                    elif isinstance(
-                        discord_channel,
-                        _discord.VoiceChannel,
-                    ):
-                        entity_type = _JDEEntityVoiceChannel
-                    elif isinstance(
-                        discord_channel,
-                        _discord.StageChannel,
-                    ):
-                        entity_type = _JDEEntityStageChannel
-                    elif isinstance(
-                        discord_channel,
-                        _discord.ForumChannel,
-                    ):
-                        entity_type = _JDEEntityForumChannel
-                    else:
-                        # Categories and other unsupported channel types
-                        # can be added to the entity hierarchy separately.
-                        entity_type = _JDEEntityGuildChannel
+                    if isinstance(discord_channel, _discord.CategoryChannel):
+                        channel = _JDEEntityGuildCategory(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
 
-                    channel = entity_type(
-                        discord_channel,
-                        guild,
-                    )
+                    elif isinstance(discord_channel, _discord.TextChannel):
+                        channel = _JDEEntityTextChannel(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
+
+                    elif isinstance(discord_channel, _discord.VoiceChannel):
+                        channel = _JDEEntityVoiceChannel(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
+
+                    elif isinstance(discord_channel, _discord.StageChannel):
+                        channel = _JDEEntityStageChannel(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
+
+                    elif isinstance(discord_channel, _discord.ForumChannel):
+                        channel = _JDEEntityForumChannel(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
+
+                    else:
+                        channel = _JDEEntityGuildChannel(
+                            discord_channel,
+                            guild,
+                            _jde_warn=False,  # pyright: ignore[reportCallIssue]
+                        )
 
                     self._channels[discord_channel.id] = channel
 
-                    if not isinstance(
-                        discord_channel,
-                        _discord.TextChannel,
-                    ):
+                    if not isinstance(discord_channel, _discord.TextChannel):
                         continue
 
                     async for discord_message in discord_channel.history(
                         limit=None,
                         oldest_first=True,
                     ):
-                        message = _JDEEntityMessage(discord_message, channel=channel)
+                        message = _JDEEntityMessage(
+                            discord_message,
+                            channel=channel,
+                        )
 
                         self._messages[discord_message.id] = message
 
@@ -285,6 +303,10 @@ class JDEBot(_JDEInternFieldDiscord):
                 "Discord entity synchronization did not complete."
             )
 
+    @_flag(".", doc="Guild list")
+    def guilds(self):
+        return "_guilds"
+
     @_flag(".", doc="Role list")
     def roles(self):
         return "_roles"
@@ -296,6 +318,21 @@ class JDEBot(_JDEInternFieldDiscord):
     @_flag(".", doc="Message history")
     def messages(self):
         return "_messages"
+
+    def guild(self, guild):
+        if not self.synchronized:
+            raise RuntimeError(
+                "Cannot manage guilds before entity synchronization completes."
+            )
+
+        guild = self._guilds.get(guild.id)
+
+        if guild is None:
+            raise LookupError(
+                f"Guild {guild.id} is not registered with this bot."  # pyright: ignore[reportAttributeAccessIssue]
+            )
+
+        return _JDEGuildManager(self, guild)
 
     async def change_presence(self, *, status = None, activity = None):
         self._jde_initializing = True

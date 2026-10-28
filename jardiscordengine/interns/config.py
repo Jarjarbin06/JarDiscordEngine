@@ -280,7 +280,7 @@ def init_all():
                 "version": "0.1.0",
                 "application_id": "",
                 "owners_id": "",
-                "debug_guild_is": "",
+                "debug_guild_id": "",
                 "client_id": "",
             },
         },

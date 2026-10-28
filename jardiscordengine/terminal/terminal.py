@@ -35,7 +35,6 @@ from __future__ import annotations
 
 import asyncio
 import shlex
-from collections.abc import Awaitable, Callable
 from contextlib import suppress
 from typing import final as _final
 
@@ -44,6 +43,7 @@ from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
+from jardiscordengine.interns.config import get as _get
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import logged as _logged
 from jardiscordengine.interns.decorators import timed as _timed
@@ -51,8 +51,8 @@ from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
 from jardiscordengine.interns.log import log
+from jardiscordengine.terminal.decorator import terminal_command as _terminal_command
 
-JDETerminalCommandHandler = Callable[[list[str]], Awaitable[None]]
 
 @_final
 @_logged
@@ -63,27 +63,37 @@ class JDETerminal(_JDEInternBaseClass):
     __instance_limit__ = 1
     __recursive__ = False
 
-    def __new__(cls, bot, prompt = "JDE> ", _jde_key = None, _jde_warn = None, **kwargs):
+    def __new__(cls, bot, prompt = None, _jde_key = None, _jde_warn = None, **kwargs):
         return _JDEInternBaseClass.__new__(
             cls,
             _jde_key=_jde_key,
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
-    def __init__(self, bot, prompt = "JDE> ", on_ready = None):
+    def __init__(self, bot, prompt = None, on_ready = None):
+        if prompt is None:
+            prompt = f"JDE - {_get("project", "PROJECT", "name", str, "Unnamed project")} >>> "
+
         self._bot = bot
         self._prompt = prompt
         self._running = False
         self._on_ready = on_ready
-        self._commands: dict[str, JDETerminalCommandHandler] = {}
 
-        self.register_command(
-            "exit",
-            self._command_exit,
-        )
+        self._commands = {}
+        self._description = {}
+        self._arguments = {}
 
-    def register_command(self, name, handler):
+        self.register_command(self._command_exit)
+        self.register_command(self._command_help)
+
+    def register_command(self, handler):
+        name = getattr(handler, "cmd_name", handler.__name__)
+        description = getattr(handler, "cmd_description", "No description")
+        arguments = getattr(handler, "cmd_arguments", ())
+
         self._commands[name] = handler
+        self._description[name] = description
+        self._arguments[name] = arguments
 
     @_timed
     async def run(self):
@@ -148,20 +158,42 @@ class JDETerminal(_JDEInternBaseClass):
                     ).f_color_error()
                 )
 
+    @staticmethod
+    def _text(message):
+        return _JTKExternConsole.Text(message)
+
+    @staticmethod
+    def _color(message, red, green, blue):
+        return _JTKExternConsole.Text(message).f_color_foreground(_JTKExternConsole.ColorRGB(red, green, blue))
+
+    @classmethod
+    def _panel(cls, title, content):
+        Text = _JTKExternConsole.Text
+
+        heading = cls._color(title, 70, 160, 255)
+
+        return Text(f"{heading}\n{content}").f_border_box(border=_JTKExternConsole.PresetBorder.ROUND, padding=1)
+
     async def _terminal_loop(self):
+
+        _JTKExternConsole.print(self._panel("JAR DISCORD ENGINE", (
+            f"{self._color('Terminal ready', 100, 220, 130)}\n"
+            f"{self._color('Type help to list available commands.', 180, 180, 180)}\n"
+            f"{self._color('Type exit to shut down.', 180, 180, 180)}"
+        )))
+
         while self._running:
             try:
-                raw_command = await asyncio.to_thread(
-                    input,
-                    _JTKExternConsole.Text(self._prompt).f_color_foreground(_JTKExternConsole.ColorRGB(70, 160, 255)),
-                )
+                prompt = self._color(self._prompt, 70, 160, 255)
+                raw_command = await asyncio.to_thread(input, prompt)
             except EOFError:
+                _JTKExternConsole.print(self._color("\nEnd of terminal input.", 150, 150, 150))
                 break
 
             try:
                 arguments = shlex.split(raw_command)
             except ValueError as error:
-                print(f"Invalid command syntax: {error}")
+                _JTKExternConsole.print(self._color(f"Invalid command syntax: {error}", 255, 100, 100))
                 continue
 
             if not arguments:
@@ -173,19 +205,109 @@ class JDETerminal(_JDEInternBaseClass):
             handler = self._commands.get(command_name)
 
             if handler is None:
-                print(f"Unknown command: {command_name}")
+                _JTKExternConsole.print(self._color(f"Unknown command: {command_name}", 255, 100, 100))
                 log("WARN", "Terminal", f"Unknown command: {command_name}")
                 continue
 
             try:
                 await handler(command_arguments)
                 log("NOTICE", "Terminal", f"Command ran: {command_name}")
-            except Exception as error:  # noqa: BLE001
-                print(f"Command failed: {error}")
-                log("ERROR", "Terminal", f"Command failed: {command_name} - {error}")
 
+            except Exception as error:  # noqa: BLE001
+                _JTKExternConsole.print(self._color(f"Command failed: {error}", 255, 100, 100))
+                log("ERROR", "Terminal", f"Command failed: {command_name} - {error}",)
+
+    @_terminal_command(
+        "exit",
+        "Stop the bot and exit the terminal prompt.",
+    )
     async def _command_exit(self, arguments):
+        _JTKExternConsole.print(self._panel("SHUTTING DOWN", self._color("Stopping JarDiscordEngine...", 255, 180, 80)))
         self._running = False
+
+    @_terminal_command(
+        "help",
+        "Display help information about terminal commands.",
+        ("[command]", "Name of the command to get detailed help for."),
+    )
+    async def _command_help(self, arguments):
+        if not arguments:
+            self._show_general_help()
+            return
+
+        name = arguments[0].lower()
+
+        if name not in self._commands:
+            _JTKExternConsole.print(self._color(f"Unknown command: {name}", 255, 100, 100))
+            return
+
+        self._show_command_help(name)
+
+    def _show_general_help(self):
+        Text = _JTKExternConsole.Text
+
+        lines = [self._color("Available commands", 200, 200, 200), ""]
+
+        for name in sorted(self._commands):
+            command_arguments = self._arguments[name]
+            argument_names = []
+
+            for argument_name, _ in command_arguments:
+                if (
+                    argument_name.startswith("[")
+                    and argument_name.endswith("]")
+                ):
+                    argument_names.append(argument_name)
+                else:
+                    argument_names.append(f"<{argument_name}>")
+
+            usage = name
+
+            if argument_names:
+                usage += " " + " ".join(argument_names)
+
+            usage_text = self._color(Text(f"{usage:<34}").f_layout_indent(1), 70, 160, 255)
+            description_text = self._text(self._description[name])
+
+            lines.append(f"{usage_text}{description_text}")
+
+        lines.extend(["", self._color("Use 'help <command>' for detailed information.", 150, 150, 150)])
+
+        _JTKExternConsole.print(Text("\n".join(lines)).f_border_box(border=_JTKExternConsole.PresetBorder.ROUND, padding=1))
+
+    def _show_command_help(self, name):
+        Text = _JTKExternConsole.Text
+
+        description = self._description[name]
+        command_arguments = self._arguments[name]
+
+        heading = self._color(f"Command: {name}", 70, 160, 255)
+
+        lines = [heading, "", self._color("DESCRIPTION", 200, 200, 200), Text(description).f_layout_indent(1), "", self._color("USAGE", 200, 200, 200)]
+
+        usage = name
+
+        for argument_name, _ in command_arguments:
+            if (
+                argument_name.startswith("[")
+                and argument_name.endswith("]")
+            ):
+                usage += f" {argument_name}"
+            else:
+                usage += f" <{argument_name}>"
+
+        lines.append(Text(usage).f_layout_indent(1))
+
+        if command_arguments:
+            lines.extend(["", self._color("ARGUMENTS", 200, 200, 200)])
+
+            for argument_name, argument_description in command_arguments:
+                lines.append(Text(self._color(argument_name, 70, 160, 255)).f_layout_indent(1))
+                lines.append(Text(argument_description).f_layout_indent(2))
+        else:
+            lines.extend(["", self._color("This command takes no arguments.", 150, 150, 150)])
+
+        _JTKExternConsole.print(Text("\n".join(lines)).f_border_box(border=_JTKExternConsole.PresetBorder.ROUND, padding=1))
 
     async def _wait_until_ready(self):
         while True:

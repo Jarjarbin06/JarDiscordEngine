@@ -33,9 +33,14 @@
 
 from __future__ import annotations
 
-from jardiscordengine.terminal.terminal import JDETerminal, JDETerminalCommandHandler
+from jardiscordengine.terminal.decorator import (
+    terminal_command,
+)
+from jardiscordengine.terminal.terminal import (
+    JDETerminal,
+)
 
 __all__ = [
     "JDETerminal",
-    "JDETerminalCommandHandler",
+    "terminal_command",
 ]

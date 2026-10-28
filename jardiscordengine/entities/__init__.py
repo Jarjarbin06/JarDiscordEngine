@@ -42,11 +42,15 @@ from jardiscordengine.entities.assets import (
     JDEEntityImage,
     JDEEntitySticker,
 )
-from jardiscordengine.entities.bot import (
+from jardiscordengine.entities.bots import (
     JDEEntityActivity,
     JDEEntityActivityGame,
     JDEEntityActivityStreaming,
     JDEEntityIntents,
+)
+from jardiscordengine.entities.categories import (
+    JDEEntityCategory,
+    JDEEntityGuildCategory,
 )
 from jardiscordengine.entities.channels import (
     JDEEntityAnnouncementChannel,
@@ -88,12 +92,14 @@ __all__ = [
     "JDEEntityAnnouncementChannel",
     "JDEEntityAvatar",
     "JDEEntityBanner",
+    "JDEEntityCategory",
     "JDEEntityChannel",
     "JDEEntityClientUser",
     "JDEEntityCustomEmoji",
     "JDEEntityEmoji",
     "JDEEntityForumChannel",
     "JDEEntityGuild",
+    "JDEEntityGuildCategory",
     "JDEEntityGuildChannel",
     "JDEEntityGuildIcon",
     "JDEEntityImage",
