@@ -71,7 +71,7 @@ class JDEEntityIntents(_JDEInternEntity, _JDEInternFieldDiscord):
         return _JDEInternEntity.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, **kwargs):

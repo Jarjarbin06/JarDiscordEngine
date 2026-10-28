@@ -33,6 +33,8 @@
 
 from __future__ import annotations
 
+from typing import final as _final
+
 import discord as _discord
 
 from jardiscordengine.entities.categories import (
@@ -53,10 +55,37 @@ from jardiscordengine.entities.channels import (
 from jardiscordengine.entities.channels import (
     JDEEntityVoiceChannel as _JDEEntityVoiceChannel,
 )
+from jardiscordengine.interns.base_classe import (
+    JDEInternBaseClass as _JDEInternBaseClass,
+)
+from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import logged as _logged
+from jardiscordengine.interns.decorators import register_entity as _register_entity
+from jardiscordengine.interns.decorators import requires_init as _requires_init
+from jardiscordengine.interns.enums import (
+    JDEInternInstancePolicy as _JDEInternInstancePolicy,
+)
 
 
-class JDEGuildManager:
+@_final
+@_logged
+@_documented
+@_register_entity(name="JDEGuildManager", category="Manager")
+class JDEGuildManager(_JDEInternBaseClass):
 
+    __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
+    __instance_limit__ = 1
+    __recursive__ = False
+
+    @_requires_init
+    def __new__(cls, *args, _jde_key = None, _jde_warn = None, **kwargs):
+        return _JDEInternBaseClass.__new__(
+            cls,
+            _jde_key=_jde_key,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
+        )
+
+    @_requires_init
     def __init__(self, bot, guild):
         self._bot = bot
         self._guild = guild

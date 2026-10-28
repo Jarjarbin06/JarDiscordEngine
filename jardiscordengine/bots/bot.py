@@ -43,6 +43,9 @@ from discord import Bot as _Bot
 from jardiscordengine.bots.guild_manager import (
     JDEGuildManager as _JDEGuildManager,
 )
+from jardiscordengine.commands.command_manager import (
+    JDECommandManager as _JDECommandManager,
+)
 from jardiscordengine.entities.bots import JDEEntityActivity as _JDEEntityActivity
 from jardiscordengine.entities.bots import (
     JDEEntityActivityGame as _JDEEntityActivityGame,
@@ -198,7 +201,13 @@ class JDEBot(_JDEInternFieldDiscord):
         init_from_config()
         init_bot()
 
+        self._commands = _JDECommandManager(self)
+
         self._initialized = True
+
+    @_flag(doc="Command manager")
+    def commands(self):
+        return "_commands"
 
     async def _synchronize_entities(self):
         if self.synchronized:

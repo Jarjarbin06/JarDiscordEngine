@@ -36,6 +36,8 @@ from __future__ import annotations
 import asyncio as _asyncio
 from datetime import datetime as _datetime
 from uuid import uuid4 as _uuid4
+import os as _os
+import sys as _sys
 
 from dotenv import load_dotenv as _load_dotenv
 
@@ -51,9 +53,7 @@ import jardiscordengine.bots as Bots
 import jardiscordengine.commands as Commands
 import jardiscordengine.entities as Entities
 import jardiscordengine.events as Events
-import jardiscordengine.extensions as Extensions
 import jardiscordengine.interns as Interns
-import jardiscordengine.services as Services
 import jardiscordengine.systems as Systems
 import jardiscordengine.terminal as Terminals
 from jardiscordengine.constants import *
@@ -127,42 +127,35 @@ def init(project_path):
     Interns.Log.save()
 
 @Interns.Decorators.requires_init
-@Interns.Decorators.handle_errors
-def run(main):
-    try:
-        _asyncio.run(main())
-    except Exception as error:
-        Interns.Helpers.critical(error)
-        return
-
-@Interns.Decorators.requires_init
 def quit():
     global _session, _start_time
 
-    if _start_time is not None and _session is not None:
-        _end = _datetime.now()
-        duration = (_end - _start_time).total_seconds()
+    if _start_time is None or _session is None:
+        return
 
-        Interns.Config.set("state", "LAST_RUN", "end", _end)
-        Interns.Config.set("state", "LAST_RUN", "duration", duration)
+    _end = _datetime.now()
+    duration = (_end - _start_time).total_seconds()
 
-        total_runtime = Interns.Config.get("state", "STATISTICS", "total_runtime", float, 0.0)
-        launches = Interns.Config.get("state", "SESSION", "launches", int, 1)
-        longest_session = Interns.Config.get("state", "STATISTICS", "longest_session", float, 0.0)
-        shortest_session = Interns.Config.get("state", "STATISTICS", "shortest_session", float, 0.0)
+    Interns.Config.set("state", "LAST_RUN", "end", _end)
+    Interns.Config.set("state", "LAST_RUN", "duration", duration)
 
-        new_total_runtime = total_runtime + duration  # pyright: ignore[reportOperatorIssue]
-        average_session = new_total_runtime / launches
+    total_runtime = Interns.Config.get("state", "STATISTICS", "total_runtime", float, 0.0)
+    launches = Interns.Config.get("state", "SESSION", "launches", int, 1)
+    longest_session = Interns.Config.get("state", "STATISTICS", "longest_session", float, 0.0)
+    shortest_session = Interns.Config.get("state", "STATISTICS", "shortest_session", float, 0.0)
 
-        longest_session = max(longest_session, duration)
+    new_total_runtime = total_runtime + duration  # pyright: ignore[reportOperatorIssue]
+    average_session = new_total_runtime / launches
 
-        if shortest_session == 0 or duration < shortest_session:  # pyright: ignore[reportOperatorIssue]
-            shortest_session = duration
+    longest_session = max(longest_session, duration)
 
-        Interns.Config.set("state", "STATISTICS", "total_runtime", new_total_runtime)
-        Interns.Config.set("state", "STATISTICS", "average_session", average_session)
-        Interns.Config.set("state", "STATISTICS", "longest_session", longest_session)
-        Interns.Config.set("state", "STATISTICS", "shortest_session", shortest_session)
+    if shortest_session == 0 or duration < shortest_session:  # pyright: ignore[reportOperatorIssue]
+        shortest_session = duration
+
+    Interns.Config.set("state", "STATISTICS", "total_runtime", new_total_runtime)
+    Interns.Config.set("state", "STATISTICS", "average_session", average_session)
+    Interns.Config.set("state", "STATISTICS", "longest_session", longest_session)
+    Interns.Config.set("state", "STATISTICS", "shortest_session", shortest_session)
 
     Interns.Log.log("INFO", "ENGINE", "Engine quit")
     Interns.Log.save()
@@ -172,6 +165,33 @@ def quit():
 
     _start_time = None
     _session = None
+
+@Interns.Decorators.requires_init
+@Interns.Decorators.handle_errors
+def run(main):
+    while True:
+        try:
+            _asyncio.run(main())
+            return
+
+        except Terminals.JDETerminalRestart:
+            Interns.Log.log("INFO", "ENGINE", "Restart requested")
+
+        except Exception as error:  # noqa: BLE001
+            Interns.Helpers.critical(error)
+            return
+
+        Interns.Log.log("INFO", "ENGINE", "Quitting engine for restart")
+        Interns.Log.log("INFO", "ENGINE", "Restarting application process")
+
+        Interns.JTKExternConsole.ANSI.Screen.ScreenErase.erase_display()
+
+        quit()
+
+        _os.execv(
+            _sys.executable,
+            [_sys.executable, *_sys.argv],
+        )
 
 ##Special##
 def _title_color(title):
@@ -209,6 +229,7 @@ def _banner():
         "Discord bot development framework"
     ).f_layout_align_center(width)
 
+    Interns.JTKExternConsole.ANSI.Screen.ScreenErase.erase_display()
     Interns.JTKExternConsole.Console.Console.print(
         (f"{Cursor.previous_line() + Screen.erase_line()}" * 2) +
         Text(f"{top}\n{sep}\n{center}\n{sep}\n{bottom}").f_border_box(border=Interns.JTKExternConsole.PresetBorder.ROUND, padding=0),
@@ -231,9 +252,7 @@ __all__ = [  # noqa: RUF022
     "Commands",
     "Entities",
     "Events",
-    "Extensions",
     "Interns",
-    "Services",
     "Systems",
     "Terminals",
     ## Constants ##

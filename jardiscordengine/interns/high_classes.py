@@ -57,7 +57,7 @@ class JDEInternFieldID(_JDEInternField):
         return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else id,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, id):
@@ -78,7 +78,7 @@ class JDEInternFieldUsername(_JDEInternField):
         return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, username):
@@ -99,7 +99,7 @@ class JDEInternFieldName(_JDEInternField):
         return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else name,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, name):
@@ -120,7 +120,7 @@ class JDEInternFieldURL(_JDEInternField):
         return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, url):
@@ -143,7 +143,7 @@ class JDEInternFieldDiscord(_JDEInternField):
         return _JDEInternField.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self, discord):

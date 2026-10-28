@@ -67,7 +67,7 @@ class JDEInternConfig(_JTKExternConfig.Config, _JDEInternBaseClass):
         return _JDEInternBaseClass.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is not None else name,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     @_requires_init

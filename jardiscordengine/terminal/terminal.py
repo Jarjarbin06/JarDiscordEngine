@@ -39,6 +39,7 @@ from contextlib import suppress
 from typing import final as _final
 
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
@@ -53,6 +54,9 @@ from jardiscordengine.interns.enums import (
 from jardiscordengine.interns.log import log
 from jardiscordengine.terminal.decorator import terminal_command as _terminal_command
 
+
+class JDETerminalRestart(_JTKExternError.JErrorSystem):
+    pass
 
 @_final
 @_logged
@@ -78,6 +82,7 @@ class JDETerminal(_JDEInternBaseClass):
         self._prompt = prompt
         self._running = False
         self._on_ready = on_ready
+        self._restart_requested = False
 
         self._commands = {}
         self._description = {}
@@ -85,6 +90,7 @@ class JDETerminal(_JDEInternBaseClass):
 
         self.register_command(self._command_exit)
         self.register_command(self._command_help)
+        self.register_command(self._command_restart)
 
     def register_command(self, handler):
         name = getattr(handler, "cmd_name", handler.__name__)
@@ -157,6 +163,9 @@ class JDETerminal(_JDEInternBaseClass):
                         f"Startup failed: {startup_error}"
                     ).f_color_error()
                 )
+
+            if self._restart_requested:
+                raise JDETerminalRestart("Restarting")
 
     @staticmethod
     def _text(message):
@@ -243,6 +252,26 @@ class JDETerminal(_JDEInternBaseClass):
             return
 
         self._show_command_help(name)
+
+    @_terminal_command(
+        "restart",
+        "Restart the entire application.",
+    )
+    async def _command_restart(self, arguments):
+        _JTKExternConsole.print(
+            self._panel(
+                "RESTARTING",
+                self._color(
+                    "Stopping JarDiscordEngine before restarting...",
+                    255,
+                    180,
+                    80,
+                ),
+            )
+        )
+
+        self._restart_requested = True
+        self._running = False
 
     def _show_general_help(self):
         Text = _JTKExternConsole.Text

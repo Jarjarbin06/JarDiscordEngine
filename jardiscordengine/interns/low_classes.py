@@ -53,7 +53,7 @@ class JDEInternEntity(_JDEInternBaseClass):
         return _JDEInternBaseClass.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self):
@@ -70,7 +70,7 @@ class JDEInternField(_JDEInternBaseClass):
         return _JDEInternBaseClass.__new__(
             cls,
             _jde_key=_jde_key,
-            _jde_warn=_jde_warn,
+            _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
     def __init__(self):

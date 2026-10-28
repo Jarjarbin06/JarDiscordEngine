@@ -38,9 +38,11 @@ from jardiscordengine.terminal.decorator import (
 )
 from jardiscordengine.terminal.terminal import (
     JDETerminal,
+    JDETerminalRestart,
 )
 
 __all__ = [
     "JDETerminal",
+    "JDETerminalRestart",
     "terminal_command",
 ]
