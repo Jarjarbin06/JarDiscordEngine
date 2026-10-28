@@ -72,7 +72,7 @@ class JDETerminal(_JDEInternBaseClass):
 
     def __init__(self, bot, prompt = None, on_ready = None):
         if prompt is None:
-            prompt = f"JDE - {_get("project", "PROJECT", "name", str, "Unnamed project")} >>> "
+            prompt = f"[JDE: {_get("project", "PROJECT", "name", str, "Unnamed project")}] > "
 
         self._bot = bot
         self._prompt = prompt
@@ -177,6 +177,7 @@ class JDETerminal(_JDEInternBaseClass):
     async def _terminal_loop(self):
 
         _JTKExternConsole.print(self._panel("JAR DISCORD ENGINE", (
+            f"{self._color(f'{len(self._commands)} commands registered', 180, 180, 180)}\n"
             f"{self._color('Terminal ready', 100, 220, 130)}\n"
             f"{self._color('Type help to list available commands.', 180, 180, 180)}\n"
             f"{self._color('Type exit to shut down.', 180, 180, 180)}"

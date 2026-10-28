@@ -303,19 +303,19 @@ class JDEBot(_JDEInternFieldDiscord):
                 "Discord entity synchronization did not complete."
             )
 
-    @_flag(".", doc="Guild list")
+    @_flag(doc="Guild list")
     def guilds(self):
         return "_guilds"
 
-    @_flag(".", doc="Role list")
+    @_flag(doc="Role list")
     def roles(self):
         return "_roles"
 
-    @_flag(".", doc="Channel list")
+    @_flag(doc="Channel list")
     def channels(self):
         return "_channels"
 
-    @_flag(".", doc="Message history")
+    @_flag(doc="Message history")
     def messages(self):
         return "_messages"
 
@@ -350,6 +350,6 @@ class JDEBot(_JDEInternFieldDiscord):
     async def close(self):
         await self.discord.close()  # pyright: ignore[reportAttributeAccessIssue]
 
-    @_flag(".", cast=bool)
+    @_flag(cast=bool)
     def synchronized(self):
         return "_synchronized"

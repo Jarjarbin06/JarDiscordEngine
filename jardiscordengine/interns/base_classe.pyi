@@ -47,16 +47,6 @@ class JDEInternBaseClass[
     ) -> None:
         """Initialize a JDE object."""
 
-    def to_dict(
-        self,
-    ) -> dict[str, Any]:
-        """
-        Get the dictionary of all public fields and functions of the JDE object.
-
-        Returns:
-            dict[str, Any]: Public features.
-        """
-
 __all__: Sequence[str] = [
     "JDEInternBaseClass",
 ]

@@ -41,9 +41,17 @@ def terminal_command(
 ):
 
     def decorator(handler):
-        handler.cmd_name = name  # pyright: ignore[reportFunctionMemberAccess]
-        handler.cmd_description = description  # pyright: ignore[reportFunctionMemberAccess]
-        handler.cmd_arguments = arguments  # pyright: ignore[reportFunctionMemberAccess]
+        handler.cmd_name = name.lower().replace(" ", "_")  # pyright: ignore[reportFunctionMemberAccess]
+        handler.cmd_description = description + ("." if not description.endswith(".") else "")  # pyright: ignore[reportFunctionMemberAccess]
+
+        new_arguments = list(arguments)
+
+        for index in range(len(new_arguments)):
+            arg_name = new_arguments[index][0]
+            arg_description = new_arguments[index][1]
+            new_arguments[index] = (arg_name, arg_description + ("." if not arg_description.endswith(".") else ""))
+
+        handler.cmd_arguments = tuple(new_arguments)  # pyright: ignore[reportFunctionMemberAccess]
 
         return handler
 

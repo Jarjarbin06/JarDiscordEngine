@@ -91,19 +91,21 @@ def init(project_path):
     author = Interns.Config.get('project', 'AUTHOR', 'name', str, None)
     organization = Interns.Config.get('project', 'AUTHOR', 'organization', str, None)
 
-    sep = Text("───").f_layout_pad_center(80)
+    width = (Interns.JTKExternConsole.Console.Console.width() or 85) - 5
+
+    sep = Text("───").f_layout_pad_center(width)
 
     top = Text(
         f"{_title_color(name)} {_version_color(version)}"
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     center = Text(
         f"{description}"
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     bottom = Text(
         f"Made by: {author}" + (f" ({organization})" if organization else "")
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     Interns.JTKExternConsole.Console.Console.print(
         Text(f"{top}\n{sep}\n{center}\n{sep}\n{bottom}").f_border_box(border=Interns.JTKExternConsole.PresetBorder.ROUND, padding=0),
@@ -189,21 +191,23 @@ def _banner():
     Cursor = Interns.JTKExternConsole.ANSI.Cursor.CursorPosition
     Screen = Interns.JTKExternConsole.ANSI.Screen.ScreenErase
 
-    sep = Text("───").f_layout_pad_center(80)
+    width = (Interns.JTKExternConsole.Console.Console.width() or 85) - 5
+
+    sep = Text("───").f_layout_pad_center(width)
 
     top = Text(
         f"{_title_color("JarDiscordEngine (JDE)")} {_version_color(__version__)}"
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     center = Text(
         f"{_subtitle_color("Config")} {_version_color(JDEVersion_Config)} ─ "
         f"{_subtitle_color("Py-Cord")} {_version_color(JDEVersion_Discord)} ─ "
         f"{_subtitle_color("Python")} {_version_color(JDEVersion_Python)}"
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     bottom = Text(
         "Discord bot development framework"
-    ).f_layout_align_center(80)
+    ).f_layout_align_center(width)
 
     Interns.JTKExternConsole.Console.Console.print(
         (f"{Cursor.previous_line() + Screen.erase_line()}" * 2) +

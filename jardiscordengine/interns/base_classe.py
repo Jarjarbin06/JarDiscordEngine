@@ -239,24 +239,6 @@ class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, Recursi
             f"(jdeid={getattr(self, 'jdeid', 'unknown')})>"
         )
 
-    def to_dict(self):
-
-        def get_value(value: _Any):
-            if isinstance(value, JDEInternBaseClass):
-                return value.to_dict()
-            else:
-                return value
-
-        return {
-            "class": self.__class__.__name__,
-            "jdeid": self.jdeid,
-            "public": {
-                k: get_value(v)
-                for k, v in self.__dict__.items()
-                if not k.startswith("_") and not callable(v)
-            }
-        }
-
 __all__ = [
     "JDEInternBaseClass",
 ]

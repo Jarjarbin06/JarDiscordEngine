@@ -71,9 +71,6 @@ from jardiscordengine.entities.guilds import (
 from jardiscordengine.entities.messages import (
     JDEEntityMessage,
 )
-from jardiscordengine.entities.miscellaneous import (
-    JDEEntityWebhook,
-)
 from jardiscordengine.entities.roles import (
     JDEEntityRole,
 )
@@ -82,6 +79,11 @@ from jardiscordengine.entities.users import (
     JDEEntityMember,
     JDEEntityUser,
     JDEEntityUserProfile,
+)
+from jardiscordengine.entities.webhook import (
+    JDEEntityWebhook,
+    JDEEntityWebhookEmbed,
+    JDEEntityWebhookMessage,
 )
 
 __all__ = [
@@ -114,5 +116,7 @@ __all__ = [
     "JDEEntityUserProfile",
     "JDEEntityVoiceChannel",
     "JDEEntityWebhook",
+    "JDEEntityWebhookEmbed",
+    "JDEEntityWebhookMessage",
     "JDEStatus",
 ]
