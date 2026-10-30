@@ -78,6 +78,9 @@ _DEBUG_THEME: dict[str, tuple[int, int, int]] = {
     # misc
     "error": (255, 80, 80),
     "dim": (130, 130, 130),
+    # commands
+    "discord_command": (100, 200, 255),
+    "terminal_command": (255, 180, 100),
 }
 
 _DEBUG_ICONS: dict[str, str] = {
@@ -115,6 +118,101 @@ class _DebugMethod:
     signature: str
     return_type: str
     decorators: tuple[str, ...]
+
+def _debug_command_candidates(obj):
+    """Yield an object and its underlying callbacks when available."""
+    seen = set()
+    pending = [obj]
+
+    while pending:
+        candidate = pending.pop(0)
+
+        if candidate is None or id(candidate) in seen:
+            continue
+
+        seen.add(id(candidate))
+        yield candidate
+
+        for attribute in ("callback", "func", "__wrapped__"):
+            try:
+                wrapped = getattr(candidate, attribute, None)
+            except Exception:  # noqa: BLE001, S112
+                continue
+
+            if wrapped is not None and wrapped is not candidate:
+                pending.append(wrapped)
+
+
+def _debug_discord_command(obj):
+    from jardiscordengine.commands.decorators import (
+        _get_command_metadata,
+    )
+
+    for candidate in _debug_command_candidates(obj):
+        try:
+            metadata = _get_command_metadata(candidate)
+        except (TypeError, ValueError, AttributeError):
+            continue
+
+        if (
+            metadata.get("is_command")
+            and isinstance(metadata.get("name"), str)
+            and isinstance(metadata.get("description"), str)
+        ):
+            return metadata
+
+    return None
+
+def _debug_terminal_command(obj):
+    for candidate in _debug_command_candidates(obj):
+        name = getattr(candidate, "cmd_name", None)
+        description = getattr(candidate, "cmd_description", None)
+        arguments = getattr(candidate, "cmd_arguments", None)
+
+        if (
+            isinstance(name, str)
+            and isinstance(description, str)
+            and isinstance(arguments, tuple)
+        ):
+            return {
+                "name": name,
+                "description": description,
+                "arguments": arguments,
+            }
+
+    return None
+
+def _debug_command_header(obj, paint):
+    metadata = _debug_discord_command(obj)
+
+    if metadata is not None:
+        name = metadata["name"]
+        description = metadata["description"]
+
+        return (
+            f"{paint('Command', 'discord_command')} - "
+            f"{paint(name, 'name')} "
+            f"{paint(f'({description})', 'string')}"
+        )
+
+    metadata = _debug_terminal_command(obj)
+
+    if metadata is not None:
+        name = metadata["name"]
+        arguments = metadata["arguments"]
+
+        formatted_arguments = ", ".join(
+            f"{argument[0]}: {argument[1]}"
+            for argument in arguments
+        )
+
+        return (
+            f"{paint('TerminalCommand', 'terminal_command')} - "
+            f"{paint(name, 'name')} "
+            f"{paint(f'({formatted_arguments})', 'string')}"
+        )
+
+    return None
 
 def _debug_painter(is_colored):
     if not is_colored:
@@ -202,6 +300,11 @@ def _debug_find_name(obj):
     return None
 
 def _debug_header(obj, paint):
+    command_header = _debug_command_header(obj, paint)
+
+    if command_header is not None:
+        return command_header
+
     cls = type(obj)
     class_text = paint(cls.__name__, "class")
     name = _debug_find_name(obj)
@@ -237,6 +340,27 @@ def _debug_describe_method(obj, name):
     params = str(signature.replace(return_annotation=_inspect.Signature.empty))
 
     return _DebugMethod(params, return_type, decorators)
+
+def _debug_is_pycord_callable(value):
+    if not callable(value):
+        return False
+
+    module = getattr(value, "__module__", None)
+
+    if module is None:
+        module = getattr(
+            getattr(value, "__func__", None),
+            "__module__",
+            None,
+        )
+
+    return (
+        isinstance(module, str)
+        and (
+            module == "discord"
+            or module.startswith("discord.")
+        )
+    )
 
 def _debug_collect_rows(obj):
     cls = type(obj)
@@ -306,6 +430,12 @@ def _debug_role(value):
         return "false"
     elif isinstance(value, _JDEInternBaseClass):
         return "engine_object"
+    elif (
+        isinstance(value, _JTKExternTime.Time) or
+        "discord" in getattr(type(value), "__module__", "") or
+        _debug_is_pycord_callable(value)
+    ):
+        return "extern"
     elif value is None:
         return "none"
     elif isinstance(value, _inspect.Signature) or callable(value):
@@ -314,10 +444,6 @@ def _debug_role(value):
         return "dict"
     elif isinstance(value, (list, tuple, set)):
         return "list"
-    elif isinstance(value, _JTKExternTime.Time) or "discord" in getattr(
-        type(value), "__module__", ""
-    ):
-        return "extern"
     elif isinstance(value, str):
         return "string"
     elif isinstance(value, (int, float)):
@@ -332,6 +458,13 @@ def _debug_render(value):
         return str(value)
     elif isinstance(value, _inspect.Signature):
         return f"Function {value}"
+    elif _debug_is_pycord_callable(value):
+        try:
+            signature = _inspect.signature(value)
+        except (TypeError, ValueError):
+            signature = "(...)"
+
+        return f"Function {signature} (Extern:PyCord)"
     elif isinstance(value, _Enum):
         return f"{value.name} (Enum:{value.__class__.__name__})"
     elif isinstance(value, _JTKExternTime.Time):
@@ -398,7 +531,11 @@ class _DebugWriter:
 
         label = self.label(prefix, text, role)
 
-        if isinstance(value, _JDEInternBaseClass) and not isinstance(value, _JDEBool):
+        command_header = _debug_command_header(value, self.paint)
+
+        if command_header is not None:
+            self.line(prefix, last, f"{label} = {command_header}")
+        elif isinstance(value, _JDEInternBaseClass) and not isinstance(value, _JDEBool):
             self._engine_object(prefix, last, label, value)
         elif not nested and isinstance(value, dict):
             items = [(str(k), "name", v) for k, v in value.items()]

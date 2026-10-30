@@ -47,10 +47,6 @@ from jardiscordengine.interns.low_classes import (
 @_documented
 class JDEInternFieldID(_JDEInternField):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
-
     id = _field(int, required=True, read_only=True, doc="Discord ID")
 
     def __new__(cls, id, _jde_key = None, _jde_warn = None):
@@ -67,10 +63,6 @@ class JDEInternFieldID(_JDEInternField):
 
 @_documented
 class JDEInternFieldUsername(_JDEInternField):
-
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
 
     username = _field(str, required=True, doc="Username")
 
@@ -89,10 +81,6 @@ class JDEInternFieldUsername(_JDEInternField):
 @_documented
 class JDEInternFieldName(_JDEInternField):
 
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
-
     name = _field(str, required=True, read_only=True, doc="Name")
 
     def __new__(cls, name, _jde_key = None, _jde_warn = None):
@@ -109,10 +97,6 @@ class JDEInternFieldName(_JDEInternField):
 
 @_documented
 class JDEInternFieldURL(_JDEInternField):
-
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
 
     url = _field(str, required=True, read_only=True, doc="URL")
 
@@ -132,10 +116,6 @@ class JDEInternFieldURL(_JDEInternField):
 
 @_documented
 class JDEInternFieldDiscord(_JDEInternField):
-
-    __instance_policy__ = _JDEInternInstancePolicy.NORMAL
-    __instance_limit__ = 0
-    __recursive__ = False
 
     discord = _field(object, required=True, read_only=True, doc="Discord object", setter_check=lambda instance: getattr(instance, "_jde_initializing", False))
 

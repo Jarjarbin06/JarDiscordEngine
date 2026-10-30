@@ -42,7 +42,7 @@ from jardiscordengine.interns.decorators import requires_init as _requires_init
 
 HAS_CRITICAL = False
 
-def assert_is_instance(obj, cls, msg=None):
+def assert_is_instance(obj, cls, msg = None):
     if not isinstance(obj, cls):
         raise _JTKExternError.JErrorType(
             "Invalid type" if msg is None else msg,
@@ -163,7 +163,7 @@ def enabled(config, section, setting = "enabled"):
 
     return _get(config, section, setting, bool, False)
 
-def get_registered_entities(category=None):
+def get_registered_entities(category = None):
     with _ENTITY_REGISTRY_LOCK:
         if category is None:
             return dict(_ENTITY_REGISTRY)
@@ -174,7 +174,7 @@ def get_registered_entities(category=None):
             if entity_category == category
         }
 
-def get_registered_entity(name, *, category="entity"):
+def get_registered_entity(name, *, category = "entity"):
     with _ENTITY_REGISTRY_LOCK:
         try:
             return _ENTITY_REGISTRY[(category, name)]
@@ -183,3 +183,15 @@ def get_registered_entity(name, *, category="entity"):
                 f"No entity named {name!r} is registered "
                 f"in category {category!r}"
             ) from None
+
+__all__ = [
+    "assert_is_instance",
+    "critical",
+    "deprecated",
+    "enabled",
+    "error",
+    "get_registered_entities",
+    "get_registered_entity",
+    "version",
+    "warning",
+]

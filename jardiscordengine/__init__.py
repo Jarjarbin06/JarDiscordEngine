@@ -34,10 +34,10 @@
 from __future__ import annotations
 
 import asyncio as _asyncio
-from datetime import datetime as _datetime
-from uuid import uuid4 as _uuid4
 import os as _os
 import sys as _sys
+from datetime import datetime as _datetime
+from uuid import uuid4 as _uuid4
 
 from dotenv import load_dotenv as _load_dotenv
 
@@ -258,6 +258,8 @@ __all__ = [  # noqa: RUF022
     ## Constants ##
     # Versions #
     "JDEVersion_JarDiscordEngine",
+    "JDEVersion_Config",
+    "JDEVersion_Discord",
     "JDEVersion_Python",
     # Booleans #
     "JDEFalse",
@@ -266,7 +268,6 @@ __all__ = [  # noqa: RUF022
     "init",
     "run",
     "quit",
-
 ]
 
 _banner()

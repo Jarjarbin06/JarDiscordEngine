@@ -35,7 +35,6 @@ from __future__ import annotations
 
 from datetime import UTC as _UTC
 from datetime import datetime as _datetime
-from datetime import timezone as _timezone
 from urllib.parse import urlparse as _urlparse
 
 import aiohttp as _aiohttp

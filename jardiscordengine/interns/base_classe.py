@@ -73,7 +73,7 @@ class _JDEInternMeta(type):
         return instance
 
 @_documented
-class JDEInternBaseClass[PolicyT: _JDEInternInstancePolicy, LimitT: int, RecursiveT: bool](_JDEDebug, metaclass=_JDEInternMeta):
+class JDEInternBaseClass(_JDEDebug, metaclass=_JDEInternMeta):
 
     __instance_policy__ = _JDEInternInstancePolicy.NORMAL
     __instance_limit__ = 0

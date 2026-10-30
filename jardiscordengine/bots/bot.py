@@ -92,6 +92,8 @@ from jardiscordengine.interns.enums import (
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldDiscord as _JDEInternFieldDiscord,
 )
+from jardiscordengine.systems.bool import JDEBool as _JDEBool
+from jardiscordengine.systems.version import JDEVersion as _JDEVersion
 
 
 @_final
@@ -102,9 +104,10 @@ class JDEBot(_JDEInternFieldDiscord):
 
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
-    __recursive__ = False
+    __recursive__ = True
 
     name = _field(str, required=True, read_only=True, doc="Name")
+    version = _field(_JDEVersion, required=True, read_only=True, doc="Version")
     description = _field(str, required=True, read_only=True, doc="Description")
     application_id = _field(int | None, read_only=True, doc="Application ID")
     owners = _field(tuple | None, read_only=True, doc="Owners")
@@ -139,6 +142,7 @@ class JDEBot(_JDEInternFieldDiscord):
 
             self.name = _get("bots", str(bot_index), "name", str, "JDEBot")
             self.description = _get("bots", str(bot_index), "description", str, "")
+            self.version = _JDEVersion(*(int(v) for v in _get("bots", str(bot_index), "version", str, "0.0.0").split(".")))
             self.application_id = _get("bots", str(bot_index), "application_id", int, 0) or None
 
             owners = _get("bots", str(bot_index), "owners_id", str, "").split(",")
@@ -189,6 +193,7 @@ class JDEBot(_JDEInternFieldDiscord):
         self._synchronization_error = None
 
         self._guilds = {}
+        self._categories = {}
         self._channels = {}
         self._roles = {}
         self._messages = {}
@@ -206,7 +211,7 @@ class JDEBot(_JDEInternFieldDiscord):
         self._initialized = True
 
     @_flag(doc="Command manager")
-    def commands(self):
+    def command_manager(self):
         return "_commands"
 
     async def _synchronize_entities(self):
@@ -233,11 +238,13 @@ class JDEBot(_JDEInternFieldDiscord):
 
                 for discord_channel in discord_guild.channels:
                     if isinstance(discord_channel, _discord.CategoryChannel):
-                        channel = _JDEEntityGuildCategory(
+                        self._categories[discord_channel.id] = _JDEEntityGuildCategory(
                             discord_channel,
                             guild,
                             _jde_warn=False,  # pyright: ignore[reportCallIssue]
                         )
+
+                        continue
 
                     elif isinstance(discord_channel, _discord.TextChannel):
                         channel = _JDEEntityTextChannel(
@@ -299,7 +306,7 @@ class JDEBot(_JDEInternFieldDiscord):
         finally:
             self._synchronization_event.set()
 
-    async def wait_until_synchronized(self):
+    async def _wait_until_synchronized(self):
         await self._synchronization_event.wait()
 
         if self._synchronization_error is not None:
@@ -316,9 +323,9 @@ class JDEBot(_JDEInternFieldDiscord):
     def guilds(self):
         return "_guilds"
 
-    @_flag(doc="Role list")
-    def roles(self):
-        return "_roles"
+    @_flag(doc="Category list")
+    def categories(self):
+        return "_categories"
 
     @_flag(doc="Channel list")
     def channels(self):
@@ -327,6 +334,10 @@ class JDEBot(_JDEInternFieldDiscord):
     @_flag(doc="Message history")
     def messages(self):
         return "_messages"
+
+    @_flag(doc="Role list")
+    def roles(self):
+        return "_roles"
 
     def guild(self, guild):
         if not self.synchronized:
@@ -353,12 +364,16 @@ class JDEBot(_JDEInternFieldDiscord):
 
         await self.discord.change_presence(status=status, activity=activity)  # pyright: ignore[reportAttributeAccessIssue]
 
-    async def start(self):
+    async def _start(self):
         await self.discord.start(self._token)  # pyright: ignore[reportAttributeAccessIssue]
 
-    async def close(self):
+    async def _stop(self):
         await self.discord.close()  # pyright: ignore[reportAttributeAccessIssue]
 
-    @_flag(cast=bool)
+    @_flag(cast=_JDEBool)
     def synchronized(self):
         return "_synchronized"
+
+__all__ = [
+    "JDEBot",
+]

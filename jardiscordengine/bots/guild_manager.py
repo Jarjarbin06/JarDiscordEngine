@@ -59,6 +59,7 @@ from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
 from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import logged as _logged
 from jardiscordengine.interns.decorators import register_entity as _register_entity
 from jardiscordengine.interns.decorators import requires_init as _requires_init
@@ -73,15 +74,15 @@ from jardiscordengine.interns.enums import (
 @_register_entity(name="JDEGuildManager", category="Manager")
 class JDEGuildManager(_JDEInternBaseClass):
 
-    __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
-    __instance_limit__ = 1
-    __recursive__ = False
+    __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
+    __instance_limit__ = 0
+    __recursive__ = True
 
     @_requires_init
-    def __new__(cls, *args, _jde_key = None, _jde_warn = None, **kwargs):
+    def __new__(cls, bot, guild, _jde_key = None, _jde_warn = None, **kwargs):
         return _JDEInternBaseClass.__new__(
             cls,
-            _jde_key=_jde_key,
+            _jde_key=_jde_key if _jde_key is None else guild.id,
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
@@ -92,9 +93,9 @@ class JDEGuildManager(_JDEInternBaseClass):
 
         self._get_discord_guild()
 
-    @property
+    @_flag(doc="Guild")
     def guild(self):
-        return self._guild
+        return "_guild"
 
     @property
     def discord(self):
@@ -325,10 +326,11 @@ class JDEGuildManager(_JDEInternBaseClass):
 
         return self._synchronize_channel(discord_channel)
 
-    async def create_stage_channel(self, name, *, topic, category = None, position = None, bitrate = None, user_limit = None, reason = None):
-        options = {
-            "topic": topic,
-        }
+    async def create_stage_channel(self, name, *, topic = None, category = None, position = None, bitrate = None, user_limit = None, reason = None):
+        options = {}
+
+        if topic is not None:
+            options["topic"] = "topic"
 
         if category is not None:
             options["category"] = self._resolve_category(category)
@@ -424,3 +426,7 @@ class JDEGuildManager(_JDEInternBaseClass):
         await discord_channel.delete(reason=reason)
 
         self._remove_channel(channel_id)
+
+__all__ = [
+    "JDEGuildManager",
+]

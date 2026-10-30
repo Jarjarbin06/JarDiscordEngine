@@ -272,6 +272,17 @@ def init_all():
     )
 
     JDEInternConfig(
+        "settings",
+        {
+            "LOG": {
+                "level": "DEBUG",
+                "save_per": 60,
+            },
+        },
+        False,
+    )
+
+    JDEInternConfig(
         "bots",
         {
             "1": {

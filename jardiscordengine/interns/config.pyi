@@ -24,10 +24,18 @@ class JDEInternConfig(
         Literal[False],
     ]
 ):
+    """
+    Configuration.
 
-    project_path: str | None
-    config_path: str | None
-    state_path: str | None
+    Attributes:
+        project_path (str | None): Project path.
+        config_path (str | None): Config path.
+        state_path (str | None): State path.
+    """
+
+    project_path: str | None = None
+    config_path: str | None = None
+    state_path: str | None = None
 
     def __init__(
         self,

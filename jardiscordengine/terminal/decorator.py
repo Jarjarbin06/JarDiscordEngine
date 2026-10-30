@@ -34,11 +34,7 @@
 from __future__ import annotations
 
 
-def terminal_command(
-    name,
-    description,
-    *arguments,
-):
+def terminal_command(name, description, *arguments):
 
     def decorator(handler):
         handler.cmd_name = name.lower().replace(" ", "_")  # pyright: ignore[reportFunctionMemberAccess]

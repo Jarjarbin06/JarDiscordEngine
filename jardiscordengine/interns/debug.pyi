@@ -4,6 +4,7 @@ from jardiscordengine.interns.decorators import documented
 
 @documented
 class JDEDebug:
+    """Debug tool."""
 
     def debug(
         self,

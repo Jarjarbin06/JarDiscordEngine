@@ -33,9 +33,9 @@
 
 from __future__ import annotations
 
-import asyncio
-import shlex
-from contextlib import suppress
+import asyncio as _asyncio
+import shlex as _shlex
+from contextlib import suppress as _suppress
 from typing import final as _final
 
 from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
@@ -46,12 +46,14 @@ from jardiscordengine.interns.base_classe import (
 )
 from jardiscordengine.interns.config import get as _get
 from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import logged as _logged
 from jardiscordengine.interns.decorators import timed as _timed
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
-from jardiscordengine.interns.log import log
+from jardiscordengine.interns.log import log as _log
+from jardiscordengine.interns.log import save as _save
 from jardiscordengine.terminal.decorator import terminal_command as _terminal_command
 
 
@@ -65,7 +67,7 @@ class JDETerminal(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
     __instance_limit__ = 1
-    __recursive__ = False
+    __recursive__ = True
 
     def __new__(cls, bot, prompt = None, _jde_key = None, _jde_warn = None, **kwargs):
         return _JDEInternBaseClass.__new__(
@@ -83,6 +85,7 @@ class JDETerminal(_JDEInternBaseClass):
         self._running = False
         self._on_ready = on_ready
         self._restart_requested = False
+        self._save_interval = _get("settings", "LOG", "save_per", int, 60)
 
         self._commands = {}
         self._description = {}
@@ -101,6 +104,14 @@ class JDETerminal(_JDEInternBaseClass):
         self._description[name] = description
         self._arguments[name] = arguments
 
+    @_flag(doc="Bots")
+    def bot(self):
+        return "_bot"
+
+    @_flag(doc="Commands")
+    def commands(self):
+        return "_commands"
+
     @_timed
     async def run(self):
         if self._running:
@@ -108,14 +119,19 @@ class JDETerminal(_JDEInternBaseClass):
 
         self._running = True
 
-        bot_task = asyncio.create_task(
-            self._bot.start(),
+        bot_task = _asyncio.create_task(
+            self._bot._start(),
             name="jde-discord-bot",
         )
 
-        ready_task = asyncio.create_task(
+        ready_task = _asyncio.create_task(
             self._wait_until_ready(),
             name="jde-discord-ready",
+        )
+
+        save_task = _asyncio.create_task(
+            self._periodic_log_save(),
+            name="jde-periodic-log-save",
         )
 
         terminal_task = None
@@ -137,14 +153,14 @@ class JDETerminal(_JDEInternBaseClass):
                     startup_error = error
 
             if startup_error is None:
-                terminal_task = asyncio.create_task(
+                terminal_task = _asyncio.create_task(
                     self._terminal_loop(),
                     name="jde-terminal-loop",
                 )
 
-                done, _ = await asyncio.wait(
+                done, _ = await _asyncio.wait(
                     {bot_task, terminal_task},
-                    return_when=asyncio.FIRST_COMPLETED,
+                    return_when=_asyncio.FIRST_COMPLETED,
                 )
 
                 if bot_task in done:
@@ -153,8 +169,10 @@ class JDETerminal(_JDEInternBaseClass):
         finally:
             self._running = False
 
+            await self._cancel_task(save_task)
             await self._cancel_task(terminal_task)
             await self._cancel_task(ready_task)
+
             await self._stop_bot(bot_task)
 
             if startup_error is not None:
@@ -166,6 +184,25 @@ class JDETerminal(_JDEInternBaseClass):
 
             if self._restart_requested:
                 raise JDETerminalRestart("Restarting")
+
+    async def _periodic_log_save(self):
+        while self._running:
+            await _asyncio.sleep(self._save_interval)
+
+            if not self._running:
+                break
+
+            try:
+                _save()
+            except Exception as error:  # noqa: BLE001
+                _JTKExternConsole.print(
+                    self._color(
+                        f"Failed to save logs: {error}",
+                        255,
+                        100,
+                        100,
+                    )
+                )
 
     @staticmethod
     def _text(message):
@@ -195,13 +232,13 @@ class JDETerminal(_JDEInternBaseClass):
         while self._running:
             try:
                 prompt = self._color(self._prompt, 70, 160, 255)
-                raw_command = await asyncio.to_thread(input, prompt)
+                raw_command = await _asyncio.to_thread(input, prompt)
             except EOFError:
                 _JTKExternConsole.print(self._color("\nEnd of terminal input.", 150, 150, 150))
                 break
 
             try:
-                arguments = shlex.split(raw_command)
+                arguments = _shlex.split(raw_command)
             except ValueError as error:
                 _JTKExternConsole.print(self._color(f"Invalid command syntax: {error}", 255, 100, 100))
                 continue
@@ -216,16 +253,16 @@ class JDETerminal(_JDEInternBaseClass):
 
             if handler is None:
                 _JTKExternConsole.print(self._color(f"Unknown command: {command_name}", 255, 100, 100))
-                log("WARN", "Terminal", f"Unknown command: {command_name}")
+                _log("WARN", "Terminal", f"Unknown command: {command_name}")
                 continue
 
             try:
                 await handler(command_arguments)
-                log("NOTICE", "Terminal", f"Command ran: {command_name}")
+                _log("NOTICE", "Terminal", f"Command ran: {command_name}")
 
             except Exception as error:  # noqa: BLE001
                 _JTKExternConsole.print(self._color(f"Command failed: {error}", 255, 100, 100))
-                log("ERROR", "Terminal", f"Command failed: {command_name} - {error}",)
+                _log("ERROR", "Terminal", f"Command failed: {command_name} - {error}",)
 
     @_terminal_command(
         "exit",
@@ -344,7 +381,7 @@ class JDETerminal(_JDEInternBaseClass):
             try:
                 await self._bot.discord.wait_until_ready()
             except RuntimeError:
-                await asyncio.sleep(0.05)
+                await _asyncio.sleep(0.05)
             else:
                 return
 
@@ -355,7 +392,7 @@ class JDETerminal(_JDEInternBaseClass):
 
         task.cancel()
 
-        with suppress(asyncio.CancelledError):
+        with _suppress(_asyncio.CancelledError):
             await task
 
     async def _stop_bot(self, bot_task):
@@ -363,13 +400,13 @@ class JDETerminal(_JDEInternBaseClass):
 
         if not bot_task.done():
             if discord_bot.is_ready():
-                await self._bot.close()
+                await self._bot._stop()
             else:
                 bot_task.cancel()
 
             try:
                 await bot_task
-            except asyncio.CancelledError:
+            except _asyncio.CancelledError:
                 pass
             except Exception as error:  # noqa: BLE001
                 if isinstance(error, RuntimeError) and str(error) == "Session is closed":
@@ -378,7 +415,7 @@ class JDETerminal(_JDEInternBaseClass):
                     _JTKExternConsole.print("\n" + _JTKExternConsole.Text(f"Bot stopped with an error: {error}").f_color_error() + "\n")
 
         if not discord_bot.is_closed():
-            await self._bot.close()
+            await self._bot._stop()
 
     async def _wait_for_bot(self, bot_task, ready_task):
         animation = _JTKExternConsole.Animation.Spinner.braille(
@@ -430,10 +467,10 @@ class JDETerminal(_JDEInternBaseClass):
                     )
 
                     if synchronization_event.is_set():
-                        await self._bot.wait_until_synchronized()
+                        await self._bot._wait_until_synchronized()
                         break
 
-                await asyncio.sleep(0.05)
+                await _asyncio.sleep(0.05)
 
                 current_time = _JTKExternTime.Time.tick()
                 elapsed = current_time - previous_time

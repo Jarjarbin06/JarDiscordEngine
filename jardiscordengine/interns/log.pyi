@@ -8,7 +8,7 @@ from jardiscordengine.interns.base_classe import (
 from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
-current_logs: dict[str, JDEInternLog]
+current_logs: dict[Literal["base", "crash"], JDEInternLog]
 
 @documented
 @final
@@ -20,9 +20,16 @@ class JDEInternLog(
         Literal[False],
     ]
 ):
+    """
+    Logger.
 
-    project_path: str | None
-    log_path: str | None
+    Attributes:
+        project_path (str | None): Project path.
+        log_path (str | None): Log path.
+    """
+
+    project_path: str | None = None
+    log_path: str | None = None
 
     def __init__(
         self,
@@ -32,7 +39,7 @@ class JDEInternLog(
         Initialize a log file.
 
         Args:
-            name (str): File name
+            name (str): File name.
         """
 
 def log(

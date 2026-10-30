@@ -251,7 +251,7 @@ class JDEEntityActivity(_JDEInternEntity, _JDEInternFieldName, _JDEInternFieldDi
 
     @property
     @_handle_errors
-    def start(self):
+    def _start(self):
         return _JTKExternTime.Time(timestamp=self.discord.start.timestamp())  # pyright: ignore[reportAttributeAccessIssue]
 
     @property

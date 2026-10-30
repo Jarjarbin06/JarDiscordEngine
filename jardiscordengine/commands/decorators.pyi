@@ -1,5 +1,5 @@
-from collections.abc import Callable
-from typing import Literal, Sequence, TypedDict, Unpack
+from collections.abc import Callable, Sequence
+from typing import Literal, TypedDict, Unpack
 
 class JDEPermissionOptions(TypedDict, total=False):
     administrator: bool
@@ -169,21 +169,7 @@ def cooldown(
         Callable: Command.
     """
 
-def _get_command_metadata(
-    callback: Callable
-) -> dict:
-    """
-    Get a command's metadata
-
-    Args:
-        callback (Callable): Command.
-
-    Returns:
-        dict: Command metadata.
-    """
-
 __all__: Sequence[str] = [
-    "_get_command_metadata",
     "bot_has_permissions",
     "checks",
     "command",

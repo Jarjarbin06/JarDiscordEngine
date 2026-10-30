@@ -1,7 +1,7 @@
 """
 JarDiscordEngine - Interns
 
-Internal layers of the engine
+Internal layers of the engine.
 """
 
 import discord as DiscordExtern
@@ -18,7 +18,7 @@ from . import helpers as Helpers
 from . import high_classes as HighClasses
 from . import log as Log
 from . import low_classes as LowClasses
-from .base_classe import JDEInternBaseClass
+from .base_classe import JDEInternBaseClass as JDEInternBaseClass
 
 __all__: list[str] = [
     "Config",

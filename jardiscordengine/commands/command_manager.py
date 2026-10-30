@@ -45,6 +45,7 @@ import discord as _discord
 from jardiscordengine.commands.decorators import (
     _get_command_metadata,
 )
+from jardiscordengine.commands.decorators import command as _command
 from jardiscordengine.entities.commands import (
     JDEEntityApplicationContext as _JDEEntityApplicationContext,
 )
@@ -52,6 +53,7 @@ from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
 from jardiscordengine.interns.decorators import documented as _documented
+from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import logged as _logged
 from jardiscordengine.interns.decorators import register_entity as _register_entity
 from jardiscordengine.interns.decorators import requires_init as _requires_init
@@ -68,7 +70,7 @@ class JDECommandManager(_JDEInternBaseClass):
 
     __instance_policy__ = _JDEInternInstancePolicy.SINGLETON
     __instance_limit__ = 1
-    __recursive__ = False
+    __recursive__ = True
 
     @_requires_init
     def __new__(cls, *args, _jde_key = None, _jde_warn = None, **kwargs):
@@ -80,17 +82,143 @@ class JDECommandManager(_JDEInternBaseClass):
 
     @_requires_init
     def __init__(self, bot):
+        _JDEInternBaseClass.__init__(self)
+
         self._bot = bot
         self._commands = {}
         self._cooldowns = _defaultdict(_deque)
 
-    @property
-    def bot(self):
-        return self._bot
+        self.register_commands(self._ping, self._about, self._help)
 
-    @property
+    @staticmethod
+    @_command("ping", "Check the bot's latency.")
+    async def _ping(bot, ctx):
+        latency = bot.discord.latency * 1000  # pyright: ignore[reportAttributeAccessIssue]
+
+        await ctx.respond(
+            f"Pong! Latency: `{latency:.2f} ms`"
+        )
+
+    @staticmethod
+    @_command("about", "Display information about the bot and JarDiscordEngine.")
+    async def _about(bot, ctx):
+        bot_name = (
+            bot.discord.user.name
+            if bot.discord.user is not None
+            else bot.name
+        )
+        bot_version = bot.version
+        bot_description = bot.description
+
+        embed = _discord.Embed(
+            title=f"About {bot_name}",
+            description=(
+                "A Discord bot powered by **JarDiscordEngine**.\n\n"
+                "JarDiscordEngine is a lightweight Discord bot framework "
+                "built on top of Pycord, designed to simplify bot "
+                "development through command management, event handling, "
+                "and extensibility."
+            ),
+            color=_discord.Color.blurple(),
+        )
+
+        embed.add_field(
+            name="Bot",
+            value=bot_name,
+            inline=True,
+        )
+        embed.add_field(
+            name="Bot Version",
+            value=str(bot_version),
+            inline=True,
+        )
+        embed.add_field(
+            name="Bot Description",
+            value=str(bot_description),
+            inline=True,
+        )
+        embed.add_field(
+            name="Framework",
+            value="JarDiscordEngine",
+            inline=True,
+        )
+        embed.add_field(
+            name="JDE Version",
+            value=__import__(
+                "jardiscordengine"
+            ).__version__,
+            inline=True,
+        )
+
+        embed.set_footer(
+            text="Powered by JarDiscordEngine"
+        )
+
+        await ctx.respond(embed=embed)
+
+    @staticmethod
+    @_command("help", "List the commands available to you.")
+    async def _help(bot, ctx):
+        command_manager = bot.command_manager  # pyright: ignore[reportAttributeAccessIssue]
+        available_commands = []
+
+        for name, registered_command in command_manager.commands.items():
+            metadata = _get_command_metadata(
+                registered_command.callback
+            )
+
+            if metadata["guild_only"] and ctx.guild is None:
+                continue
+
+            if metadata["owner_only"] and not await command_manager._check_owner(ctx):
+                    continue
+
+            if not await command_manager._check_permissions(
+                ctx,
+                metadata["permissions"],
+            ):
+                continue
+
+            if not await command_manager._check_permissions(
+                ctx,
+                metadata["bot_permissions"],
+                bot=True,
+            ):
+                continue
+
+            if not await command_manager._check_custom_checks(
+                ctx,
+                metadata["checks"],
+            ):
+                continue
+
+            available_commands.append(
+                f"`/{name}` — {metadata['description']}"
+            )
+
+        embed = _discord.Embed(
+            title="Available Commands",
+            description=(
+                "\n".join(available_commands)
+                if available_commands
+                else "You don't have access to any commands."
+            ),
+            color=_discord.Color.blurple(),
+        )
+
+        embed.set_footer(
+            text=f"{len(available_commands)} command(s) available"
+        )
+
+        await ctx.respond(embed=embed)
+
+    @_flag(doc="Bot")
+    def bot(self):
+        return "_bot"
+
+    @_flag(doc="Commands")
     def commands(self):
-        return self._commands.copy()
+        return "_commands"
 
     @staticmethod
     def _validate_callback(callback):
@@ -430,7 +558,7 @@ class JDECommandManager(_JDEInternBaseClass):
 
         return registered_command
 
-    def register_commands(self, callbacks):
+    def register_commands(self, *callbacks):
         registered_commands = []
 
         for callback in callbacks:
@@ -471,3 +599,7 @@ class JDECommandManager(_JDEInternBaseClass):
             self._cooldowns.pop(key, None)
 
         return command
+
+__all__ = [
+    "JDECommandManager",
+]

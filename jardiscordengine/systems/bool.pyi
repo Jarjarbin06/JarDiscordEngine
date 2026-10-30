@@ -14,9 +14,7 @@ class JDEBool(
         Literal[False],
     ]
 ):
-    """
-    Boolean.
-    """
+    """Boolean."""
 
     def __init__(
         self,

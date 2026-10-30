@@ -34,9 +34,9 @@
 from __future__ import annotations
 
 import inspect as _inspect
-from functools import update_wrapper
+from functools import update_wrapper as _update_wrapper
 from functools import wraps as _wraps
-from inspect import iscoroutinefunction
+from inspect import iscoroutinefunction as _iscoroutinefunction
 from threading import RLock as _RLock
 
 from jarbin_toolkit_time import StopWatch as _StopWatch
@@ -329,7 +329,7 @@ def logged(func = None, *, title = "Call", level = "DEBUG", log_args = False):
 
     return decorator(func)
 
-def handle_errors(func = None, *, reraise = True, default = None, keyboard_interupt = False):
+def handle_errors(func = None, *, reraise = True, default = None, keyboard_interrupt = False):
 
     def decorator(target):
         @_wraps(target)
@@ -420,7 +420,7 @@ def deprecated(func = None, *, new_func = None, version = None):
 def timed(func=None, *, level="DEBUG", title="Timing"):
 
     def decorator(target):
-        if iscoroutinefunction(target):
+        if _iscoroutinefunction(target):
 
             @_wraps(target)
             async def async_wrapper(*args, **kwargs):
@@ -635,7 +635,7 @@ class flag:
             "storage": self.name,
             "doc": self.doc,
         })
-        update_wrapper(self, func)
+        _update_wrapper(self, func)
         return self
 
     def __set_name__(self, owner, name):
@@ -677,3 +677,15 @@ class flag:
             f"<flag public_name={self.public_name!r} "
             f"obj={self.obj!r} name={self.name!r}>"
         )
+
+__all__ = [
+    "deprecated",
+    "documented",
+    "field",
+    "flag",
+    "handle_errors",
+    "logged",
+    "register_entity",
+    "requires_init",
+    "timed",
+]

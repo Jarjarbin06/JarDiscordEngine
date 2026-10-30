@@ -22,7 +22,7 @@ class JDEInternBaseClass[
 
     __instance_policy__: PolicyT
     __instance_limit__: LimitT
-    __recursive__:RecursiveT
+    __recursive__: RecursiveT
 
     jdeid: str
 
