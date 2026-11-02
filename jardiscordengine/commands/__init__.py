@@ -33,7 +33,6 @@
 
 from __future__ import annotations
 
-from jardiscordengine.commands.command_manager import JDECommandManager
 from jardiscordengine.commands.decorators import (
     bot_has_permissions,
     checks,
@@ -46,7 +45,6 @@ from jardiscordengine.commands.decorators import (
 )
 
 __all__ = [
-    "JDECommandManager",
     "bot_has_permissions",
     "checks",
     "command",

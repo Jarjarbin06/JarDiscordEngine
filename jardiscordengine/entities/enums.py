@@ -62,3 +62,8 @@ class JDEStatus(_StrEnum):
     DO_NOT_DISTURB = _Status.do_not_disturb.value
     INVISIBLE = _Status.invisible.value
     STREAMING = _Status.streaming.value
+
+__all__ = [
+    "JDEActivityType",
+    "JDEStatus",
+]

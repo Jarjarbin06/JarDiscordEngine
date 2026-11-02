@@ -37,14 +37,14 @@ import inspect as _inspect
 from dataclasses import dataclass as _dataclass
 from enum import Enum as _Enum
 
-from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
-from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns.extern import JTKExternTime as _JTKExternTime
 
 _DEBUG_EXCLUDED_INHERITANCE_MODULES = (
     "jardiscordengine.interns.low_classes",

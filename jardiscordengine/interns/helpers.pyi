@@ -1,17 +1,19 @@
 from collections.abc import Callable, Sequence
 
-from jardiscordengine.interns import JTKExternError
+from typing_extensions import TypeForm
+
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
 from jardiscordengine.interns.decorators import (
     requires_init,
 )
+from jardiscordengine.interns.extern import JTKExternError
 from jardiscordengine.systems.version import JDEVersion
 
 HAS_CRITICAL : bool = False
 
 def assert_is_instance(
     obj: object,
-    cls: type,
+    cls: type | TypeForm,
     msg: str | None = None
 ) -> None:
     """

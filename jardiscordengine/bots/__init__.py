@@ -34,9 +34,7 @@
 from __future__ import annotations
 
 from jardiscordengine.bots.bot import JDEBot
-from jardiscordengine.bots.guild_manager import JDEGuildManager
 
 __all__ = [
     "JDEBot",
-    "JDEGuildManager"
 ]

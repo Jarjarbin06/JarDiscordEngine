@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Literal, final
+from typing import final
 
 from discord import Guild
 
@@ -18,12 +18,6 @@ from jardiscordengine.entities.guilds import JDEEntityGuild
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import (
-    documented,
-    logged,
-    register_entity,
-    requires_init,
-)
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
@@ -31,20 +25,16 @@ from jardiscordengine.interns.high_classes import JDEInternFieldDiscord
 from jardiscordengine.systems.bool import JDEBool
 
 @final
-@logged
-@documented
-@register_entity(name="JDEGuildManager", category="Manager")
 class JDEGuildManager(
     JDEInternFieldDiscord[Guild],
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.UNIQUE],
-        Literal[0],
-        Literal[True],
+        JDEInternInstancePolicy.UNIQUE,
+        0,
+        True,
     ]
 ):
     """Guild manager."""
 
-    @requires_init
     def __init__(
         self,
         bot: JDEBot,

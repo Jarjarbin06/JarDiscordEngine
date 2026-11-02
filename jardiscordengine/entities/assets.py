@@ -56,9 +56,8 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternFieldName):
     __recursive__ = False
 
     emoji = _field(str, required=True, read_only=True, doc="Emoji")
-    name = _field(str, required=True, read_only=True, doc="Name")
     guild = _field(_JDEEntityGuild | None, read_only=True, doc="Guild")
-    animated = _field(bool, read_only=True, doc="Is animated")
+    animated = _field(bool, required=True, read_only=True, doc="Is animated")
 
     def __new__(cls, emoji, name, guild = None, animated = False, _jde_key = None, _jde_warn = None):
         return _JDEInternEntity.__new__(
@@ -67,7 +66,7 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternFieldName):
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
-    def __init__(self, emoji, name, guild = None, animated = False, **kwargs):
+    def __init__(self, emoji, name, guild = None, animated = False):
         _JDEInternEntity.__init__(self)
         _JDEInternFieldName.__init__(self, name)
 
@@ -83,18 +82,6 @@ class JDEEntityEmoji(_JDEInternEntity, _JDEInternFieldName):
             return f"<:{self.emoji}:{self.guild.id}>"
 
         return f":{self.emoji}:"
-
-    @classmethod
-    def from_emoji(cls, emoji, name):
-        return cls(emoji, name)
-
-    @classmethod
-    def from_guild(cls, emoji, name, guild):
-        return cls(emoji, name, guild)
-
-    @classmethod
-    def animated_from_guild(cls, emoji, name, guild):
-        return cls(emoji, name, guild, True)
 
 @_documented
 class JDEEntityCustomEmoji(JDEEntityEmoji):
@@ -152,3 +139,13 @@ class JDEEntitySticker(JDEEntityImage):
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
+
+__all__ = [
+    "JDEEntityAvatar",
+    "JDEEntityBanner",
+    "JDEEntityCustomEmoji",
+    "JDEEntityEmoji",
+    "JDEEntityGuildIcon",
+    "JDEEntityImage",
+    "JDEEntitySticker",
+]

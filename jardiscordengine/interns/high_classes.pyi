@@ -1,15 +1,8 @@
-from typing import Literal
-
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
-from jardiscordengine.interns.decorators import documented
-from jardiscordengine.interns.enums import (
-    JDEInternInstancePolicy,
-)
 from jardiscordengine.interns.low_classes import (
     JDEInternField,
 )
 
-@documented
 class JDEInternFieldID(
     JDEInternField,
     JDEInternBaseClass
@@ -34,7 +27,6 @@ class JDEInternFieldID(
             id (int): ID.
         """
 
-@documented
 class JDEInternFieldUsername(
     JDEInternField,
     JDEInternBaseClass
@@ -59,7 +51,6 @@ class JDEInternFieldUsername(
             username (str): Username.
         """
 
-@documented
 class JDEInternFieldName(
     JDEInternField,
     JDEInternBaseClass
@@ -84,7 +75,6 @@ class JDEInternFieldName(
             name (str): Name.
         """
 
-@documented
 class JDEInternFieldURL(
     JDEInternField,
     JDEInternBaseClass
@@ -109,7 +99,6 @@ class JDEInternFieldURL(
             url (str): URL.
         """
 
-@documented
 class JDEInternFieldDiscord[DiscordT](
     JDEInternField,
     JDEInternBaseClass

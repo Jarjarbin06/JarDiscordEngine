@@ -1,17 +1,15 @@
 from collections.abc import Sequence
-from typing import Any, Literal, final
+from typing import Any, final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
-from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
-@documented
 @final
 class JDEBool(
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.FLYWEIGHT],
-        Literal[2],
-        Literal[False],
+        JDEInternInstancePolicy.FLYWEIGHT,
+        2,
+        False,
     ]
 ):
     """Boolean."""

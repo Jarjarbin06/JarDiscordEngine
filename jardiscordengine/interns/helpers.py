@@ -35,10 +35,10 @@ from __future__ import annotations
 
 import sys
 
-from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
-from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.decorators import _ENTITY_REGISTRY, _ENTITY_REGISTRY_LOCK
 from jardiscordengine.interns.decorators import requires_init as _requires_init
+from jardiscordengine.interns.extern import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns.extern import JTKExternError as _JTKExternError
 
 HAS_CRITICAL = False
 

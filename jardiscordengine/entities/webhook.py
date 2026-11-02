@@ -40,13 +40,13 @@ from urllib.parse import urlparse as _urlparse
 import aiohttp as _aiohttp
 import discord as _discord
 
-from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.helpers import assert_is_instance as _assert_is_instance
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldURL as _JDEInternFieldURL,
@@ -658,3 +658,9 @@ class JDEEntityWebhook(_JDEInternEntity, _JDEInternFieldURL):
 
     async def send(self, message=None, **kwargs):
         return await self(message, **kwargs)
+
+__all__ = [
+    "JDEEntityWebhook",
+    "JDEEntityWebhookEmbed",
+    "JDEEntityWebhookMessage",
+]

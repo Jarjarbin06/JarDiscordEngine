@@ -34,18 +34,11 @@
 from __future__ import annotations
 
 import asyncio as _asyncio
-import os as _os
 from typing import final as _final
 
 import discord as _discord
 from discord import Bot as _Bot
 
-from jardiscordengine.bots.guild_manager import (
-    JDEGuildManager as _JDEGuildManager,
-)
-from jardiscordengine.commands.command_manager import (
-    JDECommandManager as _JDECommandManager,
-)
 from jardiscordengine.entities.bots import JDEEntityActivity as _JDEEntityActivity
 from jardiscordengine.entities.bots import (
     JDEEntityActivityGame as _JDEEntityActivityGame,
@@ -92,7 +85,14 @@ from jardiscordengine.interns.enums import (
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldDiscord as _JDEInternFieldDiscord,
 )
+from jardiscordengine.managers.command_manager import (
+    JDECommandManager as _JDECommandManager,
+)
+from jardiscordengine.managers.guild_manager import (
+    JDEGuildManager as _JDEGuildManager,
+)
 from jardiscordengine.systems.bool import JDEBool as _JDEBool
+from jardiscordengine.systems.env import JDEEnv as _JDEEnv
 from jardiscordengine.systems.version import JDEVersion as _JDEVersion
 
 
@@ -131,10 +131,10 @@ class JDEBot(_JDEInternFieldDiscord):
             return
 
         def init_from_env():
-            if "JDE_TOKEN" not in _os.environ:
+            if not _JDEEnv.contains("JDE_TOKEN"):
                 raise RuntimeError("JDE_TOKEN not found in environment")
 
-            self._token = _os.environ.get("JDE_TOKEN")  # pyright: ignore[reportAttributeAccessIssue]
+            self._token = _JDEEnv("JDE_TOKEN")  # pyright: ignore[reportAttributeAccessIssue]
 
         def init_from_config():
             if not _CONFIGS["bots"].section_exists(str(bot_index)):

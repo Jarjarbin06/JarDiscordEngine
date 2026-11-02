@@ -38,11 +38,13 @@ from jardiscordengine.systems.color import JDEColor
 from jardiscordengine.systems.enums import (
     JDECompatibility,
 )
+from jardiscordengine.systems.env import JDEEnv
 from jardiscordengine.systems.version import JDEVersion
 
 __all__ = [
-    'JDEBool',
-    'JDEColor',
-    'JDECompatibility',
-    'JDEVersion',
+    "JDEBool",
+    "JDEColor",
+    "JDECompatibility",
+    "JDEEnv",
+    "JDEVersion",
 ]

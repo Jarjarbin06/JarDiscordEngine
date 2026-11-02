@@ -1,10 +1,10 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 def terminal_command(
     name: str,
     description: str,
     *arguments: tuple[str, str],
-) -> Callable:
+) -> Callable[[Callable[[list[str]], Awaitable[None]]], Callable[[list[str]], Awaitable[None]]]:
     """
     Make the function a JDETerminal command.
 
@@ -14,5 +14,5 @@ def terminal_command(
         *arguments (tuple[str, str]): Command arguments (name, description).
 
     Returns:
-        Callable: JDETerminal command.
+        Callable[[Callable[[list[str]], Awaitable[None]]], Callable[[list[str]], Awaitable[None]]]: JDETerminal command.
     """

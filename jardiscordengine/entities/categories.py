@@ -99,3 +99,8 @@ class JDEEntityGuildCategory(JDEEntityCategory, _JDEInternFieldDiscord):
         _JDEInternFieldDiscord.__init__(self, category)
 
         self.guild = guild
+
+__all__ = [
+    "JDEEntityCategory",
+    "JDEEntityGuildCategory",
+]

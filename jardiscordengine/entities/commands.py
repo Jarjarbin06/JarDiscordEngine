@@ -236,3 +236,7 @@ class JDEEntityApplicationContext(_JDEInternEntity, _JDEInternFieldDiscord):
     @_flag("discord")
     def trigger_typing(self):
         return "trigger_typing"
+
+__all__ = [
+    "JDEEntityApplicationContext",
+]

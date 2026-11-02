@@ -1,5 +1,5 @@
 from collections.abc import Awaitable, Callable, Sequence
-from typing import Literal, final
+from typing import final
 
 from jardiscordengine.bots.bot import JDEBot
 from jardiscordengine.entities.commands import (
@@ -8,29 +8,19 @@ from jardiscordengine.entities.commands import (
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import (
-    documented,
-    logged,
-    register_entity,
-    requires_init,
-)
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
 
 @final
-@logged
-@documented
-@register_entity(name="JDECommandManager", category="Manager")
 class JDECommandManager(
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.SINGLETON],
-        Literal[1],
-        Literal[True],
+        JDEInternInstancePolicy.SINGLETON,
+        1,
+        True,
     ]
 ):
 
-    @requires_init
     def __init__(
         self,
         bot: JDEBot

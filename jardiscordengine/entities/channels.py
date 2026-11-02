@@ -100,7 +100,7 @@ class JDEEntityGuildChannel(JDEEntityChannel, _JDEInternFieldDiscord):
 
         self.guild = guild
 
-    async def send(self, content: str):
+    async def send(self, content):
         return await self.discord.send(content)  # pyright: ignore[reportAttributeAccessIssue]
 
 @_documented
@@ -137,3 +137,13 @@ class JDEEntityAnnouncementChannel(JDEEntityGuildChannel):
     __instance_policy__ = _JDEInternInstancePolicy.UNIQUE
     __instance_limit__ = 0
     __recursive__ = False
+
+__all__ = [
+    "JDEEntityAnnouncementChannel",
+    "JDEEntityChannel",
+    "JDEEntityForumChannel",
+    "JDEEntityGuildChannel",
+    "JDEEntityStageChannel",
+    "JDEEntityTextChannel",
+    "JDEEntityVoiceChannel",
+]

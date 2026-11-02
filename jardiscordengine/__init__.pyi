@@ -1,3 +1,18 @@
+"""
+JarDiscordEngine - Python Discord Bot Engine
+
+Main public API for JarDiscordEngine.
+
+Provides the core interfaces and utilities used
+to develop Discord bots with JarDiscordEngine.
+
+Built on top of Pycord, JDE provides higher-level abstractions for
+bot management, commands, events, entities.
+
+This package exposes the framework's public API and serves as the
+main entry point for bot development.
+"""
+
 ##Metadata##
 __author__: str
 __email__: str
@@ -13,6 +28,7 @@ from . import commands as Commands
 from . import entities as Entities
 from . import events as Events
 from . import interns as Interns
+from . import managers as Managers
 from . import systems as Systems
 from . import terminal as Terminals
 from .constants import *
@@ -56,6 +72,7 @@ __all__ = [  # noqa: RUF022
     "Entities",
     "Events",
     "Interns",
+    "Managers",
     "Systems",
     "Terminals",
     ## Constants ##

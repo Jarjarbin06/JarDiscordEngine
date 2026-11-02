@@ -1,17 +1,15 @@
 from collections.abc import Sequence
-from typing import Literal, final
+from typing import final
 
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
-from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 
-@documented
 @final
 class JDEColor(
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.NORMAL],
-        Literal[0],
-        Literal[False],
+        JDEInternInstancePolicy.NORMAL,
+        0,
+        False,
     ]
 ):
     """

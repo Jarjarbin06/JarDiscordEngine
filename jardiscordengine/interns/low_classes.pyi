@@ -1,14 +1,7 @@
-from typing import Literal
-
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documented
-from jardiscordengine.interns.enums import (
-    JDEInternInstancePolicy,
-)
 
-@documented
 class JDEInternEntity(
     JDEInternBaseClass
 ):
@@ -19,7 +12,6 @@ class JDEInternEntity(
     ) -> None:
         """Initialize an entity."""
 
-@documented
 class JDEInternField(
     JDEInternBaseClass
 ):

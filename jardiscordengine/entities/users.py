@@ -122,3 +122,10 @@ class JDEEntityUserProfile(_JDEInternEntity):
         _JDEInternEntity.__init__(self)
 
         self.user = user
+
+__all__ = [
+    "JDEEntityClientUser",
+    "JDEEntityMember",
+    "JDEEntityUser",
+    "JDEEntityUserProfile",
+]

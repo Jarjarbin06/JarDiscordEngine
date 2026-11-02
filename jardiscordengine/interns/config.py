@@ -37,8 +37,6 @@ from datetime import datetime as _datetime
 from pathlib import Path as _Path
 from typing import final as _final
 
-from jardiscordengine.interns import JTKExternConfig as _JTKExternConfig
-from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
@@ -47,6 +45,8 @@ from jardiscordengine.interns.decorators import requires_init as _requires_init
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternConfig as _JTKExternConfig
+from jardiscordengine.interns.extern import JTKExternError as _JTKExternError
 
 CONFIGS = {}
 

@@ -1,23 +1,21 @@
 from collections.abc import Awaitable, Callable
-from typing import Literal, final
+from typing import final
 
 from jardiscordengine.bots.bot import JDEBot
-from jardiscordengine.interns import JTKExternError
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
 from jardiscordengine.interns.decorators import documented, logged, timed
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
+from jardiscordengine.interns.extern import JTKExternError
 
 class JDETerminalRestart(JTKExternError.JErrorSystem):
     """Raise to the JarDiscordEngine a restart signal/exception"""
 
 @final
-@logged
-@documented
 class JDETerminal(
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.SINGLETON],
-        Literal[1],
-        Literal[True],
+        JDEInternInstancePolicy.SINGLETON,
+        1,
+        True,
     ]
 ):
     """Terminal handler."""
@@ -70,7 +68,6 @@ class JDETerminal(
             handler (Callable[[list[str]], Awaitable[None]]): Command handler.
         """
 
-    @timed
     async def run(
         self
     ) -> None:

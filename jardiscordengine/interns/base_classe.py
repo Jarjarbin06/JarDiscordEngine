@@ -38,12 +38,12 @@ from typing import Any as _Any
 from typing import ClassVar as _ClassVar
 from uuid import uuid4 as _uuid4
 
-from jardiscordengine.interns import JTKExternError as _JTKExternError
 from jardiscordengine.interns.debug import JDEDebug as _JDEDebug
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternError as _JTKExternError
 from jardiscordengine.interns.helpers import warning as _warning
 
 _JDE_WARNED_INSTANCE_LIMIT: set[_Any] = set()
@@ -137,7 +137,7 @@ class JDEInternBaseClass(_JDEDebug, metaclass=_JDEInternMeta):
                 _warning(
                     _JTKExternError.JErrorRuntime(
                         f"{cls.__name__}: construction warning for "
-                        f"the {policy.name} policy."
+                        f"the {policy.name} policy."  # pyright: ignore[reportAttributeAccessIssue]
                     )
                 )
 

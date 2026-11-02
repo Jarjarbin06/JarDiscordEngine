@@ -45,3 +45,7 @@ class JDEInternInstancePolicy(_IntEnum):
     SINGLETON = _auto()
     FLYWEIGHT = _auto()
     UNIQUE = _auto()
+
+__all__ = [
+    "JDEInternInstancePolicy",
+]

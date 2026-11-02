@@ -1,6 +1,8 @@
 from collections.abc import Callable, Sequence
 from typing import Any, overload
 
+from typing_extensions import TypeForm
+
 def documented[T](
     cls: type[T]
 ) -> type[T]:
@@ -163,7 +165,7 @@ class field[T]:
     Use in class.
     """
 
-    expected_type: type[Any] | tuple[type[Any], ...] | None
+    expected_type: TypeForm[T] | tuple[TypeForm[T], ...] | None
     default: Any
     required: bool
     read_only: bool
@@ -174,10 +176,9 @@ class field[T]:
     name: str
     owner: type[Any] | None
 
-    @overload
     def __init__(
         self,
-        expected_type: type[T] | tuple[type[Any], ...] | None = None,
+        expected_type: TypeForm[T] | tuple[TypeForm[T], ...] | None = None,
         *,
         default: Any = ...,
         required: bool = False,
@@ -188,56 +189,36 @@ class field[T]:
         setter_check: Callable[[Any], bool] | None = None,
     ) -> None: ...
 
-    @overload
-    def __init__(
-        self,
-        expected_type: type[Any] | tuple[type[Any], ...] | None,
-        type_hint: type[T],
-        *,
-        default: Any = ...,
-        required: bool = False,
-        read_only: bool = False,
-        validator: Callable[[Any], bool] | None = None,
-        doc: str = "",
-        storage: str | None = None,
-        setter_check: Callable[[Any], bool] | None = None,
-    ) -> None:
-        ...
-
     def __set_name__(
         self,
         owner: type[Any],
-        name: str) -> None:
-            ...
+        name: str,
+    ) -> None: ...
 
     @overload
     def __get__(
         self,
         instance: None,
-        owner: type[Any] | None = None
-    ) -> field[T]:
-        ...
+        owner: type[Any] | None = None,
+    ) -> field[T]: ...
 
     @overload
     def __get__(
         self,
         instance: Any,
-        owner: type[Any] | None = None
-    ) -> T:
-        ...
+        owner: type[Any] | None = None,
+    ) -> T: ...
 
     def __set__(
         self,
         instance: Any,
-        value: T
-    ) -> None:
-        ...
+        value: T,
+    ) -> None: ...
 
     def __delete__(
         self,
-        instance: Any
-    ) -> None:
-        ...
+        instance: Any,
+    ) -> None: ...
 
 class flag[T]:
     """

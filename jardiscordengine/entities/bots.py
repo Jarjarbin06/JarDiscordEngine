@@ -40,13 +40,13 @@ from discord import PartialEmoji as _PartialEmoji
 from discord import Streaming as _Streaming
 
 from jardiscordengine.entities.enums import JDEActivityType
-from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import handle_errors as _handle_errors
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldDiscord as _JDEInternFieldDiscord,
 )
@@ -297,3 +297,10 @@ class JDEEntityActivityStreaming(_JDEInternEntity, _JDEInternFieldName, _JDEInte
         _JDEInternFieldURL.__init__(self, url)
         _JDEInternFieldName.__init__(self, name)
         _JDEInternFieldDiscord.__init__(self, _Streaming(name=name, url=url))
+
+__all__ = [
+    "JDEEntityActivity",
+    "JDEEntityActivityGame",
+    "JDEEntityActivityStreaming",
+    "JDEEntityIntents",
+]

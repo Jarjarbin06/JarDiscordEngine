@@ -1,23 +1,21 @@
 from collections.abc import Sequence
 from typing import Any, Literal, final
 
-from jardiscordengine.interns import JTKExternLog
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass,
 )
-from jardiscordengine.interns.decorators import documented
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
+from jardiscordengine.interns.extern import JTKExternLog
 
 current_logs: dict[Literal["base", "crash"], JDEInternLog]
 
-@documented
 @final
 class JDEInternLog(
     JTKExternLog.Log,
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.UNIQUE],
-        Literal[0],
-        Literal[False],
+        JDEInternInstancePolicy.UNIQUE,
+        0,
+        False,
     ]
 ):
     """

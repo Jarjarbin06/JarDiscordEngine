@@ -1,8 +1,5 @@
 from collections.abc import Sequence
 
-from jardiscordengine.interns.decorators import documented
-
-@documented
 class JDEDebug:
     """Debug tool."""
 

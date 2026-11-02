@@ -33,19 +33,9 @@
 
 from __future__ import annotations
 
-import os
-
-os.environ["JARBIN_CONSOLE_NO_BANNER"] = "1"
-
-import discord as DiscordExtern
-import jarbin_toolkit_config as JTKExternConfig
-import jarbin_toolkit_console as JTKExternConsole
-import jarbin_toolkit_error as JTKExternError
-import jarbin_toolkit_log as JTKExternLog
-import jarbin_toolkit_time as JTKExternTime
-
 import jardiscordengine.interns.config as Config
 import jardiscordengine.interns.decorators as Decorators
+import jardiscordengine.interns.extern as Externs
 import jardiscordengine.interns.final_classes as FinalClasses
 import jardiscordengine.interns.helpers as Helpers
 import jardiscordengine.interns.high_classes as HighClasses
@@ -56,16 +46,11 @@ from jardiscordengine.interns.base_classe import JDEInternBaseClass
 __all__ = [
     "Config",
     "Decorators",
-    "DiscordExtern",
+    "Externs",
     "FinalClasses",
     "Helpers",
     "HighClasses",
     "JDEInternBaseClass",
-    "JTKExternConfig",
-    "JTKExternConsole",
-    "JTKExternError",
-    "JTKExternLog",
-    "JTKExternTime",
     "Log",
     "LowClasses",
 ]

@@ -64,3 +64,7 @@ class JDEEntityGuild(_JDEInternEntity, _JDEInternFieldID, _JDEInternFieldName):
         _JDEInternEntity.__init__(self)
         _JDEInternFieldID.__init__(self, id)
         _JDEInternFieldName.__init__(self, name)
+
+__all__ = [
+    "JDEEntityGuild",
+]

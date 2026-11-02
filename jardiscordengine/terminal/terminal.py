@@ -38,9 +38,6 @@ import shlex as _shlex
 from contextlib import suppress as _suppress
 from typing import final as _final
 
-from jardiscordengine.interns import JTKExternConsole as _JTKExternConsole
-from jardiscordengine.interns import JTKExternError as _JTKExternError
-from jardiscordengine.interns import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
@@ -48,10 +45,14 @@ from jardiscordengine.interns.config import get as _get
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import logged as _logged
+from jardiscordengine.interns.decorators import requires_init as _requires_init
 from jardiscordengine.interns.decorators import timed as _timed
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy as _JDEInternInstancePolicy,
 )
+from jardiscordengine.interns.extern import JTKExternConsole as _JTKExternConsole
+from jardiscordengine.interns.extern import JTKExternError as _JTKExternError
+from jardiscordengine.interns.extern import JTKExternTime as _JTKExternTime
 from jardiscordengine.interns.log import log as _log
 from jardiscordengine.interns.log import save as _save
 from jardiscordengine.terminal.decorator import terminal_command as _terminal_command
@@ -112,6 +113,7 @@ class JDETerminal(_JDEInternBaseClass):
     def commands(self):
         return "_commands"
 
+    @_requires_init
     @_timed
     async def run(self):
         if self._running:

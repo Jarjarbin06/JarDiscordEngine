@@ -1,14 +1,8 @@
 from collections.abc import Sequence
-from typing import Literal, final
+from typing import final
 
 from discord import Bot
 
-from jardiscordengine.bots.guild_manager import (
-    JDEGuildManager,
-)
-from jardiscordengine.commands.command_manager import (
-    JDECommandManager,
-)
 from jardiscordengine.entities.bots import (
     JDEEntityActivity,
     JDEEntityActivityGame,
@@ -27,31 +21,28 @@ from jardiscordengine.entities.messages import JDEEntityMessage
 from jardiscordengine.entities.roles import JDEEntityRole
 from jardiscordengine.entities.users import JDEEntityClientUser, JDEEntityUser
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
-from jardiscordengine.interns.decorators import (
-    documented,
-    logged,
-    register_entity,
-    requires_init,
-)
 from jardiscordengine.interns.enums import JDEInternInstancePolicy
 from jardiscordengine.interns.high_classes import JDEInternFieldDiscord
+from jardiscordengine.managers.command_manager import (
+    JDECommandManager,
+)
+from jardiscordengine.managers.guild_manager import (
+    JDEGuildManager,
+)
 from jardiscordengine.systems.bool import JDEBool
 from jardiscordengine.systems.version import JDEVersion
 
 @final
-@logged
-@documented
-@register_entity(name="JDEBot", category="Bot")
 class JDEBot(
     JDEInternFieldDiscord[Bot],
     JDEInternBaseClass[
-        Literal[JDEInternInstancePolicy.UNIQUE],
-        Literal[0],
-        Literal[True],
+        JDEInternInstancePolicy.UNIQUE,
+        0,
+        True,
     ]
 ):
     """
-    Configuration.
+    Bot.
 
     Attributes:
         name (str): Bot name.
@@ -77,7 +68,6 @@ class JDEBot(
     activity: JDEEntityActivity | JDEEntityActivityGame | JDEEntityActivityStreaming | None = None
     status: JDEStatus
 
-    @requires_init
     def __init__(
         self,
         *,

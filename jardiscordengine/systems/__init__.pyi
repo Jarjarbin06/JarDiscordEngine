@@ -4,16 +4,18 @@ JarDiscordEngine - Systems
 Engine systems and non discord related components.
 """
 
-from .bool import JDEBool as JDEBool
-from .color import JDEColor as JDEColor
+from .bool import JDEBool
+from .color import JDEColor
 from .enums import (
-    JDECompatibility as JDECompatibility,
+    JDECompatibility,
 )
-from .version import JDEVersion as JDEVersion
+from .env import JDEEnv
+from .version import JDEVersion
 
 __all__ = [
-    'JDEBool',
-    'JDEColor',
-    'JDECompatibility',
-    'JDEVersion',
+    "JDEBool",
+    "JDEColor",
+    "JDECompatibility",
+    "JDEEnv",
+    "JDEVersion",
 ]

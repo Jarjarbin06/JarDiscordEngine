@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from enum import IntEnum
 from typing import final
 
@@ -17,3 +18,7 @@ class JDEInternInstancePolicy(IntEnum):
     SINGLETON: int
     FLYWEIGHT: int
     UNIQUE: int
+
+__all__: Sequence[str] = [
+    "JDEInternInstancePolicy",
+]

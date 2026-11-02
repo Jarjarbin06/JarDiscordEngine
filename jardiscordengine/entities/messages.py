@@ -56,7 +56,7 @@ class JDEEntityMessage(_JDEInternEntity, _JDEInternFieldID, _JDEInternFieldDisco
     __instance_limit__ = 0
     __recursive__ = False
 
-    channel = _field(_JDEEntityChannel, required=False, read_only=True, doc="Channel")
+    channel = _field(_JDEEntityChannel, read_only=True, doc="Channel")
 
     def __new__(cls, message, channel = None, _jde_key = None, _jde_warn = None):
         message_id = message.id if isinstance(message, _Message) else message
@@ -95,3 +95,7 @@ class JDEEntityMessage(_JDEInternEntity, _JDEInternFieldID, _JDEInternFieldDisco
         _JDEInternFieldDiscord.__init__(self, discord_message)
 
         self.channel = channel
+
+__all__ = [
+    "JDEEntityMessage",
+]
