@@ -85,6 +85,7 @@ from jardiscordengine.interns.enums import (
 from jardiscordengine.interns.high_classes import (
     JDEInternFieldDiscord as _JDEInternFieldDiscord,
 )
+from jardiscordengine.interns.logs import log as _log
 from jardiscordengine.managers.command_manager import (
     JDECommandManager as _JDECommandManager,
 )
@@ -127,7 +128,7 @@ class JDEBot(_JDEInternFieldDiscord):
         )
 
     @_requires_init
-    def __init__(self, *, bot_index = 1, intents = None, activity = None, status = _JDEStatus.ONLINE):
+    def __init__(self, *, bot_index = 1, intents = None, activity = None, status = _JDEStatus.ONLINE, no_sync = ()):
         if hasattr(self, "_initialized"):
             return
 
@@ -166,6 +167,7 @@ class JDEBot(_JDEInternFieldDiscord):
 
             self.client = _JDEEntityClientUser(_get("bots", str(bot_index), "client_id", int, 0), self.name)
 
+
         def init_bot():
             kwargs = {}
 
@@ -198,6 +200,8 @@ class JDEBot(_JDEInternFieldDiscord):
         self._synchronized = False
         self._synchronization_event = _asyncio.Event()
         self._synchronization_error = None
+
+        self._no_sync = no_sync
 
         self._guilds = {}
         self._categories = {}
@@ -245,11 +249,13 @@ class JDEBot(_JDEInternFieldDiscord):
 
                 for discord_channel in discord_guild.channels:
                     if isinstance(discord_channel, _discord.CategoryChannel):
-                        self._categories[discord_channel.id] = _JDEEntityGuildCategory(
+                        category = _JDEEntityGuildCategory(
                             discord_channel,
                             guild,
                             _jde_warn=False,  # pyright: ignore[reportCallIssue]
                         )
+
+                        self._categories[discord_channel.id] = category
 
                         continue
 
@@ -293,18 +299,20 @@ class JDEBot(_JDEInternFieldDiscord):
                     if not isinstance(discord_channel, _discord.TextChannel):
                         continue
 
-                    async for discord_message in discord_channel.history(
-                        limit=None,
-                        oldest_first=True,
-                    ):
-                        message = _JDEEntityMessage(
-                            discord_message,
-                            channel=channel,
-                        )
+                    if not "MESSAGES" in self._no_sync:
+                        async for discord_message in discord_channel.history(
+                            limit=None,
+                            oldest_first=True,
+                        ):
+                            message = _JDEEntityMessage(
+                                discord_message,
+                                channel=channel,
+                            )
 
-                        self._messages[discord_message.id] = message
+                            self._messages[discord_message.id] = message
 
             self._synchronized = True
+            _log("NOTICE", "BOT SYNC", "Bot synchronized")
 
         except Exception as error:
             self._synchronization_error = error

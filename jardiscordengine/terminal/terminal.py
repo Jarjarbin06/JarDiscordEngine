@@ -475,7 +475,7 @@ class JDETerminal(_JDEInternBaseClass):
 
                     if not synchronization_started:
                         synchronization_started = True
-                        status = "Synchronizing Discord entities"
+                        status = "Synchronizing Discord entities (Bot is already running, you may use its commands)"
 
                 if synchronization_started:
                     synchronization_event = (

@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import final
+from typing import Literal, final
 
 from discord import Bot
 
@@ -75,7 +75,8 @@ class JDEBot(
         bot_index: int = 1,
         intents: JDEEntityIntents | None = None,
         activity: JDEEntityActivity | JDEEntityActivityGame | JDEEntityActivityStreaming | None = None,
-        status: JDEStatus = JDEStatus.ONLINE
+        status: JDEStatus = JDEStatus.ONLINE,
+        no_sync: tuple[Literal["MESSAGES"], ...] = ()
     ) -> None:
         """
         Initialize a new bot.
