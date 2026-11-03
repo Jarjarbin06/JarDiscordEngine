@@ -34,6 +34,7 @@
 from __future__ import annotations
 
 import os as _os
+from pathlib import Path as _Path
 
 from dotenv import load_dotenv as _load_dotenv
 
@@ -56,7 +57,23 @@ class JDEEnv(metaclass=JDEEnvMeta):
 
     @staticmethod
     def load(path = None):
-        _load_dotenv(path)
+        if path is None:
+            path = _Path.cwd()
+
+        env_path = _Path(path) / ".env"
+
+        if not env_path.is_file():
+            raise FileNotFoundError(
+                f"Environment file not found: {env_path}"
+            )
+
+        if not _load_dotenv(
+            dotenv_path=env_path,
+            override=False,
+        ):
+            raise RuntimeError(
+                f"No environment variables were loaded from {env_path}"
+            )
 
     @staticmethod
     def set(setting, value):

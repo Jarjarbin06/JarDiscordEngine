@@ -24,7 +24,8 @@ class JDETerminal(
         self,
         bot: JDEBot,
         prompt: str | None = None,
-        on_ready: Callable[[], Awaitable[None]] | None = None
+        on_ready: Callable[[], Awaitable[None]] | None = None,
+        on_close: Callable[[], Awaitable[None]] | None = None
     ) -> None:
         """
         Create a terminal.
@@ -33,6 +34,7 @@ class JDETerminal(
             bot (JDEBot): Bot.
             prompt (str | None): Terminal command prompt.
             on_ready (Callable[[], Coroutine[Any, Any, None]] | None): Function that will be called when terminal AND bot ready.
+            on_close (Callable[[], Coroutine[Any, Any, None]] | None): Function that will be called when exiting terminal AND bot.
         """
 
     @property
@@ -66,6 +68,17 @@ class JDETerminal(
 
         Args:
             handler (Callable[[list[str]], Awaitable[None]]): Command handler.
+        """
+
+    def register_commands(
+        self,
+        *handlers: Callable[[list[str]], Awaitable[None]]
+    ) -> None:
+        """
+        Register terminal commands in batch.
+
+        Args:
+            *handlers (Callable[[list[str]], Awaitable[None]]): Command handlers.
         """
 
     async def run(

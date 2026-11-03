@@ -268,7 +268,7 @@ def register_entity(entity = None, *, name = None, category = "entity", replace 
     return decorator(entity)
 
 def _get_jde_log():
-    from jardiscordengine.interns.log import log
+    from jardiscordengine.interns.logs import log
 
     return log
 

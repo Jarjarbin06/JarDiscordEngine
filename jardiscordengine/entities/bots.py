@@ -235,7 +235,7 @@ class JDEEntityActivity(_JDEInternEntity, _JDEInternFieldName, _JDEInternFieldDi
         type = kwargs.pop("type", -1)
         name = kwargs.pop("name", "JDECustomStatus" if type == JDEActivityType.CUSTOM else None)
         _emoji = kwargs.pop("emoji", None)
-        emoji = _PartialEmoji.from_str(_emoji.emoji) if _emoji is not None else None
+        emoji = _PartialEmoji.from_str(str(_emoji)).to_dict() if _emoji is not None else None
 
         _JDEInternFieldName.__init__(self, name or "Activity")
         _JDEInternFieldDiscord.__init__(self, _Activity(

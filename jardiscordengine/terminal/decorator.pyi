@@ -1,10 +1,13 @@
 from collections.abc import Awaitable, Callable
 
+type JDECommand = Callable[[list[str]], Awaitable[None]]
+type JDECommandDecorator = Callable[[JDECommand], JDECommand]
+
 def terminal_command(
     name: str,
     description: str,
     *arguments: tuple[str, str],
-) -> Callable[[Callable[[list[str]], Awaitable[None]]], Callable[[list[str]], Awaitable[None]]]:
+) -> JDECommandDecorator:
     """
     Make the function a JDETerminal command.
 
@@ -14,5 +17,5 @@ def terminal_command(
         *arguments (tuple[str, str]): Command arguments (name, description).
 
     Returns:
-        Callable[[Callable[[list[str]], Awaitable[None]]], Callable[[list[str]], Awaitable[None]]]: JDETerminal command.
+        JDECommandDecorator: JDETerminal command.
     """

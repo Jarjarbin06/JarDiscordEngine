@@ -71,8 +71,8 @@ from jardiscordengine.entities.messages import JDEEntityMessage as _JDEEntityMes
 from jardiscordengine.entities.roles import JDEEntityRole as _JDEEntityRole
 from jardiscordengine.entities.users import JDEEntityClientUser as _JDEEntityClientUser
 from jardiscordengine.entities.users import JDEEntityUser as _JDEEntityUser
-from jardiscordengine.interns.config import CONFIGS as _CONFIGS
-from jardiscordengine.interns.config import get as _get
+from jardiscordengine.interns.configs import CONFIGS as _CONFIGS
+from jardiscordengine.interns.configs import get as _get
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import field as _field
 from jardiscordengine.interns.decorators import flag as _flag
@@ -112,6 +112,7 @@ class JDEBot(_JDEInternFieldDiscord):
     application_id = _field(int | None, read_only=True, doc="Application ID")
     owners = _field(tuple | None, read_only=True, doc="Owners")
     debug_guilds = _field(tuple | None, read_only=True, doc="Debug guilds")
+    bot_guilds = _field(tuple | None, read_only=True, doc="Bot guilds")
     client = _field(_JDEEntityClientUser, required=True, read_only=True, doc="Client")
     intents = _field(_JDEEntityIntents, required=True, read_only=True, doc="Intents")
     activity = _field(_JDEEntityActivity | _JDEEntityActivityGame | _JDEEntityActivityStreaming | None, read_only=True, doc="Activity")
@@ -151,11 +152,17 @@ class JDEBot(_JDEInternFieldDiscord):
             else:
                 self.owners = None
 
-            debug_guilds = _get("bots", str(bot_index), "debug_guild_id", str, "").split(",")
+            debug_guilds = _get("bots", str(bot_index), "debug_guild_ids", str, "").split(",")
             if debug_guilds and debug_guilds[0] != "":
                 self.debug_guilds = tuple(_JDEEntityGuild(int(id), f"DebugGuild({id})", _jde_warn=False) for id in debug_guilds)  # pyright: ignore[reportCallIssue]
             else:
                 self.debug_guilds = None
+
+            bot_guilds = _get("bots", str(bot_index), "bot_guild_ids", str, "").split(",")
+            if bot_guilds and bot_guilds[0] != "":
+                self.bot_guilds = tuple(_JDEEntityGuild(int(id), f"BotGuild({id})", _jde_warn=False) for id in bot_guilds)  # pyright: ignore[reportCallIssue]
+            else:
+                self.bot_guilds = None
 
             self.client = _JDEEntityClientUser(_get("bots", str(bot_index), "client_id", int, 0), self.name)
 
@@ -306,7 +313,7 @@ class JDEBot(_JDEInternFieldDiscord):
         finally:
             self._synchronization_event.set()
 
-    async def _wait_until_synchronized(self):
+    async def wait_until_synchronized(self):
         await self._synchronization_event.wait()
 
         if self._synchronization_error is not None:
@@ -362,7 +369,10 @@ class JDEBot(_JDEInternFieldDiscord):
         finally:
             self._jde_initializing = False
 
-        await self.discord.change_presence(status=status, activity=activity)  # pyright: ignore[reportAttributeAccessIssue]
+        await self.discord.change_presence(  # pyright: ignore[reportAttributeAccessIssue]
+            status=self.status,
+            activity=self.activity.discord if self.activity is not None else None,  # pyright: ignore[reportAttributeAccessIssue]
+        )
 
     async def _start(self):
         await self.discord.start(self._token)  # pyright: ignore[reportAttributeAccessIssue]

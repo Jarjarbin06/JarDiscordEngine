@@ -1,5 +1,5 @@
 from collections.abc import Awaitable, Callable, Sequence
-from typing import final
+from typing import Concatenate, final
 
 from jardiscordengine.bots.bot import JDEBot
 from jardiscordengine.entities.commands import (
@@ -11,6 +11,8 @@ from jardiscordengine.interns.base_classe import (
 from jardiscordengine.interns.enums import (
     JDEInternInstancePolicy,
 )
+
+type JDECommand[**P] = Callable[Concatenate[JDEBot, JDEEntityApplicationContext, P], Awaitable[None]]
 
 @final
 class JDECommandManager(
@@ -46,40 +48,40 @@ class JDECommandManager(
     @property
     def commands(
         self
-    ) -> dict[str, Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]]:
+    ) -> dict[str, JDECommand[...]]:
         """
         Get the registered commands.
 
         Returns:
-            dict[str, Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]]: Commands.
+            dict[str, JDECommand[...]]: Commands.
         """
 
-    def register_command(
+    def register_command[**P](
         self,
-        callback: Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]
+        callback: JDECommand[P]
     ) -> None:
         """
         Register a command to the manager.
 
         Args:
-            callback (Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]): Command.
+            callback (JDECommand[P]): Command.
         """
 
     def register_commands(
         self,
-        *callbacks: Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]
+        *callbacks: JDECommand[...]
     ) -> None:
         """
         Register commands to the manager in batch.
 
         Args:
-            *callbacks (Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]): Commands.
+            *callbacks (JDECommand[...]): Commands.
         """
 
     def get_command(
         self,
         name: str
-    ) -> Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]:
+    ) -> JDECommand[...]:
         """
         Get a command by it's name.
 
@@ -87,13 +89,13 @@ class JDECommandManager(
             name (str): Command name.
 
         Returns:
-            Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]: Command.
+            JDECommand[...]: Command.
         """
 
     def unregister_command(
         self,
         name: str
-    ) -> Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]:
+    ) -> JDECommand[...]:
         """
         Unregister a command.
 
@@ -101,7 +103,7 @@ class JDECommandManager(
             name (str): Command name.
 
         Returns:
-            Callable[[JDEBot, JDEEntityApplicationContext], Awaitable[None]]: Unregistered command.
+            JDECommand[...]: Unregistered command.
         """
 
 __all__: Sequence[str] = [

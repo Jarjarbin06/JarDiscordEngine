@@ -33,24 +33,24 @@
 
 from __future__ import annotations
 
-import jardiscordengine.interns.config as Config
+import jardiscordengine.interns.configs as Configs
 import jardiscordengine.interns.decorators as Decorators
 import jardiscordengine.interns.extern as Externs
 import jardiscordengine.interns.final_classes as FinalClasses
 import jardiscordengine.interns.helpers as Helpers
 import jardiscordengine.interns.high_classes as HighClasses
-import jardiscordengine.interns.log as Log
+import jardiscordengine.interns.logs as Logs
 import jardiscordengine.interns.low_classes as LowClasses
 from jardiscordengine.interns.base_classe import JDEInternBaseClass
 
 __all__ = [
-    "Config",
+    "Configs",
     "Decorators",
     "Externs",
     "FinalClasses",
     "Helpers",
     "HighClasses",
     "JDEInternBaseClass",
-    "Log",
+    "Logs",
     "LowClasses",
 ]

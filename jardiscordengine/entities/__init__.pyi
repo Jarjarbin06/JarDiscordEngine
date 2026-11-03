@@ -32,6 +32,9 @@ from .channels import (
     JDEEntityTextChannel,
     JDEEntityVoiceChannel,
 )
+from .commands import (
+    JDEEntityApplicationContext,
+)
 from .enums import (
     JDEActivityType,
     JDEStatus,
@@ -63,6 +66,7 @@ __all__ = [
     "JDEEntityActivityGame",
     "JDEEntityActivityStreaming",
     "JDEEntityAnnouncementChannel",
+    "JDEEntityApplicationContext",
     "JDEEntityAvatar",
     "JDEEntityBanner",
     "JDEEntityCategory",

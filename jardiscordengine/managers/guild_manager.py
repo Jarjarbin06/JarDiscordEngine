@@ -83,7 +83,7 @@ class JDEGuildManager(_JDEInternBaseClass):
         return _JDEInternBaseClass.__new__(
             cls,
             _jde_key=_jde_key if _jde_key is None else guild.id,
-            _jde_warn=_jde_warn if _jde_warn is not None else True,
+            _jde_warn=_jde_warn if _jde_warn is not None else False,
         )
 
     @_requires_init

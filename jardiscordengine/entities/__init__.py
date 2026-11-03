@@ -61,6 +61,9 @@ from jardiscordengine.entities.channels import (
     JDEEntityTextChannel,
     JDEEntityVoiceChannel,
 )
+from jardiscordengine.entities.commands import (
+    JDEEntityApplicationContext,
+)
 from jardiscordengine.entities.enums import (
     JDEActivityType,
     JDEStatus,
@@ -92,6 +95,7 @@ __all__ = [
     "JDEEntityActivityGame",
     "JDEEntityActivityStreaming",
     "JDEEntityAnnouncementChannel",
+    "JDEEntityApplicationContext",
     "JDEEntityAvatar",
     "JDEEntityBanner",
     "JDEEntityCategory",

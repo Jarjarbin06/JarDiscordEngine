@@ -41,7 +41,7 @@ from typing import final as _final
 from jardiscordengine.interns.base_classe import (
     JDEInternBaseClass as _JDEInternBaseClass,
 )
-from jardiscordengine.interns.config import get as _get
+from jardiscordengine.interns.configs import get as _get
 from jardiscordengine.interns.decorators import documented as _documented
 from jardiscordengine.interns.decorators import flag as _flag
 from jardiscordengine.interns.decorators import logged as _logged
@@ -53,8 +53,8 @@ from jardiscordengine.interns.enums import (
 from jardiscordengine.interns.extern import JTKExternConsole as _JTKExternConsole
 from jardiscordengine.interns.extern import JTKExternError as _JTKExternError
 from jardiscordengine.interns.extern import JTKExternTime as _JTKExternTime
-from jardiscordengine.interns.log import log as _log
-from jardiscordengine.interns.log import save as _save
+from jardiscordengine.interns.logs import log as _log
+from jardiscordengine.interns.logs import save as _save
 from jardiscordengine.terminal.decorator import terminal_command as _terminal_command
 
 
@@ -77,7 +77,7 @@ class JDETerminal(_JDEInternBaseClass):
             _jde_warn=_jde_warn if _jde_warn is not None else True,
         )
 
-    def __init__(self, bot, prompt = None, on_ready = None):
+    def __init__(self, bot, prompt = None, on_ready = None, on_close = None):
         if prompt is None:
             prompt = f"[JDE: {_get("project", "PROJECT", "name", str, "Unnamed project")}] > "
 
@@ -85,6 +85,7 @@ class JDETerminal(_JDEInternBaseClass):
         self._prompt = prompt
         self._running = False
         self._on_ready = on_ready
+        self._on_close = on_close
         self._restart_requested = False
         self._save_interval = _get("settings", "LOG", "save_per", int, 60)
 
@@ -92,9 +93,7 @@ class JDETerminal(_JDEInternBaseClass):
         self._description = {}
         self._arguments = {}
 
-        self.register_command(self._command_exit)
-        self.register_command(self._command_help)
-        self.register_command(self._command_restart)
+        self.register_commands(self._command_exit, self._command_sync, self._command_help, self._command_restart)
 
     def register_command(self, handler):
         name = getattr(handler, "cmd_name", handler.__name__)
@@ -104,6 +103,10 @@ class JDETerminal(_JDEInternBaseClass):
         self._commands[name] = handler
         self._description[name] = description
         self._arguments[name] = arguments
+
+    def register_commands(self, *handlers):
+        for handler in handlers:
+            self.register_command(handler)
 
     @_flag(doc="Bots")
     def bot(self):
@@ -266,6 +269,9 @@ class JDETerminal(_JDEInternBaseClass):
                 _JTKExternConsole.print(self._color(f"Command failed: {error}", 255, 100, 100))
                 _log("ERROR", "Terminal", f"Command failed: {command_name} - {error}",)
 
+        if self._on_close is not None:
+            await self._on_close()
+
     @_terminal_command(
         "exit",
         "Stop the bot and exit the terminal prompt.",
@@ -273,24 +279,6 @@ class JDETerminal(_JDEInternBaseClass):
     async def _command_exit(self, arguments):
         _JTKExternConsole.print(self._panel("SHUTTING DOWN", self._color("Stopping JarDiscordEngine...", 255, 180, 80)))
         self._running = False
-
-    @_terminal_command(
-        "help",
-        "Display help information about terminal commands.",
-        ("[command]", "Name of the command to get detailed help for."),
-    )
-    async def _command_help(self, arguments):
-        if not arguments:
-            self._show_general_help()
-            return
-
-        name = arguments[0].lower()
-
-        if name not in self._commands:
-            _JTKExternConsole.print(self._color(f"Unknown command: {name}", 255, 100, 100))
-            return
-
-        self._show_command_help(name)
 
     @_terminal_command(
         "restart",
@@ -311,6 +299,32 @@ class JDETerminal(_JDEInternBaseClass):
 
         self._restart_requested = True
         self._running = False
+
+    @_terminal_command(
+        "sync",
+        "Synchronize the logs and other systems.",
+    )
+    async def _command_sync(self, arguments):
+        _save()
+        _JTKExternConsole.print(self._panel("SYNCHRONIZATION", self._color("Done", 100, 220, 130)))
+
+    @_terminal_command(
+        "help",
+        "Display help information about terminal commands.",
+        ("[command]", "Name of the command to get detailed help for."),
+    )
+    async def _command_help(self, arguments):
+        if not arguments:
+            self._show_general_help()
+            return
+
+        name = arguments[0].lower()
+
+        if name not in self._commands:
+            _JTKExternConsole.print(self._color(f"Unknown command: {name}", 255, 100, 100))
+            return
+
+        self._show_command_help(name)
 
     def _show_general_help(self):
         Text = _JTKExternConsole.Text
@@ -469,7 +483,7 @@ class JDETerminal(_JDEInternBaseClass):
                     )
 
                     if synchronization_event.is_set():
-                        await self._bot._wait_until_synchronized()
+                        await self._bot.wait_until_synchronized()
                         break
 
                 await _asyncio.sleep(0.05)

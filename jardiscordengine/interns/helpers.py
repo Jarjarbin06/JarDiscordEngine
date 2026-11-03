@@ -68,40 +68,90 @@ def deprecated(func, new_func, version = None):
         separator="",
     )
 
-def critical(err, show = True):
-    from jardiscordengine.interns.log import log as _log
+def critical(err, show=True):
+    import traceback as _traceback
+
+    from jardiscordengine.interns.logs import comment as _comment
+    from jardiscordengine.interns.logs import log as _log
 
     global HAS_CRITICAL
 
     HAS_CRITICAL = True
 
+    # Preserve the original error message.
     if isinstance(err, _JTKExternError.BaseJError):
-        err = _JTKExternError.BaseJError(
-            err.message.splitlines()[-1].replace("→", "").replace(":", " →").strip(),
-            error="Critical",
-            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
+        original_message = err.message
+        summary = (
+            original_message.splitlines()[-1]
+            .replace("→", "")
+            .replace(":", " →")
+            .strip()
         )
     else:
-        err = _JTKExternError.BaseJError(
-            str(err).replace(":", " →").strip(),
-            error="Critical",
-            format=_JTKExternError.FormatType.COMPACT  # pyright: ignore[reportArgumentType]
-        )
+        original_message = str(err)
+        summary = original_message.replace(":", " →").strip()
+
+    critical_error = _JTKExternError.BaseJError(
+        summary,
+        error="Critical",
+        format=_JTKExternError.FormatType.COMPACT,  # pyright: ignore[reportArgumentType]
+    )
 
     if show:
-        title, message = str(err).split(":")
+        title, message = str(critical_error).split(":", 1)
 
         _JTKExternConsole.print(
-            _JTKExternConsole.Text(f" JDE - {title.strip()} ").f_color_error(background=True).f_color_black(),
-            _JTKExternConsole.Text(" : " + message.strip().removeprefix("'").removesuffix("'")).f_color_error(background=True).f_color_black(),
+            _JTKExternConsole.Text(
+                f" JDE - {title.strip()} "
+            ).f_color_error(background=True).f_color_black(),
+            _JTKExternConsole.Text(
+                " : " + message.strip().removeprefix("'").removesuffix("'")
+            ).f_color_error(background=True).f_color_black(),
             stream=sys.stderr,
             separator="",
         )
 
-    _log("CRIT", "ENGINE", err.message)
+    # Record the critical summary.
+    _log("CRIT", "ENGINE", critical_error.message)
+
+    # Record the complete error message.
+    _comment(
+        "Complete critical error:\n"
+        + "\n".join(
+            f"    {line}"
+            for line in original_message.splitlines()
+        )
+    )
+
+    # Capture and record the traceback when available.
+    if isinstance(err, BaseException):
+        if err.__traceback__ is not None:
+            traceback_text = "".join(
+                _traceback.format_exception(
+                    type(err),
+                    err,
+                    err.__traceback__,
+                )
+            )
+        else:
+            traceback_text = ""
+
+        if traceback_text:
+            _comment(
+                "Critical error traceback:\n"
+                + "\n".join(
+                    f"    {line}"
+                    for line in traceback_text.rstrip().splitlines()
+                )
+            )
+        else:
+            _comment(
+                "Critical error traceback unavailable: "
+                "the exception has no attached traceback."
+            )
 
 def error(err, show = True):
-    from jardiscordengine.interns.log import log as _log
+    from jardiscordengine.interns.logs import log as _log
 
     if isinstance(err, _JTKExternError.BaseJError):
         err = _JTKExternError.BaseJError(
@@ -129,7 +179,7 @@ def error(err, show = True):
     _log("ERROR", "ENGINE", err.message)
 
 def warning(err, show = True):
-    from jardiscordengine.interns.log import log as _log
+    from jardiscordengine.interns.logs import log as _log
 
     if isinstance(err, _JTKExternError.BaseJError):
         err = _JTKExternError.BaseJError(
@@ -152,14 +202,14 @@ def warning(err, show = True):
 
 @_requires_init
 def version(config, section, key):
-    from jardiscordengine.interns.config import get as _get
+    from jardiscordengine.interns.configs import get as _get
     from jardiscordengine.systems.version import JDEVersion as _JDEVersion
 
     return _JDEVersion(*[int(v) for v in _get(config, section, key).split(".")])
 
 @_requires_init
 def enabled(config, section, setting = "enabled"):
-    from jardiscordengine.interns.config import get as _get
+    from jardiscordengine.interns.configs import get as _get
 
     return _get(config, section, setting, bool, False)
 

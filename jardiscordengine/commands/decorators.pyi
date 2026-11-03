@@ -1,5 +1,11 @@
-from collections.abc import Callable, Sequence
-from typing import Literal, TypedDict, Unpack
+from collections.abc import Awaitable, Callable, Sequence
+from typing import Concatenate, Literal, TypedDict, Unpack
+
+from jardiscordengine.bots.bot import JDEBot
+from jardiscordengine.entities.commands import JDEEntityApplicationContext
+
+type JDECommand[**P] = Callable[Concatenate[JDEBot, JDEEntityApplicationContext, P], Awaitable[None]]
+type JDECommandDecorator[**P] = Callable[[JDECommand[P]], JDECommand[P]]
 
 class JDEPermissionOptions(TypedDict, total=False):
     administrator: bool
@@ -53,10 +59,10 @@ class JDEPermissionOptions(TypedDict, total=False):
     view_creator_monetization_analytics: bool
     view_guild_insights: bool
 
-def command(
+def command[**P](
     name: str,
     description: str
-) -> Callable:
+) -> JDECommandDecorator[P]:
     """
     Create the base of a command.
 
@@ -65,12 +71,12 @@ def command(
         description (str): Command description.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator[P]: Command.
     """
 
-def has_permissions(
+def has_permissions[**P](
     **permissions: Unpack[JDEPermissionOptions]
-) -> Callable:
+) -> JDECommandDecorator[P]:
     """
     Allow command to be ran only by users having the specified permissions.
 
@@ -78,12 +84,12 @@ def has_permissions(
         **permissions (Unpack[JDEPermissionOptions]): Command permissions.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator[P]: Command.
     """
 
-def bot_has_permissions(
+def bot_has_permissions[**P](
     **permissions: Unpack[JDEPermissionOptions]
-) -> Callable:
+) -> JDECommandDecorator[P]:
     """
     Allow command to be ran only if the bot have the specified permissions.
 
@@ -91,39 +97,39 @@ def bot_has_permissions(
         **permissions (Unpack[JDEPermissionOptions]): Command bot permissions.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator: Command.
     """
 
-def guild_only() -> Callable:
+def guild_only[**P]() -> JDECommandDecorator[P]:
     """
     Allow command to be ran only in guilds.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator: Command.
     """
 
-def is_owner() -> Callable:
+def is_owner[**P]() -> JDECommand[P]:
     """
     Allow command to be ran only by the owner.
 
     Returns:
-        Callable: Command.
+        JDECommand[P]: Command.
     """
 
-def checks(
-    *callbacks: Callable
-) -> Callable:
+def checks[**P](
+    *callbacks: JDECommand
+) -> JDECommandDecorator[P]:
     """
     Allow command to be ran only if all custom conditions are checked.
 
     Args:
-        *callbacks (Callable): Functions the check custom conditions.
+        *callbacks (JDECommand): Functions the check custom conditions.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator[P]: Command.
     """
 
-def option(
+def option[**P](
     name: str,
     description: str,
     option_type: type[str | int | float | bool] | Literal["user", "channel", "role", "mentionable", "attachment"],
@@ -133,7 +139,7 @@ def option(
     max_value: int | float | None = None,  # noqa: PYI041
     min_length: int | float | None = None,  # noqa: PYI041
     max_length: int | float | None = None  # noqa: PYI041
-) -> Callable:
+) -> JDECommandDecorator[P]:
     """
     Add an option to the command.
 
@@ -149,14 +155,14 @@ def option(
         max_length (int | float | None): Maximum length (if option is a str).
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator[P]: Command.
     """
 
-def cooldown(
+def cooldown[**P](
     rate: int,
     per: int | float,  # noqa: PYI041
     scope: Literal["user", "guild", "channel", "global"] = "user"
-) -> Callable:
+) -> JDECommandDecorator[P]:
     """
     Add an option to the command.
 
@@ -166,7 +172,7 @@ def cooldown(
         scope (Literal["user", "guild", "channel", "global"]): Cooldown scope.
 
     Returns:
-        Callable: Command.
+        JDECommandDecorator[P]: Command.
     """
 
 __all__: Sequence[str] = [

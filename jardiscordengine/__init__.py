@@ -42,8 +42,8 @@ from uuid import uuid4 as _uuid4
 ##Metadata##
 __author__ = "Nathan Jarjarbin"
 __email__ = "nathan.amaraggi@epitech.eu"
-__version__ = "0.1.0"
-__config_version__ = "0.1.0"
+__version__ = "0.3.1"
+__config_version__ = "0.2.0"
 __license__ = "GPL"
 
 ##Imports##
@@ -71,26 +71,26 @@ def init(project_path):
 
     project_path = project_path.removesuffix("/")
 
-    Systems.JDEEnv.load(f"{project_path}/.env")
+    Systems.JDEEnv.load(f"{project_path}")
 
-    Interns.Config.JDEInternConfig.project_path = f"{project_path}"
-    Interns.Config.JDEInternConfig.config_path = f"{project_path}/.jde-config"
-    Interns.Config.JDEInternConfig.state_path = f"{project_path}/.jde-state"
+    Interns.Configs.JDEInternConfig.project_path = f"{project_path}"
+    Interns.Configs.JDEInternConfig.config_path = f"{project_path}/.jde-config"
+    Interns.Configs.JDEInternConfig.state_path = f"{project_path}/.jde-state"
 
-    Interns.Log.JDEInternLog.project_path = f"{project_path}"
-    Interns.Log.JDEInternLog.log_path = f"{project_path}/.jde-log"
+    Interns.Logs.JDEInternLog.project_path = f"{project_path}"
+    Interns.Logs.JDEInternLog.log_path = f"{project_path}/.jde-log"
 
-    Interns.Config.init_all()
+    Interns.Configs.init_all()
 
-    Interns.Log.JDEInternLog("jde-log", _session=_session)  # pyright: ignore[reportCallIssue]
+    Interns.Logs.JDEInternLog("jde-log", _session=_session)  # pyright: ignore[reportCallIssue]
 
-    name = Interns.Config.get("project", "PROJECT", "name", str, "Unnamed project")
-    description = Interns.Config.get(
+    name = Interns.Configs.get("project", "PROJECT", "name", str, "Unnamed project")
+    description = Interns.Configs.get(
         "project", "PROJECT", "description", str, "No description"
     )
-    version = Interns.Config.get("project", "PROJECT", "version", str, "0.0.0")
-    author = Interns.Config.get("project", "AUTHOR", "name", str, None)
-    organization = Interns.Config.get("project", "AUTHOR", "organization", str, None)
+    version = Interns.Configs.get("project", "PROJECT", "version", str, "0.0.0")
+    author = Interns.Configs.get("project", "AUTHOR", "name", str, None)
+    organization = Interns.Configs.get("project", "AUTHOR", "organization", str, None)
 
     width = (Interns.Externs.JTKExternConsole.Console.Console.width() or 85) - 5
 
@@ -113,30 +113,30 @@ def init(project_path):
         end="\n\n",
     )
 
-    if not Interns.Config.get("state", "LAST_RUN", "clean_exit", bool, True):
+    if not Interns.Configs.get("state", "LAST_RUN", "clean_exit", bool, True):
         Interns.Helpers.warning(
             Interns.Externs.JTKExternError.JErrorRuntime("Previous run crashed")
         )
 
-    Interns.Config.set("state", "LAST_RUN", "start", _start_time)
-    Interns.Config.set("state", "LAST_RUN", "clean_exit", False)
-    Interns.Config.set(
+    Interns.Configs.set("state", "LAST_RUN", "start", _start_time)
+    Interns.Configs.set("state", "LAST_RUN", "clean_exit", False)
+    Interns.Configs.set(
         "state",
         "SESSION",
         "launches",
-        Interns.Config.get("state", "SESSION", "launches", int, 0) + 1,
+        Interns.Configs.get("state", "SESSION", "launches", int, 0) + 1,
     )
-    Interns.Config.set("state", "SESSION", "id", _session)
-    Interns.Config.check_compatibility()
+    Interns.Configs.set("state", "SESSION", "id", _session)
+    Interns.Configs.check_compatibility()
 
-    Interns.Log.log(
+    Interns.Logs.log(
         "INFO",
         "ENGINE",
         f"JarDiscordEngine version {JDEVersion_JarDiscordEngine} initialized",
     )
-    Interns.Log.log("INFO", "ENGINE", f"Current session: {_session}")
+    Interns.Logs.log("INFO", "ENGINE", f"Current session: {_session}")
 
-    Interns.Log.save()
+    Interns.Logs.save()
 
 @Interns.Decorators.requires_init
 def quit():
@@ -148,17 +148,17 @@ def quit():
     _end = _datetime.now()
     duration = (_end - _start_time).total_seconds()
 
-    Interns.Config.set("state", "LAST_RUN", "end", _end)
-    Interns.Config.set("state", "LAST_RUN", "duration", duration)
+    Interns.Configs.set("state", "LAST_RUN", "end", _end)
+    Interns.Configs.set("state", "LAST_RUN", "duration", duration)
 
-    total_runtime = Interns.Config.get(
+    total_runtime = Interns.Configs.get(
         "state", "STATISTICS", "total_runtime", float, 0.0
     )
-    launches = Interns.Config.get("state", "SESSION", "launches", int, 1)
-    longest_session = Interns.Config.get(
+    launches = Interns.Configs.get("state", "SESSION", "launches", int, 1)
+    longest_session = Interns.Configs.get(
         "state", "STATISTICS", "longest_session", float, 0.0
     )
-    shortest_session = Interns.Config.get(
+    shortest_session = Interns.Configs.get(
         "state", "STATISTICS", "shortest_session", float, 0.0
     )
 
@@ -170,16 +170,16 @@ def quit():
     if shortest_session == 0 or duration < shortest_session:  # pyright: ignore[reportOperatorIssue]
         shortest_session = duration
 
-    Interns.Config.set("state", "STATISTICS", "total_runtime", new_total_runtime)
-    Interns.Config.set("state", "STATISTICS", "average_session", average_session)
-    Interns.Config.set("state", "STATISTICS", "longest_session", longest_session)
-    Interns.Config.set("state", "STATISTICS", "shortest_session", shortest_session)
+    Interns.Configs.set("state", "STATISTICS", "total_runtime", new_total_runtime)
+    Interns.Configs.set("state", "STATISTICS", "average_session", average_session)
+    Interns.Configs.set("state", "STATISTICS", "longest_session", longest_session)
+    Interns.Configs.set("state", "STATISTICS", "shortest_session", shortest_session)
 
-    Interns.Log.log("INFO", "ENGINE", "Engine quit")
-    Interns.Log.save()
-    Interns.Log.close()
+    Interns.Logs.log("INFO", "ENGINE", "Engine quit")
+    Interns.Logs.save()
+    Interns.Logs.close()
 
-    Interns.Config.set("state", "LAST_RUN", "clean_exit", True)
+    Interns.Configs.set("state", "LAST_RUN", "clean_exit", True)
 
     _start_time = None
     _session = None
@@ -195,14 +195,14 @@ def run(main):
             return
 
         except Terminals.JDETerminalRestart:
-            Interns.Log.log("INFO", "ENGINE", "Restart requested")
+            Interns.Logs.log("INFO", "ENGINE", "Restart requested")
 
         except Exception as error:  # noqa: BLE001
             Interns.Helpers.critical(error)
             return
 
-        Interns.Log.log("INFO", "ENGINE", "Quitting engine for restart")
-        Interns.Log.log("INFO", "ENGINE", "Restarting application process")
+        Interns.Logs.log("INFO", "ENGINE", "Quitting engine for restart")
+        Interns.Logs.log("INFO", "ENGINE", "Restarting application process")
 
         Interns.Externs.JTKExternConsole.ANSI.Screen.ScreenErase.erase_display()
 

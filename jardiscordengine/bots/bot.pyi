@@ -63,6 +63,7 @@ class JDEBot(
     application_id: int | None = None
     owners: tuple[JDEEntityUser] | None = None
     debug_guilds: tuple[JDEEntityGuild] | None = None
+    bot_guilds: tuple[JDEEntityGuild] | None = None
     client: JDEEntityClientUser
     intents: JDEEntityIntents
     activity: JDEEntityActivity | JDEEntityActivityGame | JDEEntityActivityStreaming | None = None
@@ -96,6 +97,11 @@ class JDEBot(
         Returns:
             JDECommandManager: Command manager.
         """
+
+    async def wait_until_synchronized(
+        self
+    ) -> None:
+        """Wait for bot to fully startup."""
 
     @property
     def guilds(

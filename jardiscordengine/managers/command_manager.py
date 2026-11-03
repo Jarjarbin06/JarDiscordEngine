@@ -88,11 +88,11 @@ class JDECommandManager(_JDEInternBaseClass):
         self._commands = {}
         self._cooldowns = _defaultdict(_deque)
 
-        self.register_commands(self._ping, self._about, self._help)
+        self.register_commands(self._command_ping, self._command_about, self._command_help)
 
     @staticmethod
     @_command("ping", "Check the bot's latency.")
-    async def _ping(bot, ctx):
+    async def _command_ping(bot, ctx):
         latency = bot.discord.latency * 1000  # pyright: ignore[reportAttributeAccessIssue]
 
         await ctx.respond(
@@ -101,7 +101,9 @@ class JDECommandManager(_JDEInternBaseClass):
 
     @staticmethod
     @_command("about", "Display information about the bot and JarDiscordEngine.")
-    async def _about(bot, ctx):
+    async def _command_about(bot, ctx):
+        await ctx.defer(ephemeral=True)
+
         bot_name = (
             bot.discord.user.name
             if bot.discord.user is not None
@@ -154,11 +156,13 @@ class JDECommandManager(_JDEInternBaseClass):
             text="Powered by JarDiscordEngine"
         )
 
-        await ctx.respond(embed=embed)
+        await ctx.respond(embed=embed, ephemeral=True)
 
     @staticmethod
     @_command("help", "List the commands available to you.")
-    async def _help(bot, ctx):
+    async def _command_help(bot, ctx):
+        await ctx.defer(ephemeral=True)
+
         command_manager = bot.command_manager  # pyright: ignore[reportAttributeAccessIssue]
         available_commands = []
 
@@ -210,7 +214,7 @@ class JDECommandManager(_JDEInternBaseClass):
             text=f"{len(available_commands)} command(s) available"
         )
 
-        await ctx.respond(embed=embed)
+        await ctx.respond(embed=embed, ephemeral=True)
 
     @_flag(doc="Bot")
     def bot(self):
@@ -313,17 +317,30 @@ class JDECommandManager(_JDEInternBaseClass):
                 option["type"]
             )
 
+            option_kwargs = {
+                "description": option["description"],
+                "name": option["name"],
+                "required": option["required"],
+            }
+
+            optional_arguments = (
+                "choices",
+                "min_value",
+                "max_value",
+                "min_length",
+                "max_length",
+            )
+
+            for argument in optional_arguments:
+                value = option[argument]
+
+                if value is not None:
+                    option_kwargs[argument] = value
+
             options.append(
                 _discord.Option(
                     option_type,
-                    description=option["description"],
-                    name=option["name"],
-                    required=option["required"],
-                    choices=option["choices"],
-                    min_value=option["min_value"],
-                    max_value=option["max_value"],
-                    min_length=option["min_length"],
-                    max_length=option["max_length"],
+                    **option_kwargs,
                 )
             )
 
