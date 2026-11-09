@@ -74,23 +74,33 @@ def _validate_text(value, name, maximum_length):
     if len(value) > maximum_length:
         raise ValueError(f'{name} cannot exceed {maximum_length} characters')
 
+def _get_embed_field_value(item, name, default=None):
+    if isinstance(item, dict):
+        return item.get(name, default)
+
+    return getattr(item, name, default)
+
 def _validate_embed_fields(value):
     if not isinstance(value, list) or len(value) > 25:
         return False
+
     for item in value:
-        if not isinstance(item, dict):
-            return False
-        name = item.get('name')
-        field_value = item.get('value')
-        inline = item.get('inline', False)
+        name = _get_embed_field_value(item, 'name')
+        field_value = _get_embed_field_value(item, 'value')
+        inline = _get_embed_field_value(item, 'inline', False)
+
         if not isinstance(name, str) or not name:
             return False
+
         if not isinstance(field_value, str) or not field_value:
             return False
+
         if len(name) > 256 or len(field_value) > 1024:
             return False
+
         if not isinstance(inline, bool):
             return False
+
     return True
 
 def _validate_message_embeds(value):
@@ -145,9 +155,6 @@ class JDEEntityWebhookEmbed(_JDEInternEntity):
         self.title = title
         self.description = description
         self.url = url
-
-        if isinstance(timestamp, _JTKExternTime.Time):
-            timestamp = _datetime.fromtimestamp(timestamp.timestamp(), _UTC)
 
         if isinstance(timestamp, _JTKExternTime.Time):
             timestamp = _datetime.fromtimestamp(timestamp.timestamp(), _UTC)
@@ -383,13 +390,30 @@ class JDEEntityWebhookEmbed(_JDEInternEntity):
         return self
 
     def to_discord_embed(self):
-        embed = _discord.Embed(title=self.title, description=self.description, url=self.url, color=_discord.Colour(self.color) if self.color is not None else None, timestamp=self.timestamp)  # pyright: ignore[reportArgumentType]
+        embed = _discord.Embed(
+            title=self.title,
+            description=self.description,
+            url=self.url,
+            color=(
+                _discord.Colour(self.color)
+                if self.color is not None
+                else None
+            ),
+            timestamp=self.timestamp,
+        )
 
         if self.author_name is not None:
-            embed.set_author(name=self.author_name, url=self.author_url, icon_url=self.author_icon_url)
+            embed.set_author(
+                name=self.author_name,
+                url=self.author_url,
+                icon_url=self.author_icon_url,
+            )
 
         if self.footer_text is not None:
-            embed.set_footer(text=self.footer_text, icon_url=self.footer_icon_url)
+            embed.set_footer(
+                text=self.footer_text,
+                icon_url=self.footer_icon_url,
+            )
 
         if self.image_url is not None:
             embed.set_image(url=self.image_url)
@@ -397,13 +421,35 @@ class JDEEntityWebhookEmbed(_JDEInternEntity):
         if self.thumbnail_url is not None:
             embed.set_thumbnail(url=self.thumbnail_url)
 
-        for item in self.fields:  # pyright: ignore[reportGeneralTypeIssues]
-            embed.add_field(name=item['name'], value=item['value'], inline=item['inline'])
+        for item in self.fields:
+            name = _get_embed_field_value(item, 'name')
+            value = _get_embed_field_value(item, 'value')
+            inline = _get_embed_field_value(item, 'inline', False)
 
-        text_length = len(embed.title or '') + len(embed.description or '') + len(embed.author.name or '' if embed.author else '') + len(embed.footer.text or '' if embed.footer else '') + sum(len(item['name']) + len(item['value']) for item in embed.fields)  # pyright: ignore[reportIndexIssue]
+            if name is None or value is None:
+                raise ValueError('Invalid embed field: missing name or value')
+
+            embed.add_field(
+                name=name,
+                value=value,
+                inline=inline,
+            )
+
+        text_length = (
+            len(embed.title or '')
+            + len(embed.description or '')
+            + len(embed.author.name or '' if embed.author else '')
+            + len(embed.footer.text or '' if embed.footer else '')
+            + sum(
+                len(item.name) + len(item.value)
+                for item in embed.fields
+            )
+        )
 
         if text_length > 6000:
-            raise ValueError('The combined text in an embed cannot exceed 6000 characters')
+            raise ValueError(
+                'The combined text in an embed cannot exceed 6000 characters'
+            )
 
         return embed
 

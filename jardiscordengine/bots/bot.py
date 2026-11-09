@@ -299,7 +299,7 @@ class JDEBot(_JDEInternFieldDiscord):
                     if not isinstance(discord_channel, _discord.TextChannel):
                         continue
 
-                    if not "MESSAGES" in self._no_sync:
+                    if "MESSAGES" not in self._no_sync:
                         async for discord_message in discord_channel.history(
                             limit=None,
                             oldest_first=True,
@@ -391,6 +391,9 @@ class JDEBot(_JDEInternFieldDiscord):
     @_flag(cast=_JDEBool)
     def synchronized(self):
         return "_synchronized"
+
+    def sync_commands(self):
+        return self.discord.sync_commands()
 
 __all__ = [
     "JDEBot",

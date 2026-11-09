@@ -243,7 +243,7 @@ class JDETerminal(_JDEInternBaseClass):
                 break
 
             try:
-                arguments = _shlex.split(raw_command)
+                arguments = _shlex.split(raw_command, comments=False, posix=True)
             except ValueError as error:
                 _JTKExternConsole.print(self._color(f"Invalid command syntax: {error}", 255, 100, 100))
                 continue

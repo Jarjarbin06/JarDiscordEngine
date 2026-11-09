@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jardiscordengine"
-version = "0.3.2"
+version = "0.3.3"
 description = "Wrapper over PyCord providing simple and easy-to-use API."
 authors = [
     { name = "Nathan Jarjarbin", email = "nathan.amaraggi@epitech.eu" }
@@ -34,9 +34,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://jarjarbin-studio.github.io/JarDiscordEngine/"
-Repository = "https://github.com/Jarjarbin-Studio/JarDiscordEngine/"
-Issues = "https://github.com/Jarjarbin-Studio/JarDiscordEngine/issues/"
+Repository = "https://github.com/Jarjarbin06/JarDiscordEngine/"
+Issues = "https://github.com/Jarjarbin06/JarDiscordEngine/issues/"
 
 [tool.setuptools_scm]
 version_scheme = "guess-next-dev"

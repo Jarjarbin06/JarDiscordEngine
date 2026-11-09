@@ -198,6 +198,11 @@ class JDEBot(
             JDEBool: Is synchronized.
         """
 
+    def sync_commands(
+        self
+    ) -> None:
+        """Synchronize discord commands."""
+
 __all__: Sequence[str] = [
     "JDEBot",
 ]
