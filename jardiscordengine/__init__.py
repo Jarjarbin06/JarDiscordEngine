@@ -42,7 +42,7 @@ from uuid import uuid4 as _uuid4
 ##Metadata##
 __author__ = "Nathan Jarjarbin"
 __email__ = "nathan.amaraggi@epitech.eu"
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 __config_version__ = "0.2.0"
 __license__ = "GPL"
 

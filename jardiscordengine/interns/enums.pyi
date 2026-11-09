@@ -14,10 +14,10 @@ class JDEInternInstancePolicy(IntEnum):
         UNIQUE (int): Filtered instantiation.
     """
 
-    NORMAL: ...
-    SINGLETON: ...
-    FLYWEIGHT: ...
-    UNIQUE: ...
+    NORMAL: JDEInternInstancePolicy
+    SINGLETON: JDEInternInstancePolicy
+    FLYWEIGHT: JDEInternInstancePolicy
+    UNIQUE: JDEInternInstancePolicy
 
 __all__: Sequence[str] = [
     "JDEInternInstancePolicy",

@@ -13,9 +13,9 @@ class JDECompatibility(IntEnum):
         ERROR (int): Version incompatible.
     """
 
-    OK: ...
-    WARNING: ...
-    ERROR: ...
+    OK: JDECompatibility
+    WARNING: JDECompatibility
+    ERROR: JDECompatibility
 
 __all__: Sequence[str] = [
     "JDECompatibility",

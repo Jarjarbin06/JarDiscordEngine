@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Literal, final
+from typing import Any, Literal, final
 
 from discord import Bot
 
@@ -200,7 +200,7 @@ class JDEBot(
 
     def sync_commands(
         self
-    ) -> None:
+    ) -> Any:
         """Synchronize discord commands."""
 
 __all__: Sequence[str] = [

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jardiscordengine"
-version = "0.3.3"
+version = "0.3.4"
 description = "Wrapper over PyCord providing simple and easy-to-use API."
 authors = [
     { name = "Nathan Jarjarbin", email = "nathan.amaraggi@epitech.eu" }
