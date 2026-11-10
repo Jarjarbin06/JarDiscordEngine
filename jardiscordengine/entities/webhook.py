@@ -139,7 +139,7 @@ class JDEEntityWebhookEmbed(_JDEInternEntity):
     footer_icon_url = _field((str, type(None)), default=None, validator=_is_http_url, doc='Optional footer icon URL.')
     image_url = _field((str, type(None)), default=None, validator=_is_http_url, doc="URL of the embed's main image.")
     thumbnail_url = _field((str, type(None)), default=None, validator=_is_http_url, doc="URL of the embed's thumbnail.")
-    fields = _field(list, default=[], validator=_validate_embed_fields, doc='List of embed fields.')
+    fields = _field(list, validator=_validate_embed_fields, doc='List of embed fields.')
 
     def __new__(cls, _jde_key = None, _jde_warn = None, **kwargs):
         return _JDEInternEntity.__new__(
@@ -155,6 +155,7 @@ class JDEEntityWebhookEmbed(_JDEInternEntity):
         self.title = title
         self.description = description
         self.url = url
+        self.fields = []
 
         if isinstance(timestamp, _JTKExternTime.Time):
             timestamp = _datetime.fromtimestamp(timestamp.timestamp(), _UTC)
